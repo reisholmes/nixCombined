@@ -7,6 +7,8 @@ Example repos:
 
 https://github.com/jevy/home-manager-nix-config
 
+https://github.com/mcdonc/.nixconfig
+
 https://github.com/TLATER/dotfiles
 
 https://github.com/Misterio77/nix-starter-configs
