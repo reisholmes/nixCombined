@@ -6,5 +6,7 @@ Ideally, running the config should involve no more than: `nix profile install .#
 Example repos:
 
 https://github.com/jevy/home-manager-nix-config
+
 https://github.com/TLATER/dotfiles
+
 https://github.com/Misterio77/nix-starter-configs
