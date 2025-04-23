@@ -11,6 +11,8 @@ https://github.com/mcdonc/.nixconfig
 
 https://github.com/TLATER/dotfiles
 
+https://github.com/srid/nixos-config
+
 https://github.com/Misterio77/nix-starter-configs
 
 Literature to read:
