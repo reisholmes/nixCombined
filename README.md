@@ -11,6 +11,8 @@ https://github.com/srid/nixos-unified
 
 https://github.com/dustinlyons/nixos-config
 
+https://www.reddit.com/r/NixOS/comments/yk4n8d/hostspecific_settings_different_approaches/iurkkxv/
+
 https://github.com/mwdavisii/nyx/blob/main/flake.nix
 
 https://github.com/jevy/home-manager-nix-config
