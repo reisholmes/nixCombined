@@ -9,6 +9,8 @@ https://github.com/juspay/nixos-unified-template
 
 https://github.com/srid/nixos-unified
 
+https://github.com/dustinlyons/nixos-config
+
 https://github.com/jevy/home-manager-nix-config
 
 https://github.com/mcdonc/.nixconfig
