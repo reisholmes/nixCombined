@@ -5,6 +5,8 @@ Ideally, running the config should involve no more than: `nix profile install .#
 
 Example repos:
 
+https://github.com/juspay/nixos-unified-template
+
 https://github.com/jevy/home-manager-nix-config
 
 https://github.com/mcdonc/.nixconfig
