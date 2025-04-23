@@ -12,3 +12,7 @@ https://github.com/mcdonc/.nixconfig
 https://github.com/TLATER/dotfiles
 
 https://github.com/Misterio77/nix-starter-configs
+
+Literature to read:
+
+https://callistaenterprise.se/blogg/teknik/2025/04/10/nix-flakes/
