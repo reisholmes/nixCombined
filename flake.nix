@@ -1,225 +1,108 @@
-# Layout and workflow copied from: https://github.com/mwdavisii/nyx/
 {
+  # I essentially copied this from someone much smarter than me:
+  # https://github.com/AlexNabokikh/nix-config
+  # All I wanted was a simple, easy enough to follow examples, of managing
+  # two machines (a linux mint and mac, in my case) with home manager and
+  # shared app configs between them. Alex's config matches what I required.
+  # If you don't follow what I'm doing then go read his repo.
+  description = "Nix and nix-darwin configs for my machines";
   inputs = {
-    # Core
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    #    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-    #    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    # Nixpkgs
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
+
+    # Home manager
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nur.url = "github:nix-community/NUR";
 
-    #hyprland
-    #hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
-    ##hyprland.url = "github:hyprwm/Hyprland/v0.38.1";
-    #hyprland-plugins = {
-    #url = "git+https://github.com/hyprwm/hyprland-plugins";
-    #inputs.hyprland.follows = "hyprland";
-    #};
+    # Global catppuccin theme
+    catppuccin.url = "github:catppuccin/nix";
 
-    # Secrets
-    #agenix.url = "github:ryantm/agenix";
-    #secrets = {
-    #url = "git+ssh://git@github.com/mwdavisii/nix-secrets.git";
-    #flake = false;
-    #};
-
-    # MacOS
-    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.11-darwin";
+    # Nix Darwin (for MacOS machines)
     darwin = {
-      url = "github:lnl7/nix-darwin/master";
+      url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-    homebrew-bundle = {
-      url = "github:homebrew/homebrew-bundle";
-      flake = false;
-    };
-    homebrew-core = {
-      url = "github:homebrew/homebrew-core";
-      flake = false;
-    };
-    homebrew-cask = {
-      url = "github:homebrew/homebrew-cask";
-      flake = false;
-    };
-
-    #WSL
-    /*
-    vscode-server.url = "github:nix-community/nixos-vscode-server";
-    nixos-wsl = {
-      url = "github:nix-community/NixOS-WSL";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    */
-
-    # Other
   };
 
-  outputs = {self, ...} @ inputs:
-    with self.lib; let
-      systems = ["x86_64-linux" "x86_64-darwin" "aarch64-darwin" "aarch64-linux"];
-      foreachSystem = genAttrs systems;
-      pkgsBySystem = foreachSystem (
-        system:
-          import inputs.nixpkgs {
-            inherit system;
-            config = import ./nix/config.nix;
-            overlays = self.overlays."${system}";
-            # leaving in as an example
-            /*
-              overlays = [
-              #  self.overlays."${system}"
-              inputs.nix-on-droid.overlays.default
-              (final: prev: {
-                python311Full = prev.python311Full.override {
-                  packageOverrides = finalPkgs: prevPkgs: {
-                    # Disable failing tests https://github.com/NixOS/nixpkgs/issues/272430
-                    eventlet = prevPkgs.eventlet.overridePythonAttrs (prevAttrs: {
-                      disabledTests = prevAttrs.disabledTests ++ [
-                        "test_full_duplex"
-                      ];
-                    });
-                  };
-                };
-              })
-            ];
-            */
-          }
-      );
-    in rec {
-      lib = import ./lib {inherit self inputs config;} // inputs.nixpkgs.lib;
+  outputs = {
+    self,
+    catppuccin,
+    darwin,
+    home-manager,
+    nixpkgs,
+    ...
+  } @ inputs: let
+    inherit (self) outputs;
 
-      #devShell = foreachSystem (system: import ./shell.nix { pkgs = pkgsBySystem."${system}"; });
-
-      legacyPackages = pkgsBySystem;
-      packages = foreachSystem (system: import ./nix/pkgs self system);
-      overlay = foreachSystem (system: _final: _prev: self.packages."${system}");
-      overlays = foreachSystem (
-        system:
-          with inputs; let
-            ovs = attrValues (import ./nix/overlays self);
-          in
-            [
-              (self.overlay."${system}")
-              (nur.overlay)
-              # (_:_: { inherit (eww.packages."${system}") eww; })
-            ]
-            ++ ovs
-      );
-
-      /*
-      homeManagerConfigurations = mapAttrs' mkHome {
-        mdavis67 = { };
+    # Define user configurations
+    users = {
+      reis.holmes = {
+        fullName = "Reis Holmes";
+        name = "reis.holmes";
       };
-      */
-      darwinConfigurations = mapAttrs' mkNixSystemConfiguration {
-        mwdavis-workm1 = {
-          system = "aarch64-darwin";
-          user = "mwdavisii";
-          buildTarget = "darwin";
-        }; #macbook
-        L211011 = {
-          system = "aarch64-darwin";
-          user = "mdavis67";
-          buildTarget = "darwin";
-        };
-        L241729 = {
-          system = "aarch64-darwin";
-          user = "mdavis67";
-          buildTarget = "darwin";
-        };
+      reish = {
+        fullName = "Reis Holmes";
+        name = "reish";
       };
-
-      nixosConfigurations = mapAttrs' mkNixSystemConfiguration {
-        athena = {
-          hostname = "athena";
-          user = "mwdavisii";
-          buildTarget = "nixos";
-        };
-        ares = {
-          user = "nixos";
-          hostname = "ares";
-          buildTarget = "nixos";
-        }; #WSL
-        asahi = {
-          user = "mwdavisii";
-          system = "aarch64-darwin";
-          hostname = "asahi";
-          buildTarget = "nixos";
-        }; #WSL
-        hephaestus = {
-          hostname = "hephaestus";
-          user = "mwdavisii";
-          buildTarget = "nixos";
-        }; #home machine
-        livecd = {
-          hostname = "worklt";
-          user = "mwdavisii";
-          buildTarget = "iso";
-        }; #nix build .#nixosConfigurations.livecd.config.system.build.isoImage
-        mwdavis-workm1 = {
-          system = "aarch64-darwin";
-          user = "mwdavisii";
-          buildTarget = "darwin";
-        }; #macbook
-        nixos = {
-          user = "nixos";
-          hostname = "nixos";
-          buildTarget = "nixos";
-        }; #WSL
-        olenos = {
-          hostname = "olenos";
-          user = "mwdavisii";
-          buildTarget = "nixos";
-        }; #Work Laptop (Host OS)
-        virtualbox = {
-          hostname = "virtualBoxOVA";
-          user = "mwdavisii";
-          buildTarget = "vm";
-        }; #nix build .#nixosConfigurations.virtualbox.config.system.build.isoImage
-        L241729 = {
-          system = "aarch64-darwin";
-          user = "mdavis67";
-          buildTarget = "darwin";
-        };
-        L242731 = {
-          hostname = "L242731";
-          system = "x86_64-linux";
-          user = "mdavis67";
-          buildTarget = "nixos";
-        }; #work dell, nixos
-      };
-
-      top = let
-        livecd =
-          (builtins.attrNames inputs.self.nixosConfigurations)
-          #(attr: inputs.self.nixosConfigurations.${attr}.config.system.build.isoImage);
-          (attr: inputs.self.nixosConfigurations.${attr}.livecd.config.formats.iso);
-        droidtop =
-          genAttrs
-          (builtins.attrNames inputs.self.nixOnDroidConfigurations)
-          (attr: inputs.self.nixOnDroidConfigurations.${attr}.config.system.build.toplevel);
-        nixtop =
-          genAttrs
-          (builtins.attrNames inputs.self.nixosConfigurations)
-          (attr: inputs.self.nixosConfigurations.${attr}.config.system.build.toplevel);
-        hometop =
-          genAttrs
-          (builtins.attrNames inputs.self.homeManagerConfigurations)
-          (attr: inputs.self.homeManagerConfigurations.${attr}.activationPackage);
-        darwintop =
-          genAttrs
-          (builtins.attrNames inputs.self.darwinConfigurations)
-          (attr: inputs.self.darwinConfigurations.${attr}.system);
-        vmtop =
-          genAttrs
-          (builtins.attrNames inputs.self.nixosConfigurations)
-          (attr: inputs.self.nixosConfigurations.${attr}.config.system.build.toplevel);
-      in
-        droidtop // nixtop // hometop // darwintop // vmtop;
     };
+
+    # Function for NixOS system configuration
+    mkNixosConfiguration = hostname: username:
+      nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit inputs outputs hostname;
+          userConfig = users.${username};
+          nixosModules = "${self}/modules/nixos";
+        };
+        modules = [./hosts/${hostname}];
+      };
+
+    # Function for nix-darwin system configuration
+    mkDarwinConfiguration = hostname: username:
+      darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        specialArgs = {
+          inherit inputs outputs hostname;
+          userConfig = users.${username};
+        };
+        modules = [
+          ./hosts/${hostname}
+          home-manager.darwinModules.home-manager
+        ];
+      };
+
+    # Function for Home Manager configuration
+    mkHomeConfiguration = system: username: hostname:
+      home-manager.lib.homeManagerConfiguration {
+        pkgs = import nixpkgs {inherit system;};
+        extraSpecialArgs = {
+          inherit inputs outputs;
+          userConfig = users.${username};
+          nhModules = "${self}/modules/home-manager";
+        };
+        modules = [
+          ./home/${username}/${hostname}
+          catppuccin.homeModules.catppuccin
+        ];
+      };
+  in {
+    nixosConfigurations = {
+      # leaving in as an example
+      #  energy = mkNixosConfiguration "energy" "nabokikh";
+    };
+
+    darwinConfigurations = {
+      "reis-work" = mkDarwinConfiguration "reis-work" "reis.holmes";
+    };
+
+    homeConfigurations = {
+      "reis.holmes@reis-work" = mkHomeConfiguration "x86_64-linux" "reis.holmes" "reis-work";
+      "reish@reis-sb3" = mkHomeConfiguration "x86_64-linux" "reish" "reis-sb3";
+    };
+
+    overlays = import ./overlays {inherit inputs;};
+  };
 }
