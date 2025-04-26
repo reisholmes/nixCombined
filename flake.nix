@@ -2,7 +2,7 @@
   # I essentially copied this from someone much smarter than me:
   # https://github.com/AlexNabokikh/nix-config
   # All I wanted was a simple, easy enough to follow examples, of managing
-  # two machines (a linux mint and mac, in my case) with home manager and
+  # two machines (linux mint and mac, in my case) with home manager and
   # shared app configs between them. Alex's config matches what I required.
   # If you don't follow what I'm doing then go read his repo.
   description = "Nix and nix-darwin configs for my machines";
