@@ -35,13 +35,15 @@
       then "/Users/${userConfig.name}"
       else "/home/${userConfig.name}";
 
-    # oh-my-posh - custom theme file
     file = {
-      name =
-        if pkgs.stdenv.isDarwin
-        then "/Users/${userConfig.name}/catppuccin.omp.json"
-        else "/home/${userConfig.name}/catppuccin.omp.json";
-      source = ../assets/catppuccin.omp.json;
+      # oh-my-posh - custom theme file
+      ohmyposhTheme = {
+        source = ../assets/oh-my-posh/catppuccin.omp.json;
+        target =
+          if pkgs.stdenv.isDarwin
+          then "/Users/${userConfig.name}/catppuccin.omp.json"
+          else "/home/${userConfig.name}/catppuccin.omp.json";
+      };
     };
 
     # declare our editor
