@@ -43,9 +43,9 @@
         fullName = "Reis Holmes";
         name = "reis.holmes";
       };
-      reish = {
+      reis = {
         fullName = "Reis Holmes";
-        name = "reish";
+        name = "reis";
       };
     };
 
@@ -100,7 +100,7 @@
 
     homeConfigurations = {
       "reis.holmes@reis-work" = mkHomeConfiguration "x86_64-linux" "reis.holmes" "reis-work";
-      "reish@reis-sb3" = mkHomeConfiguration "x86_64-linux" "reish" "reis-sb3";
+      "reis@rh-sb3" = mkHomeConfiguration "x86_64-linux" "reis" "rh-sb3";
     };
 
     overlays = import ./overlays {inherit inputs;};
