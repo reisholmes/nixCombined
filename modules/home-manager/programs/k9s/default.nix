@@ -11,7 +11,7 @@
   home = {
     file = {
       k9sSkin = {
-        source = ../assets/k9s/catppuccin-mocha.yaml;
+        source = ../../assets/k9s/catppuccin-mocha.yaml;
         target =
           if pkgs.stdenv.isDarwin
           then "/Users/${userConfig.name}/Users/${userConfig.name}/Library/Application Support/k9s/skins/catppuccin-mocha.yaml"
@@ -20,7 +20,7 @@
     };
     file = {
       k9sViews = {
-        source = ../assets/k9s/views.yaml;
+        source = ../../assets/k9s/views.yaml;
         target =
           if pkgs.stdenv.isDarwin
           then "/Users/${userConfig.name}/Users/${userConfig.name}/Library/Application Support/k9s/views.yaml"
@@ -40,10 +40,6 @@
           skin = "catppuccin-mocha";
         };
       };
-    };
-
-    skins = {
-      catppuccin-mocha = ./catppuccin-mocha.yaml;
     };
   };
 }

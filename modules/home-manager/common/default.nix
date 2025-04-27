@@ -70,7 +70,6 @@
       kubectl
       kubelogin
       lf
-      mas
       oh-my-posh
       pipenv
       python3
@@ -103,6 +102,7 @@
       #docker
       #hidden-bar
       #raycast
+      mas
     ]
     ++ lib.optionals (!stdenv.isDarwin) [
       # controls sound
