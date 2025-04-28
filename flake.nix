@@ -25,6 +25,13 @@
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # NixGL fixes graphics issues on non NixOS systems
+    # https://nix-community.github.io/home-manager/index.xhtml#sec-usage-gpu-non-nixos
+    nixgl = {
+      url = "github:nix-community/nixGL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -32,6 +39,7 @@
     catppuccin,
     darwin,
     home-manager,
+    nixgl,
     nixpkgs,
     ...
   } @ inputs: let
@@ -79,7 +87,7 @@
       home-manager.lib.homeManagerConfiguration {
         pkgs = import nixpkgs {inherit system;};
         extraSpecialArgs = {
-          inherit inputs outputs;
+          inherit inputs outputs nixgl;
           userConfig = users.${username};
           nhModules = "${self}/modules/home-manager";
         };

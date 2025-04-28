@@ -1,4 +1,5 @@
 {
+  nixgl,
   outputs,
   userConfig,
   pkgs,
@@ -25,6 +26,14 @@
     config = {
       allowUnfree = true;
     };
+  };
+
+  # Fixed nixGL package issues on Linux
+  # e.g. Kitty won't run without this
+  nixGL = {
+    packages = nixgl.packages;
+    defaultWrapper = "mesa";
+    offloadWeapper = "mesaPrime";
   };
 
   # Home-Manager configuration for the user's home environment

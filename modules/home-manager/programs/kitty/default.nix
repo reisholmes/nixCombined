@@ -1,8 +1,17 @@
-{...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   # https://home-manager-options.extranix.com/?query=programs.kitty&release=master
   # Kitty
   programs.kitty = {
     enable = true;
+
+    package =
+      if pkgs.stdenv.isDarwin
+      then pkgs.kitty
+      else config.lib.nixGL.wrap pkgs.kitty;
 
     keybindings = {
       "ctrl+shift+enter" = "new_window_with_cwd";

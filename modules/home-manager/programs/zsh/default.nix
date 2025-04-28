@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{pkgs, lib, ...}: {
   # ZSH
   programs.zsh = {
     enable = true;
@@ -11,7 +11,7 @@
       eval "$(brew shellenv)"
     '';
 
-    initExtra = ''
+    initContent = lib.mkOrder 500 '''
       # mac is dumb
       # https://github.com/junegunn/fzf/issues/164#issuecomment-527826925
       bindkey "ç" fzf-cd-widget
@@ -32,7 +32,7 @@
       # fixes unknown terminal prompt on SSH sessions
       [[ "$TERM" == "xterm-kitty" ]] && alias ssh="TERM=xterm-256color ssh"
 
-    '';
+    ''';
 
     shellAliases = {
       # easier rebuilding on darwin
