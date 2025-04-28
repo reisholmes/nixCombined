@@ -33,7 +33,7 @@
   nixGL = {
     packages = nixgl.packages;
     defaultWrapper = "mesa";
-    offloadWeapper = "mesaPrime";
+    offloadWrapper = "mesaPrime";
   };
 
   # Home-Manager configuration for the user's home environment
@@ -79,6 +79,8 @@
       kubectl
       kubelogin
       lf
+      neofetch
+      nvim
       oh-my-posh
       pipenv
       python3
@@ -91,6 +93,10 @@
       yq
 
       # Terminal fonts
+      # https://github.com/nix-community/home-manager/issues/6160
+      # If experiencing issues on linux run
+      #    nix shell 'nixpkgs#fontconfig"
+      #    fc-cache -vr
       nerd-fonts.hack
 
       # NVIM specific requirements
