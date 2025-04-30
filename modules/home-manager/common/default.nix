@@ -80,7 +80,7 @@
       kubelogin
       lf
       neofetch
-      nvim
+      neovim
       oh-my-posh
       pipenv
       python3
