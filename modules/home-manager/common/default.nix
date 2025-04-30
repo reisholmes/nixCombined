@@ -1,8 +1,8 @@
 {
   nixgl,
   outputs,
-  userConfig,
   pkgs,
+  userConfig,
   ...
 }: {
   # Packages that require configuration get placed in relevant place
@@ -99,6 +99,9 @@
       #    fc-cache -vr
       nerd-fonts.hack
 
+      # Emoji support
+      noto-fonts-color-emoji
+
       # NVIM specific requirements
       ######
       # markdown conform requirement
@@ -130,8 +133,42 @@
     ];
 
   # Catpuccin flavor and accent
-  catppuccin = {
-    flavor = "mocha";
-    accent = "lavender";
+  #  catppuccin = {
+  #  flavor = "mocha";
+  #  accent = "lavender";
+  #};
+
+  # Theme support from stylix
+  stylix = {
+    enable = true;
+
+    # theme, list at https://github.com/tinted-theming/schemes
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
+
+    # wallpaper https://stylix.danth.me/configuration.html#wallpaper
+    image = ../assets/stylix/wallpaper_wave_mac.jpg;
+
+    # fonts https://stylix.danth.me/configuration.html#fonts
+    fonts = {
+      serif = {
+        package = pkgs.nerd-fonts.hack;
+        name = "Hack Nerd Font Propo";
+      };
+
+      sansSerif = {
+        package = pkgs.nerd-fonts.hack;
+        name = "Hack Nerd Font Propo";
+      };
+
+      monospace = {
+        package = pkgs.nerd-fonts.hack;
+        name = "Hack Nerd Font Mono";
+      };
+
+      emoji = {
+        package = pkgs.noto-fonts-color-emoji;
+        name = "Noto Color Emoji";
+      };
+    };
   };
 }

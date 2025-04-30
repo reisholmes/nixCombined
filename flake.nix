@@ -18,7 +18,7 @@
     };
 
     # Global catppuccin theme
-    catppuccin.url = "github:catppuccin/nix";
+    #catppuccin.url = "github:catppuccin/nix";
 
     # Nix Darwin (for MacOS machines)
     darwin = {
@@ -32,15 +32,22 @@
       url = "github:nix-community/nixGL";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Stylix is a theming framework for NixOS, Home Manager, nix-darwin, and
+    # Nix-on-Droid that applies color schemes, wallpapers, and
+    # fonts to a wide range of applications.
+    stylix.url = "github:danth/stylix";
+    stylix-stable.url = "github:danth/stylix/release-24.11";
   };
 
   outputs = {
     self,
-    catppuccin,
+    #catppuccin,
     darwin,
     home-manager,
     nixgl,
     nixpkgs,
+    stylix,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -93,7 +100,8 @@
         };
         modules = [
           ./home/${username}/${hostname}
-          catppuccin.homeModules.catppuccin
+          #catppuccin.homeModules.catppuccin
+          stylix.homeManagerModules.stylix
         ];
       };
   in {
