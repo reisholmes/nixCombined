@@ -65,6 +65,7 @@
   home.packages = with pkgs;
     [
       # Packages that don't require configuring
+      (azure-cli.withExtensions [azure-cli.extensions.aks-preview])
       bat
       btop
       dig
@@ -98,6 +99,7 @@
       #    nix shell 'nixpkgs#fontconfig"
       #    fc-cache -vr
       nerd-fonts.hack
+      nerd-fonts.jetbrains-mono
 
       # Emoji support
       noto-fonts-color-emoji
@@ -128,19 +130,40 @@
       #pulseaudio
       #tesseract
       flameshot
+      magnetic-catppuccin-gtk
       unzip
       wl-clipboard
     ];
 
-  # Catpuccin flavor and accent
-  #  catppuccin = {
-  #  flavor = "mocha";
-  #  accent = "lavender";
-  #};
+  gtk =
+    if pkgs.stdenv.isDarwin
+    then {enable = false;}
+    else {
+      cursorTheme = {
+        name = "XCursor-Pro-Dark";
+      };
+      iconTheme = {
+        name = "Mint-Y-Blue";
+      };
+      theme = {
+        name = "Catppuccin-GTK-Dark";
+      };
+    };
 
   # Theme support from stylix
   stylix = {
+    autoEnable = true;
     enable = true;
+
+    # disable the theme for specific apps
+    targets = {
+      lazygit = {
+        enable = false;
+      };
+      gtk = {
+        enable = false;
+      };
+    };
 
     # theme, list at https://github.com/tinted-theming/schemes
     base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
@@ -151,13 +174,13 @@
     # fonts https://stylix.danth.me/configuration.html#fonts
     fonts = {
       serif = {
-        package = pkgs.nerd-fonts.hack;
-        name = "Hack Nerd Font Propo";
+        package = pkgs.nerd-fonts.jetbrains-mono;
+        name = "JetBrainsMono Nerd Font Propo";
       };
 
       sansSerif = {
-        package = pkgs.nerd-fonts.hack;
-        name = "Hack Nerd Font Propo";
+        package = pkgs.nerd-fonts.jetbrains-mono;
+        name = "JetBrainsMono Nerd Font Propo";
       };
 
       monospace = {
