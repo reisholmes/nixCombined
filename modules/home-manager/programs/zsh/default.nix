@@ -58,8 +58,9 @@
           owner = "zsh-users";
           repo = "zsh-autosuggestions";
           rev = "v0.7.0";
-          #this shows how to get a sha256, run the flake build and it will error with the real sha
-          #sha256 = pkgs.lib.fakeSha256;
+          # this shows how to get a sha256, run the flake build and it will error with the real sha
+          # sha256 = pkgs.lib.fakeSha256;
+          # or you can run nix-prefetch-git https://<url>
           sha256 = "KLUYpUu4DHRumQZ3w59m9aTW6TBKMCXl2UcKi4uMd7w=";
         };
       }
@@ -70,9 +71,10 @@
           owner = "marlonrichert";
           repo = "zsh-autocomplete";
           rev = "24.09.04";
-          #this shows how to get a sha256, run the flake build and it will error with the real sha
-          #sha256 = pkgs.lib.fakeSha256;
-          sha256 = "o8IQszQ4/PLX1FlUvJpowR2Tev59N8lI20VymZ+Hp4w=";
+          # this shows how to get a sha256, run the flake build and it will error with the real sha
+          # sha256 = pkgs.lib.fakeSha256;
+          # or you can run nix-prefetch-git https://<url>
+          sha256 = "1ijg6pdp9hricg9vnzhp8jlam7q7kks9nj4nj6ipy5bkccflxpzs";
         };
       }
     ];
