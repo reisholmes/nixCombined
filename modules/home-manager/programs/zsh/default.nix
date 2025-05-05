@@ -70,11 +70,11 @@
         src = pkgs.fetchFromGitHub {
           owner = "marlonrichert";
           repo = "zsh-autocomplete";
-          rev = "24.09.04";
+          rev = "25.03.19";
           # this shows how to get a sha256, run the flake build and it will error with the real sha
           # sha256 = pkgs.lib.fakeSha256;
           # or you can run nix-prefetch-git https://<url>
-          sha256 = "1ijg6pdp9hricg9vnzhp8jlam7q7kks9nj4nj6ipy5bkccflxpzs";
+          sha256 = "eb5a5WMQi8arZRZDt4aX1IV+ik6Iee3OxNMCiMnjIx4=";
         };
       }
     ];

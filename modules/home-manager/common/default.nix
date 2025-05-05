@@ -110,7 +110,15 @@
 
       # Terraform lsp, linter
       terraform-ls
+      # also used in pre-commit
       tflint
+
+      # pre-commit requirements
+      # hgttps://github.com/antonbabenko/pre-commit-terraform
+      checkov
+      pre-commit
+      terraform-docs
+      terragrunt
     ]
     ++ lib.optionals stdenv.isDarwin [
       #colima
