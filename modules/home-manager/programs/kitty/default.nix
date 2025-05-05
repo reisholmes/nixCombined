@@ -23,7 +23,11 @@
       #background_opacity = "0.93";
       cursor_shape = "beam";
       font_family = "Hack Nerd Font Mono";
-      font_size = 15.5;
+      font_size =
+        if pkgs.stdenv.isDarwin
+        then 15.5
+        else 14;
+
       macos_option_as_alt = "yes";
       initial_window_height = 44;
       initial_window_width = 160;
@@ -39,6 +43,5 @@
       cursor_trail = 3;
       cursor_trail_decay = "0.1 0.2";
     };
-    themeFile = "Catppuccin-Mocha";
   };
 }

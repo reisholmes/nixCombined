@@ -1,6 +1,6 @@
 {
   pkgs,
-  lib,
+  userConfig,
   ...
 }: {
   # ZSH
@@ -12,24 +12,35 @@
     enableCompletion = false;
 
     initContent = ''
-      # homebrew
-      eval "$(<Homebrew prefix path>/bin/brew shellenv)"
+      unameOutput="$(uname -m)"
 
-      # mac is dumb
-      # https://github.com/junegunn/fzf/issues/164#issuecomment-527826925
-      bindkey "ç" fzf-cd-widget
+      # homebrew on M based Mac chips
+      if [[ $unameOutput == 'arm64' ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+
+        # mac is dumb
+        # https://github.com/junegunn/fzf/issues/164#issuecomment-527826925
+        bindkey "ç" fzf-cd-widget
+      fi
 
       # for atuin
       eval "$(atuin init zsh)"
       eval "$(oh-my-posh init zsh)"
 
       # for az cli
-      autoload bashcompinit && bashcompinit
-      source $(brew --prefix)/etc/bash_completion.d/az
+      autoload -U +X bashcompinit && bashcompinit
+
+      if [[ $unameOutput == 'arm64' ]]; then
+        #load the file
+        source $(brew --prefix)/etc/bash_completion.d/az
+
+      elif [[ $unameOutput == 'x86_64' ]]; then
+        #load the file
+        source /home/${userConfig.name}/.nix-profile/share/bash-completion/completions/az.bash
+      fi
 
       # for oh-my-posh
       eval "$(${pkgs.oh-my-posh}/bin/oh-my-posh init zsh --config ~/catppuccin.omp.json)"
-
 
       # https://old.reddit.com/r/KittyTerminal/comments/13ephdh/xtermkitty_ssh_woes_i_know_about_the_kitten_but/https://old.reddit.com/r/KittyTerminal/comments/13ephdh/xtermkitty_ssh_woes_i_know_about_the_kitten_but/
       # fixes unknown terminal prompt on SSH sessions
@@ -39,7 +50,10 @@
 
     shellAliases = {
       # easier rebuilding on darwin
-      nix_rebuild = "darwin-rebuild switch --flake /Users/reis.holmes/Documents/code/repos/nix-darwin/#reis-work";
+      nix_darwin_rebuild = "darwin-rebuild switch --flake /Users/reis.holmes/Documents/code/repos/nix-darwin/#reis-work";
+
+      # easier rebuilding on surface book
+      nix_sb3_rebuild = "home-manager switch --flake .#reis@rh-sb3 --impure";
 
       # modern cat command remap
       cat = "bat";
@@ -65,7 +79,7 @@
         };
       }
       {
-        # will source zsh-autosuggestions.plugin.zsh
+        # will source zsh-autocomplete.plugin.zsh
         name = "zsh-autocomplete";
         src = pkgs.fetchFromGitHub {
           owner = "marlonrichert";
@@ -85,7 +99,6 @@
       plugins = [
         "git"
         "zoxide"
-        #  "z"
       ];
     };
   };
