@@ -34,6 +34,7 @@
     packages = nixgl.packages;
     defaultWrapper = "mesa";
     offloadWrapper = "mesaPrime";
+    vulkan.enable = true;
   };
 
   # Home-Manager configuration for the user's home environment
@@ -72,10 +73,12 @@
       duf
       eza
       fd
+      filezilla
       fluxcd
       git
       go
       htop
+      inetutils
       jq
       kubectl
       kubelogin
@@ -138,25 +141,11 @@
       #pulseaudio
       #tesseract
       flameshot
+      input-leap
       magnetic-catppuccin-gtk
       unzip
       wl-clipboard
     ];
-
-  gtk =
-    if pkgs.stdenv.isDarwin
-    then {enable = false;}
-    else {
-      cursorTheme = {
-        name = "XCursor-Pro-Dark";
-      };
-      iconTheme = {
-        name = "Mint-Y-Blue";
-      };
-      theme = {
-        name = "Catppuccin-GTK-Dark";
-      };
-    };
 
   # Theme support from stylix
   stylix = {

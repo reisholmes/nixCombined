@@ -112,6 +112,7 @@
     homeConfigurations = {
       "reis.holmes@reis-work" = mkHomeConfiguration "x86_64-linux" "reis.holmes" "reis-work";
       "reis@rh-sb3" = mkHomeConfiguration "x86_64-linux" "reis" "rh-sb3";
+      "reis@reis-new" = mkHomeConfiguration "x86_64-linux" "reis" "reis-new";
     };
 
     overlays = import ./overlays {inherit inputs;};

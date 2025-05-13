@@ -1,4 +1,8 @@
-{nhModules, ...}: {
+{
+  nhModules,
+  pkgs,
+  ...
+}: {
   imports = [
     "${nhModules}/common"
   ];
@@ -8,15 +12,7 @@
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   home.stateVersion = "24.11";
-  gtk = {
-    cursorTheme = {
-      name = "XCursor-Pro-Dark";
-    };
-    iconTheme = {
-      name = "Mint-Y-Blue";
-    };
-    theme = {
-      name = "Catppuccin-GTK-Dark";
-    };
-  };
+
+  # Packages specific to this
+  home.packages = with pkgs; [coolercontrol coolercontrold coolercontrol-liqctld];
 }
