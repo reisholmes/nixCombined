@@ -21,6 +21,34 @@ home-manager switch --flake .#newuser@newmachine --impure -b backup
 home-manager switch --flake .#newuser@newmachine --impure -b backup
 ```
 
+## Notes on things I discovered along the way
+
+### Reis-New
+
+- Switching to zsh using the Nix profile directory on CachyOs broke all Dolphin
+  applications and mime links. Instead I did
+
+```bash
+chsh -s /usr/bin/zsh
+```
+
+- Trying to manage systemd services on home manager sucks.
+CoolerControl required a service so instead I
+installed it through [yay on
+CachyOs](https://docs.coolercontrol.org/installation/arch.html)
+
+- To get fan control working on CoolerControl I had to add the following to the
+  end of /boot/refind_linux.conf:
+
+```text
+acpi_enforce_resources=lax
+```
+
+- Whilst Home-Manager does provide packages for 1Password, if you want to use
+it as your ssh key manager it won't work properly. Just [install it manually](https://support.1password.com/install-linux/#arch-linux)
+
+------
+
 To get up and running:
 
 ## Structure

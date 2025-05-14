@@ -26,7 +26,10 @@
     # NixGL fixes graphics issues on non NixOS systems
     # https://nix-community.github.io/home-manager/index.xhtml#sec-usage-gpu-non-nixos
     nixgl = {
-      url = "github:nix-community/nixGL";
+      # url = "github:nix-community/nixGL";
+      # fixes a bug where correct nvidia version is not calculated
+      # can be set to default url when PR is merged
+      url = "github:nix-community/nixGL/pull/187/head";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -59,6 +62,8 @@
         name = "reis";
       };
     };
+
+    # Define unfree software
 
     # Function for NixOS system configuration
     mkNixosConfiguration = hostname: username:
