@@ -44,6 +44,10 @@ CachyOs](https://docs.coolercontrol.org/installation/arch.html)
 acpi_enforce_resources=lax
 ```
 
+- To get T_Sensor values, I added support to the [asus-ec-sensors](https://github.com/zeule/asus-ec-sensors)
+repository and when this is pushed to mainline we can just add the
+asus-ec-sensors nix package to reis-new/default.nix
+
 - Whilst Home-Manager does provide packages for 1Password, if you want to use
 it as your ssh key manager it won't work properly. Just [install it manually](https://support.1password.com/install-linux/#arch-linux)
 
