@@ -8,6 +8,7 @@
   # Packages that require configuration get placed in relevant place
   imports = [
     ../programs/atuin
+    ../programs/fastfetch
     ../programs/fzf
     ../programs/k9s
     ../programs/kitty
@@ -75,10 +76,10 @@
       kubectl
       kubelogin
       lf
-      neofetch
       neovim
       oh-my-posh
       pipenv
+      powershell
       python3
       ripgrep
       terraform
