@@ -51,6 +51,25 @@ asus-ec-sensors nix package to reis-new/default.nix
 - Whilst Home-Manager does provide packages for 1Password, if you want to use
 it as your ssh key manager it won't work properly. Just [install it manually](https://support.1password.com/install-linux/#arch-linux)
 
+- Sound control (for EQ) is setup via [EasyEffects](https://github.com/wwmm/easyeffects) with: `yay easyeffects` and `yay lsp-plugins-lv2`
+When prompted for:
+
+```
+Sync Explicit (1): lsp-plugins-lv2-1.2.21-1.1
+resolving dependencies...
+:: There are 17 providers available for lv2-host:
+:: Repository cachyos-extra-v3
+   1) ardour  2) carla  3) ecasound  4) guitarix  5) jalv  6) muse  7) qtractor
+:: Repository extra
+   8) ardour  9) audacity  10) carla  11) ecasound  12) element  13) guitarix  14) jalv  15) muse  16) qtractor
+   17) reaper
+```
+
+I selected option 1
+
+- RGB Control is setup through OpenRGB: `yay openrgb` and selecting from
+`cachyos-extra-v3`
+
 ------
 
 To get up and running:
