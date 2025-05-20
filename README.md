@@ -65,6 +65,7 @@ sudo LLVM=true make dkms
 
 - Whilst Home-Manager does provide packages for 1Password, if you want to use
 it as your ssh key manager it won't work properly. Just [install it manually](https://support.1password.com/install-linux/#arch-linux)
+or through `yay 1password`
 
 - Sound control (for EQ) is setup via [EasyEffects](https://github.com/wwmm/easyeffects) with: `yay easyeffects` and `yay lsp-plugins-lv2`
 When prompted for:
