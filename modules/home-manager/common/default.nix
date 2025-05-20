@@ -66,6 +66,7 @@
       duf
       eza
       fd
+      ferdium
       filezilla
       fluxcd
       git
@@ -85,6 +86,7 @@
       terraform
       tldr
       tree
+      vlc
       wget
       yamllint
       yq
@@ -156,6 +158,10 @@
       gtk = {
         enable = false;
       };
+      kde = {
+        enable = false;
+      };
+
     };
 
     # theme, list at https://github.com/tinted-theming/schemes

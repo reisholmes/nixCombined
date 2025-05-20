@@ -46,6 +46,9 @@
       # fixes unknown terminal prompt on SSH sessions
       [[ "$TERM" == "xterm-kitty" ]] && alias ssh="TERM=xterm-256color ssh"
 
+      # nixpkgs allow unfree for "nvidia"
+      export NIXPKGS_ALLOW_UNFREE=1
+
       # start Fastfetch
       fastfetch
 

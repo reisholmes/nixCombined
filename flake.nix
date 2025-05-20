@@ -63,8 +63,6 @@
       };
     };
 
-    # Define unfree software
-
     # Function for NixOS system configuration
     mkNixosConfiguration = hostname: username:
       nixpkgs.lib.nixosSystem {

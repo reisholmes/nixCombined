@@ -11,6 +11,7 @@ Copied from the much more talented: <https://github.com/AlexNabokikh/nix-config>
 - Bootstrap home manager
 
 ```sh
+echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf 
 nix-shell -p home-manager
 home-manager switch --flake .#newuser@newmachine --impure -b backup
 ```
@@ -23,7 +24,9 @@ home-manager switch --flake .#newuser@newmachine --impure -b backup
 
 ## Notes on things I discovered along the way
 
-### Reis-New
+### Reis-New - CachyOS
+
+- Install the gaming packages `sudo pacman -S cachyos-gaming-meta cachyos-gaming-applications`
 
 - Switching to zsh using the Nix profile directory on CachyOs broke all Dolphin
   applications and mime links. Instead I did
@@ -46,7 +49,19 @@ acpi_enforce_resources=lax
 
 - To get T_Sensor values, I added support to the [asus-ec-sensors](https://github.com/zeule/asus-ec-sensors)
 repository and when this is pushed to mainline we can just add the
-asus-ec-sensors nix package to reis-new/default.nix
+asus-ec-sensors nix package to reis-new/default.nix. To install the module run
+the following:
+
+```
+sudo pacman -S yay
+yay dkms
+(select - 2 cachyos/dkms 3.2.1-2 (46.7 KiB 151.2 KiB))
+
+sudo LLVM=true make modules
+sudo LLVM=true make modules_install
+sudo LLVM=true make dkms_configure
+sudo LLVM=true make dkms
+```
 
 - Whilst Home-Manager does provide packages for 1Password, if you want to use
 it as your ssh key manager it won't work properly. Just [install it manually](https://support.1password.com/install-linux/#arch-linux)
