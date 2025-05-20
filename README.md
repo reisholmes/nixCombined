@@ -86,6 +86,14 @@ I selected option 1
 - RGB Control is setup through OpenRGB: `yay openrgb` and selecting from
 `cachyos-extra-v3`
 
+- Mount the gaming drive for Steam
+
+```
+echo "#Games\nUUID=8E3E36AB3E368C69 /mnt/games ntfs-3g   uid=1000,gid=1000    0       0" | sudo tee -a /etc/fstab
+```
+
+- Follow the instructions, mainly for Steam, [at the CachyOS wiki](https://wiki.cachyos.org/configuration/gaming/)
+
 ------
 
 To get up and running:
