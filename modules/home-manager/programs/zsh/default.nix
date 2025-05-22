@@ -46,14 +46,23 @@
       # fixes unknown terminal prompt on SSH sessions
       [[ "$TERM" == "xterm-kitty" ]] && alias ssh="TERM=xterm-256color ssh"
 
+      # nixpkgs allow unfree for "nvidia"
+      export NIXPKGS_ALLOW_UNFREE=1
+
+      # start Fastfetch
+      fastfetch
+
     '';
 
     shellAliases = {
       # easier rebuilding on darwin
-      nix_darwin_rebuild = "darwin-rebuild switch --flake /Users/reis.holmes/Documents/code/repos/nix-darwin/#reis-work";
+      nix_work_rebuild = "darwin-rebuild switch --flake /Users/reis.holmes/Documents/code/repos/nix-darwin/#reis-work";
 
       # easier rebuilding on surface book
       nix_sb3_rebuild = "home-manager switch --flake .#reis@rh-sb3 --impure";
+
+      # easier rebuilding on desktop
+      nix_desktop_rebuild = "home-manager switch --flake .#reis@reis-new --impure -b backup";
 
       # modern cat command remap
       cat = "bat";
@@ -61,6 +70,8 @@
       # Next level of an ls
       #options :  --no-filesize --no-time --no-permissions
       ls = "eza --no-filesize --long --color=always --icons=always --no-user";
+
+      lg = "lazygit";
     };
     syntaxHighlighting.enable = true;
 

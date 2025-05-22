@@ -8,6 +8,7 @@
   # Packages that require configuration get placed in relevant place
   imports = [
     ../programs/atuin
+    ../programs/fastfetch
     ../programs/fzf
     ../programs/k9s
     ../programs/kitty
@@ -26,14 +27,6 @@
     config = {
       allowUnfree = true;
     };
-  };
-
-  # Fixed nixGL package issues on Linux
-  # e.g. Kitty won't run without this
-  nixGL = {
-    packages = nixgl.packages;
-    defaultWrapper = "mesa";
-    offloadWrapper = "mesaPrime";
   };
 
   # Home-Manager configuration for the user's home environment
@@ -68,30 +61,39 @@
       (azure-cli.withExtensions [azure-cli.extensions.aks-preview])
       bat
       btop
+      deskflow
       dig
       duf
       eza
       fd
+      ferdium
+      filezilla
       fluxcd
       git
       go
       htop
+      inetutils
       jq
       kubectl
       kubelogin
       lf
-      neofetch
       neovim
       oh-my-posh
       pipenv
+      powershell
       python3
       ripgrep
       terraform
       tldr
       tree
+      vlc
       wget
       yamllint
       yq
+
+      # Fonts for stylix to apply
+      # Kitty overrides this in its config for Hack
+      ibm-plex
 
       # Terminal fonts
       # https://github.com/nix-community/home-manager/issues/6160
@@ -143,21 +145,6 @@
       wl-clipboard
     ];
 
-  gtk =
-    if pkgs.stdenv.isDarwin
-    then {enable = false;}
-    else {
-      cursorTheme = {
-        name = "XCursor-Pro-Dark";
-      };
-      iconTheme = {
-        name = "Mint-Y-Blue";
-      };
-      theme = {
-        name = "Catppuccin-GTK-Dark";
-      };
-    };
-
   # Theme support from stylix
   stylix = {
     autoEnable = true;
@@ -171,29 +158,30 @@
       gtk = {
         enable = false;
       };
+      kde = {
+        enable = false;
+      };
+
     };
 
     # theme, list at https://github.com/tinted-theming/schemes
     base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
 
-    # wallpaper https://stylix.danth.me/configuration.html#wallpaper
-    image = ../assets/stylix/wallpaper_wave_mac.jpg;
-
     # fonts https://stylix.danth.me/configuration.html#fonts
     fonts = {
       serif = {
-        package = pkgs.nerd-fonts.jetbrains-mono;
-        name = "JetBrainsMono Nerd Font Propo";
+        package = pkgs.ibm-plex;
+        name = "IBM Plex Serif";
       };
 
       sansSerif = {
-        package = pkgs.nerd-fonts.jetbrains-mono;
-        name = "JetBrainsMono Nerd Font Propo";
+        package = pkgs.ibm-plex;
+        name = "IBM Plex Sans";
       };
 
       monospace = {
-        package = pkgs.nerd-fonts.hack;
-        name = "Hack Nerd Font Mono";
+        package = pkgs.ibm-plex;
+        name = "IBM Plex Mono";
       };
 
       emoji = {

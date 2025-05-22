@@ -26,7 +26,10 @@
     # NixGL fixes graphics issues on non NixOS systems
     # https://nix-community.github.io/home-manager/index.xhtml#sec-usage-gpu-non-nixos
     nixgl = {
-      url = "github:nix-community/nixGL";
+      # url = "github:nix-community/nixGL";
+      # fixes a bug where correct nvidia version is not calculated
+      # can be set to default url when PR is merged
+      url = "github:nix-community/nixGL/pull/187/head";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -112,6 +115,7 @@
     homeConfigurations = {
       "reis.holmes@reis-work" = mkHomeConfiguration "x86_64-linux" "reis.holmes" "reis-work";
       "reis@rh-sb3" = mkHomeConfiguration "x86_64-linux" "reis" "rh-sb3";
+      "reis@reis-new" = mkHomeConfiguration "x86_64-linux" "reis" "reis-new";
     };
 
     overlays = import ./overlays {inherit inputs;};

@@ -9,7 +9,7 @@
     settings = {
       ctrl_n_shortcuts = false;
       inline_height = 25;
-      invert = true;
+      #invert = true;
       keymap_mode = "vim-insert";
       records = true;
       search_mode = "skim";
