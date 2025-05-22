@@ -40,12 +40,14 @@ CoolerControl required a service so instead I
 installed it through [yay on
 CachyOs](https://docs.coolercontrol.org/installation/arch.html)
 
-- To get fan control working on CoolerControl I had to add the following to the
-  end of /boot/refind_linux.conf:
+- To get fan control working on CoolerControl add the following to the
+  end of /etc/default/limine:
 
 ```text
 acpi_enforce_resources=lax
 ```
+
+Then run `sudo limine-update`
 
 - To get T_Sensor values, I added support to the [asus-ec-sensors](https://github.com/zeule/asus-ec-sensors)
 repository and when this is pushed to mainline we can just add the
@@ -89,10 +91,21 @@ I selected option 1
 - Mount the gaming drive for Steam
 
 ```
-echo "#Games\nUUID=8E3E36AB3E368C69 /mnt/games ntfs-3g   uid=1000,gid=1000    0       0" | sudo tee -a /etc/fstab
+sudo mkdir /mnt/games
+echo "UUID=8E3E36AB3E368C69 /mnt/games ntfs-3g   uid=1000,gid=1000    0       0" | sudo tee -a /etc/fstab
+yay ntfs-3g
+sudo mount -a
 ```
 
 - Follow the instructions, mainly for Steam, [at the CachyOS wiki](https://wiki.cachyos.org/configuration/gaming/)
+
+- Install the additional proton drivers, can help with newer games. See these
+two links: <https://github.com/augustobmoura/asdf-protonge?tab=readme-ov-file>
+<https://github.com/GloriousEggroll/proton-ge-custom?tab=readme-ov-file#installation>
+
+- Install CUDA before Sunshine `yay cuda` then ensure you get Sunshine from the built packages or build yourself. Don't install through `yay sunshine` as it did not properly detect CUDA: [Sunshine](https://docs.lizardbyte.dev/projects/sunshine/latest/md_docs_2getting__started.html),
+
+- Backups are performed by Snapper and a GUI with BTRFS-Assistant.
 
 ------
 
