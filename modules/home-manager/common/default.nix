@@ -13,6 +13,7 @@
     ../programs/k9s
     ../programs/kitty
     ../programs/lazygit
+    ../programs/ghostty
     ../programs/zoxide
     ../programs/zsh
     #../scripts
@@ -155,13 +156,18 @@
       lazygit = {
         enable = false;
       };
+      ghostty = {
+        enable = false;
+      };
       gtk = {
         enable = false;
       };
       kde = {
         enable = false;
       };
-
+      kitty = {
+        enable = false;
+      };
     };
 
     # theme, list at https://github.com/tinted-theming/schemes

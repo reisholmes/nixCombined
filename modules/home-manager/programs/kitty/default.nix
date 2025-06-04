@@ -19,8 +19,8 @@
     };
     settings = {
       active_border_color = "#a6da95";
-      #background_blur = 32;
-      #background_opacity = "0.93";
+      background_blur = 32;
+      background_opacity = "0.95";
       cursor_shape = "beam";
       font_family = "Hack Nerd Font Mono";
       font_size =
@@ -41,7 +41,8 @@
       window_margin_width = 1;
       # fun with cursor trails
       cursor_trail = 3;
-      cursor_trail_decay = "0.1 0.2";
+      cursor_trail_decay = "0.2 0.3";
     };
+    themeFile = "Catppuccin-Mocha";
   };
 }
