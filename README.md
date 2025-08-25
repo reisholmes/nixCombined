@@ -59,10 +59,10 @@ sudo pacman -S yay
 yay dkms
 (select - 2 cachyos/dkms 3.2.1-2 (46.7 KiB 151.2 KiB))
 
-sudo LLVM=true make modules
-sudo LLVM=true make modules_install
-sudo LLVM=true make dkms_configure
-sudo LLVM=true make dkms
+sudo CC=gcc make modules
+sudo CC=gcc make modules_install
+sudo CC=gcc make dkms_configure
+sudo CC=gcc make dkms
 ```
 
 - Whilst Home-Manager does provide packages for 1Password, if you want to use
