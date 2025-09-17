@@ -59,7 +59,6 @@
   home.packages = with pkgs;
     [
       # Packages that don't require configuring
-      (azure-cli.withExtensions [azure-cli.extensions.aks-preview])
       bat
       btop
       deskflow
@@ -69,22 +68,17 @@
       fd
       ferdium
       filezilla
-      fluxcd
       git
       go
       htop
       inetutils
       jq
-      kubectl
-      kubelogin
       lf
       neovim
       oh-my-posh
       pipenv
-      powershell
       python3
       ripgrep
-      terraform
       tldr
       tree
       vlc
@@ -120,13 +114,6 @@
       terraform-ls
       # also used in pre-commit
       tflint
-
-      # pre-commit requirements
-      # hgttps://github.com/antonbabenko/pre-commit-terraform
-      checkov
-      pre-commit
-      terraform-docs
-      terragrunt
     ]
     ++ lib.optionals stdenv.isDarwin [
       #colima

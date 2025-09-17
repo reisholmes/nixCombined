@@ -99,7 +99,7 @@
         };
         modules = [
           ./home/${username}/${hostname}
-          stylix.homeManagerModules.stylix
+          stylix.homeModules.stylix
         ];
       };
   in {

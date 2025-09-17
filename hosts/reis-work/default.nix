@@ -1,4 +1,5 @@
 {
+  nhModules,
   pkgs,
   outputs,
   userConfig,
@@ -14,6 +15,11 @@
       allowUnfree = true;
     };
   };
+
+  # Import extra dev packages required for work
+  imports = [
+    "${nhModules}/dev"
+  ];
 
   # Nix settings
   nix = {

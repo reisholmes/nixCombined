@@ -35,8 +35,9 @@
         source $(brew --prefix)/etc/bash_completion.d/az
 
       elif [[ $unameOutput == 'x86_64' ]]; then
-        #load the file
-        source /home/${userConfig.name}/.nix-profile/share/bash-completion/completions/az.bash
+        #load the file, do not care about az.bash completions outside of work
+        #leaving in as an example of providing for different
+        #source /home/${userConfig.name}/.nix-profile/share/bash-completion/completions/az.bash
       fi
 
       # for oh-my-posh

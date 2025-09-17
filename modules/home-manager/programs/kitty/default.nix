@@ -23,6 +23,9 @@
       background_opacity = "0.95";
       cursor_shape = "beam";
       font_family = "Hack Nerd Font Mono";
+      bold_font = "auto";
+      italic_font = "auto";
+      bold_italic_font = "auto";
       font_size =
         if pkgs.stdenv.isDarwin
         then 15.5
