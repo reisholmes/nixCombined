@@ -1,0 +1,13 @@
+{
+  "indexes": [
+    "nixpkgs",
+    "home-manager"
+  ],
+  "update_interval": "72h",
+  "enable_waiting_message": true,
+  "experimental": {
+    "render_docs_indexes": {
+      "plasma": "https://nix-community.github.io/plasma-manager/options.xhtml"
+    }
+  }
+}
