@@ -52,10 +52,27 @@
       # nixpkgs allow unfree for "nvidia"
       export NIXPKGS_ALLOW_UNFREE=1
 
+      # Configuration for zsh-vi-mode
+      #VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
+      VI_MODE_SET_CURSOR=true
+
       # start Fastfetch
       fastfetch
 
     '';
+
+    sessionVariables =
+      if pkgs.stdenv.isDarwin
+      then {
+        ANTHROPIC_VERTEX_PROJECT_ID = "fillmein";
+        ANTHROPIC_API_KEY = "fillmein";
+        CLAUDE_CODE_USE_VERTEX = "1";
+        CLOUD_ML_REGION = "us-central1";
+        DISABLE_PROMPT_CACHING = "0";
+        VERTEX_REGION_CLAUDE_4_0_SONNET = "us-east5";
+        VERTEX_REGION_CLAUDE_4_5_SONNET = "global";
+      }
+      else {};
 
     shellAliases = {
       # easier rebuilding on darwin
@@ -113,6 +130,7 @@
       plugins = [
         "git"
         "zoxide"
+        "vi-mode"
       ];
     };
   };
