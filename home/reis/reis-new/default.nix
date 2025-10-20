@@ -6,7 +6,7 @@
 }: {
   imports = [
     "${nhModules}/common"
-    "${nhModules}/programs/nix-search-tv"
+    "${nhModules}/dev"
   ];
 
   # Enable home-manager

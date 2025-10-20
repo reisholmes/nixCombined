@@ -13,12 +13,6 @@
       if pkgs.stdenv.isDarwin
       then pkgs.ghostty
       else config.lib.nixGL.wrap pkgs.ghostty;
-
-    #enableBatSyntax = true;
-    #enableZshIntegration = true;
-
-    #settings = {
-    #};
   };
   # disable xdg auto config so we can inject our own
   # https://github.com/nix-community/home-manager/issues/5539#issuecomment-2172568260

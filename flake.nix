@@ -18,10 +18,11 @@
     };
 
     # Nix Darwin (for MacOS machines)
-    darwin = {
+    nix-darwin = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    mac-app-util.url = "github:hraban/mac-app-util";
 
     # NixGL fixes graphics issues on non NixOS systems
     # https://nix-community.github.io/home-manager/index.xhtml#sec-usage-gpu-non-nixos
@@ -42,8 +43,9 @@
 
   outputs = {
     self,
-    darwin,
     home-manager,
+    mac-app-util,
+    nix-darwin,
     nixgl,
     nixpkgs,
     stylix,
@@ -76,7 +78,7 @@
 
     # Function for nix-darwin system configuration
     mkDarwinConfiguration = hostname: username:
-      darwin.lib.darwinSystem {
+      nix-darwin.lib.darwinSystem {
         system = "aarch64-darwin";
         specialArgs = {
           inherit inputs outputs hostname;

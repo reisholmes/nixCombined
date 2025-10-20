@@ -10,10 +10,10 @@
     ../programs/atuin
     ../programs/fastfetch
     ../programs/fzf
-    ../programs/k9s
     ../programs/kitty
     ../programs/lazygit
     ../programs/ghostty
+    ../programs/nix-search-tv
     ../programs/zoxide
     ../programs/zsh
     #../scripts
@@ -110,23 +110,15 @@
       alejandra
       nixd
 
-      # Terraform lsp, linter
+      # Terraform lsp, linter, expected by neovim
       terraform-ls
       # also used in pre-commit
       tflint
     ]
     ++ lib.optionals stdenv.isDarwin [
-      #colima
-      #docker
-      #hidden-bar
-      #raycast
       mas
     ]
     ++ lib.optionals (!stdenv.isDarwin) [
-      # controls sound
-      #pavucontrol
-      #pulseaudio
-      #tesseract
       flameshot
       magnetic-catppuccin-gtk
       unzip
