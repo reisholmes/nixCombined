@@ -5,6 +5,7 @@
 }: {
   imports = [
     "${nhModules}/common"
+    "${nhModules}/dev"
   ];
 
   # Enable home-manager

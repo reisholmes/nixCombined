@@ -1,5 +1,4 @@
 {
-  config,
   lib,
   pkgs,
   ...
@@ -20,8 +19,29 @@ in {
   home.packages = with pkgs;
     [
       # Packages that don't require configuring
+      go
       powershell
       yamllint
+
+      # NVIM specific requirements
+      ######
+      # markdown conform requirement
+      markdownlint-cli2
+
+      #lsp requirements
+      ## lua
+      lua-language-server
+      stylua
+      ## nix
+      alejandra
+      nixd
+
+      powershell-editor-services
+
+      # Terraform
+      terraform-ls
+      # also used in pre-commit
+      tflint
     ]
     ++ lib.optionals stdenv.isDarwin [
       (azure-cli.withExtensions [azure-cli.extensions.aks-preview])

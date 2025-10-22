@@ -69,7 +69,6 @@
       ferdium
       filezilla
       git
-      go
       htop
       inetutils
       jq
@@ -83,7 +82,6 @@
       tree
       vlc
       wget
-      yamllint
       yq
 
       # Fonts for stylix to apply
@@ -100,20 +98,6 @@
 
       # Emoji support
       noto-fonts-color-emoji
-
-      # NVIM specific requirements
-      ######
-      # markdown conform requirement
-      markdownlint-cli2
-
-      # nix lsp requirements
-      alejandra
-      nixd
-
-      # Terraform lsp, linter, expected by neovim
-      terraform-ls
-      # also used in pre-commit
-      tflint
     ]
     ++ lib.optionals stdenv.isDarwin [
       mas
