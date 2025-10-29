@@ -69,6 +69,8 @@ sudo LLVM=true make dkms
 it as your ssh key manager it won't work properly. Just [install it manually](https://support.1password.com/install-linux/#arch-linux)
 or through `yay 1password`
 
+- Proton Pass has replaced 1password, add it with `yay proton-pass-bin`
+
 - Sound control (for EQ) is setup via [EasyEffects](https://github.com/wwmm/easyeffects) with: `yay easyeffects` and `yay lsp-plugins-lv2`
 When prompted for:
 
