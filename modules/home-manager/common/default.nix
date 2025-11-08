@@ -12,6 +12,7 @@
     ../programs/fzf
     ../programs/kitty
     ../programs/lazygit
+    ../programs/lf
     ../programs/ghostty
     ../programs/nix-search-tv
     ../programs/zoxide
@@ -72,7 +73,6 @@
       htop
       inetutils
       jq
-      lf
       neovim
       oh-my-posh
       pipenv
@@ -103,8 +103,11 @@
       mas
     ]
     ++ lib.optionals (!stdenv.isDarwin) [
+      libreoffice-fresh
       flameshot
       magnetic-catppuccin-gtk
+      protonvpn-gui
+      rclone
       unzip
       wl-clipboard
     ];

@@ -52,6 +52,9 @@
       # nixpkgs allow unfree for "nvidia"
       export NIXPKGS_ALLOW_UNFREE=1
 
+      #lf icons support
+      export LF_ICONS=$(cat ~/.config/lf/icons)
+
       # Configuration for zsh-vi-mode
       #VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
       VI_MODE_SET_CURSOR=true
