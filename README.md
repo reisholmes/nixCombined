@@ -85,6 +85,15 @@ resolving dependencies...
 
 I selected option 1
 
+Microphone control, boosting and ensuring it's being presented Stereo to Mono, is performed with the `Stereo Tools` plugin from Calf.
+Install it with `yay calf-no-gui` and select `aur/calf-no-gui`.
+You can test it with `yay audacity`
+
+Printing, I used the command I found online: `sudo pacman -S hplip python-pyqt5 python-reportlab cups cups-filters cups-pdf print-manager`
+I don't think hplip is necessary for my printer.
+Access the cups server with: `http://localhost:631/`
+You can also get a a nice GUI with `yay system-config-printer`
+
 - RGB Control is setup through OpenRGB: `yay openrgb` and selecting from
 `cachyos-extra-v3`
 
