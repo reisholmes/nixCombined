@@ -8,6 +8,8 @@
 }: {
   # Packages that require configuration get placed in relevant place
   imports = [
+    ./nixpkgs-config.nix
+    ./stylix-common.nix
     ../programs/atuin
     ../programs/fastfetch
     ../programs/fzf
@@ -18,14 +20,10 @@
     ../programs/nix-search-tv
     ../programs/zoxide
     ../programs/zsh
-    #../scripts
   ];
 
-  # NOTE: nixpkgs configuration is intentionally NOT here for darwin compatibility
-  # When using home-manager with nix-darwin and useGlobalPkgs=true, setting nixpkgs
-  # options here triggers warnings. Instead:
-  # - Darwin: nixpkgs overlays/config are set at the system level (hosts/*/default.nix)
-  # - Linux: nixpkgs overlays/config are set in each home config (home/*/*/default.nix)
+  # NOTE: nixpkgs configuration is now included via ./nixpkgs-config.nix
+  # Since useGlobalPkgs is no longer used, home-manager can safely manage nixpkgs config on both Darwin and Linux
 
   # Home-Manager configuration for the user's home environment
   home = {
@@ -39,10 +37,7 @@
       # oh-my-posh - custom theme file
       ohmyposhTheme = {
         source = ../assets/oh-my-posh/catppuccin.omp.json;
-        target =
-          if pkgs.stdenv.isDarwin
-          then "/Users/${userConfig.name}/catppuccin.omp.json"
-          else "/home/${userConfig.name}/catppuccin.omp.json";
+        target = "catppuccin.omp.json";
       };
     };
 

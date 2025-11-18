@@ -18,26 +18,26 @@
       if [[ $unameOutput == 'arm64' ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
 
-        # mac is dumb
+        # macOS keyboard mapping for fzf
         # https://github.com/junegunn/fzf/issues/164#issuecomment-527826925
         bindkey "ç" fzf-cd-widget
       fi
 
       # for atuin
       eval "$(atuin init zsh)"
-      eval "$(oh-my-posh init zsh)"
 
       # for az cli
       autoload -U +X bashcompinit && bashcompinit
 
       if [[ $unameOutput == 'arm64' ]]; then
-        #load the file
-        source $(brew --prefix)/etc/bash_completion.d/az
+        # Load az bash completions if available
+        if [[ -f "$(brew --prefix)/etc/bash_completion.d/az" ]]; then
+          source $(brew --prefix)/etc/bash_completion.d/az
+        fi
 
       elif [[ $unameOutput == 'x86_64' ]]; then
-        #load the file, do not care about az.bash completions outside of work
-        #leaving in as an example of providing for different
-        #source /home/${userConfig.name}/.nix-profile/share/bash-completion/completions/az.bash
+        # Skip az bash completions on x86_64
+        :
       fi
 
       # for oh-my-posh
@@ -72,19 +72,13 @@
     sessionVariables =
       if pkgs.stdenv.isDarwin
       then {
-        ANTHROPIC_VERTEX_PROJECT_ID = "fillmein";
-        ANTHROPIC_API_KEY = "fillmein";
-        CLAUDE_CODE_USE_VERTEX = "1";
-        CLOUD_ML_REGION = "us-central1";
         DISABLE_PROMPT_CACHING = "0";
-        VERTEX_REGION_CLAUDE_4_0_SONNET = "us-east5";
-        VERTEX_REGION_CLAUDE_4_5_SONNET = "global";
       }
       else {};
 
     shellAliases = {
       # easier rebuilding on darwin
-      nix_work_rebuild = "darwin-rebuild switch --flake /Users/reis.holmes/Documents/code/personal_repos/nixCombined#reisholmes";
+      nix_work_rebuild = "sudo darwin-rebuild switch --flake ~/Documents/code/personal_repos/nixCombined#reisholmes";
 
       # easier rebuilding on surface book
       nix_sb3_rebuild = "home-manager switch --flake .#reis@rh-sb3 --impure";

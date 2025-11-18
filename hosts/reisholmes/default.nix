@@ -43,7 +43,6 @@
 
   # User configuration
   users.users.${userConfig.name} = {
-    name = "${userConfig.name}";
     home = "/Users/${userConfig.name}";
   };
 

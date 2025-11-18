@@ -10,28 +10,14 @@
     "${nhModules}/dev"
   ];
 
-  # Nixpkgs configuration for standalone home-manager
-  nixpkgs = {
-    overlays = [
-      outputs.overlays.stable-packages
-    ];
-    config = {
-      allowUnfree = true;
-    };
-  };
-
   # Enable home-manager
   programs.home-manager.enable = true;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   home.stateVersion = "24.11";
 
-  # Packages specific to this
+  # Packages specific to this machine
   home.packages = with pkgs; [
-    #coolercontrol.coolercontrold
-    #coolercontrol.coolercontrol-gui
-    #coolercontrol.coolercontrol-liqctld
-    #coolercontrol.coolercontrol-ui-data
     lm_sensors
   ];
 
@@ -52,15 +38,7 @@
     # https://basicappleguy.com/basicappleblog/mountains-beyond-mountains
     image = ../../../modules/home-manager/assets/stylix/wallpaper_mountain_mac.png;
 
+    # Font sizes are inherited from stylix-common.nix module
     # fonts https://stylix.danth.me/configuration.html#fonts
-    fonts = {
-      # sizing https://stylix.danth.me/options/platforms/nixos.html#stylixfontssizesapplications
-      sizes = {
-        applications = 10;
-        desktop = 10;
-        popups = 10;
-        terminal = 12;
-      };
-    };
   };
 }

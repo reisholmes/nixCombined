@@ -9,26 +9,15 @@
     "${nhModules}/dev"
   ];
 
-  # Nixpkgs configuration for standalone home-manager
-  nixpkgs = {
-    overlays = [
-      outputs.overlays.stable-packages
-    ];
-    config = {
-      allowUnfree = true;
-    };
-  };
-
   # Enable home-manager
   programs.home-manager.enable = true;
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   home.stateVersion = "24.11";
 
-  # NixGL
-  nixGL = {
+  # NixGL configuration for standalone home-manager on Linux
+  targets.genericLinux.nixGL = {
     packages = nixgl.packages;
-
     defaultWrapper = "mesa";
     offloadWrapper = "nvidiaPrime";
     # vulkan.enable = true; # not yet tested on sb3, could be fine
@@ -56,15 +45,7 @@
     # https://basicappleguy.com/basicappleblog/strokes
     image = ../../../modules/home-manager/assets/stylix/wallpaper_wave_mac.jpg;
 
+    # Font sizes are inherited from stylix-common.nix module
     # fonts https://stylix.danth.me/configuration.html#fonts
-    fonts = {
-      # sizing https://stylix.danth.me/options/platforms/nixos.html#stylixfontssizesapplications
-      sizes = {
-        applications = 10;
-        desktop = 10;
-        popups = 10;
-        terminal = 12;
-      };
-    };
   };
 }

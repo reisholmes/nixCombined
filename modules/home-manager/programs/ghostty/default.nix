@@ -23,10 +23,7 @@
     file = {
       ghosttySettings = {
         source = ./config;
-        target =
-          if pkgs.stdenv.isDarwin
-          then "/Users/${userConfig.name}/.config/ghostty/config"
-          else "/home/${userConfig.name}/.config/ghostty/config";
+        target = "${config.home.homeDirectory}/.config/ghostty/config";
       };
     };
   };

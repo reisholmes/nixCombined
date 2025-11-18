@@ -7,7 +7,6 @@
   # k9s is conditionally imported for darwin in its own module definition
   imports = [
     ../programs/k9s
-    #../scripts
   ];
 
   # Ensure common packages are installed
