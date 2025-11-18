@@ -23,11 +23,12 @@
     base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
     image = ../../modules/home-manager/assets/stylix/wallpaper_wave_mac.jpg;
 
-    # Disable theming for apps that have manual configuration
+    # Disable theming for apps that have manual configuration or that cause overlay conflicts
     targets = {
       lazygit.enable = false;
       ghostty.enable = false;
       gtk.enable = false;
+      gnome.enable = false;
       kde.enable = false;
       kitty.enable = false;
     };

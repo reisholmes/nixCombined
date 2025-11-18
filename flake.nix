@@ -79,7 +79,6 @@
     # Function for nix-darwin system configuration
     mkDarwinConfiguration = hostname: username:
       nix-darwin.lib.darwinSystem {
-        system = "aarch64-darwin";
         specialArgs = {
           inherit inputs outputs hostname self;
           userConfig = users.${username};
