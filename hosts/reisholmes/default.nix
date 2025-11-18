@@ -53,6 +53,15 @@
   # Define the primary user
   system.primaryUser = "reis.holmes";
 
+  # Fonts - Install fonts at system level on darwin
+  # These fonts are installed to /Library/Fonts/Nix Fonts
+  fonts.packages = with pkgs; [
+    ibm-plex
+    nerd-fonts.hack
+    nerd-fonts.jetbrains-mono
+    noto-fonts-color-emoji
+  ];
+
   # Note: Stylix darwin system-level module has compatibility issues (stylix.icons error)
   # Stylix configuration is handled at the home-manager level instead
   # See home/reis.holmes/reisholmes/default.nix for stylix config

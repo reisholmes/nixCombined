@@ -25,7 +25,6 @@
   # Homebrew package definition that installs macOS native applications
   # Casks offer a way to cmd line manage installs of Graphical apps
   casks = [
-    "1password"
     "deskflow"
     "gcloud-cli"
     "ghostty"

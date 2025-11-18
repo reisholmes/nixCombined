@@ -78,8 +78,13 @@
       tree
       wget
       yq
-
-      # Fonts for stylix to apply
+    ]
+    ++ lib.optionals stdenv.isDarwin [
+      mas
+    ]
+    ++ lib.optionals (!stdenv.isDarwin) [
+      # Fonts for stylix to apply on Linux
+      # On darwin, fonts are managed at system level via fonts.packages
       # Kitty overrides this in its config for Hack
       ibm-plex
 
@@ -93,11 +98,8 @@
 
       # Emoji support
       noto-fonts-color-emoji
-    ]
-    ++ lib.optionals stdenv.isDarwin [
-      mas
-    ]
-    ++ lib.optionals (!stdenv.isDarwin) [
+
+      # Linux-specific packages
       libreoffice-fresh
       ferdium
       filezilla
