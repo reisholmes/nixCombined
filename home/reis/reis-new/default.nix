@@ -16,6 +16,11 @@
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   home.stateVersion = "24.11";
 
+  # Host-specific shell aliases
+  programs.zsh.shellAliases = {
+    nix_rebuild = "home-manager switch --flake .#reis@reis-new --impure -b backup";
+  };
+
   # Packages specific to this machine
   home.packages = with pkgs; [
     lm_sensors

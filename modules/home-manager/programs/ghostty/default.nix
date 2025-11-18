@@ -2,6 +2,7 @@
   config,
   pkgs,
   userConfig,
+  wrapWithNixGL,
   ...
 }: {
   # https://home-manager-options.extranix.com/?query=programs.ghostty&release=master
@@ -11,10 +12,7 @@
   programs.ghostty = {
     enable = !pkgs.stdenv.isDarwin;
 
-    package =
-      if pkgs.stdenv.isDarwin
-      then pkgs.ghostty
-      else config.lib.nixGL.wrap pkgs.ghostty;
+    package = wrapWithNixGL pkgs.ghostty;
   };
   # disable xdg auto config so we can inject our own
   # https://github.com/nix-community/home-manager/issues/5539#issuecomment-2172568260

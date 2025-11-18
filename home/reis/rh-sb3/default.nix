@@ -15,6 +15,11 @@
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   home.stateVersion = "24.11";
 
+  # Host-specific shell aliases
+  programs.zsh.shellAliases = {
+    nix_rebuild = "home-manager switch --flake .#reis@rh-sb3 --impure";
+  };
+
   # NixGL configuration for standalone home-manager on Linux
   targets.genericLinux.nixGL = {
     packages = nixgl.packages;

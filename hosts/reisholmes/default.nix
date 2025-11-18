@@ -7,7 +7,7 @@
   ...
 }: {
   # Homebrew
-  homebrew = import ../../home/reis.holmes/reisholmes/homebrew.nix // {enable = true;};
+  homebrew = import ./homebrew.nix // {enable = true;};
 
   # Nixpkgs configuration
   nixpkgs = {

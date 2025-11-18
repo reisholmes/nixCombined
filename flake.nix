@@ -106,10 +106,9 @@
         ];
       };
   in {
-    nixosConfigurations = {
-      # leaving in as an example
-      #  energy = mkNixosConfiguration "energy" "nabokikh";
-    };
+    # Reserved for future NixOS host configurations
+    # Example: nixosConfigurations.hostname = mkNixosConfiguration "hostname" "username";
+    nixosConfigurations = {};
 
     darwinConfigurations = {
       "reisholmes" = mkDarwinConfiguration "reisholmes" "reis.holmes";

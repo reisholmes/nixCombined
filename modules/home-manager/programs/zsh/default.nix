@@ -52,12 +52,8 @@
       # nixpkgs allow unfree for "nvidia"
       export NIXPKGS_ALLOW_UNFREE=1
 
-      #lf icons support
+      # lf icons support
       export LF_ICONS=$(cat ~/.config/lf/icons)
-
-      # Configuration for zsh-vi-mode
-      #VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
-      #VI_MODE_SET_CURSOR=true
 
       # start Fastfetch
       fastfetch
@@ -77,15 +73,6 @@
       else {};
 
     shellAliases = {
-      # easier rebuilding on darwin
-      nix_work_rebuild = "sudo darwin-rebuild switch --flake ~/Documents/code/personal_repos/nixCombined#reisholmes";
-
-      # easier rebuilding on surface book
-      nix_sb3_rebuild = "home-manager switch --flake .#reis@rh-sb3 --impure";
-
-      # easier rebuilding on desktop
-      nix_desktop_rebuild = "home-manager switch --flake .#reis@reis-new --impure -b backup";
-
       # modern cat command remap
       cat = "bat";
 

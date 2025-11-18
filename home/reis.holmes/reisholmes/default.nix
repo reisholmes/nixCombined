@@ -17,12 +17,18 @@
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   home.stateVersion = "24.11";
 
+  # Host-specific shell aliases
+  programs.zsh.shellAliases = {
+    nix_rebuild = "sudo darwin-rebuild switch --flake ~/Documents/code/personal_repos/nixCombined#reisholmes";
+  };
+
   # Stylix configuration for darwin home-manager
   # Note: stylix.darwinModules has compatibility issues, so we use home-manager module instead
   stylix = {
     enable = true;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
     image = ../../modules/home-manager/assets/stylix/wallpaper_wave_mac.jpg;
+
+    # base16Scheme and fonts inherited from stylix-common.nix
 
     # Disable theming for apps that have manual configuration or that cause overlay conflicts
     targets = {
@@ -32,25 +38,6 @@
       gnome.enable = false;
       kde.enable = false;
       kitty.enable = false;
-    };
-
-    fonts = {
-      serif = {
-        package = pkgs.ibm-plex;
-        name = "IBM Plex Serif";
-      };
-      sansSerif = {
-        package = pkgs.ibm-plex;
-        name = "IBM Plex Sans";
-      };
-      monospace = {
-        package = pkgs.ibm-plex;
-        name = "IBM Plex Mono";
-      };
-      emoji = {
-        package = pkgs.noto-fonts-color-emoji;
-        name = "Noto Color Emoji";
-      };
     };
   };
 }

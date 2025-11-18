@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   userConfig,
   ...
@@ -63,10 +64,7 @@
     file = {
       lfIcons = {
         source = ./icons;
-        target =
-          if pkgs.stdenv.isDarwin
-          then "/Users/${userConfig.name}/.config/lf/icons"
-          else "/home/${userConfig.name}/.config/lf/icons";
+        target = "${config.home.homeDirectory}/.config/lf/icons";
       };
     };
   };

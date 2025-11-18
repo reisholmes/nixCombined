@@ -10,6 +10,7 @@
   imports = [
     ./nixpkgs-config.nix
     ./stylix-common.nix
+    ./nixgl-wrapper.nix
     ../programs/atuin
     ../programs/fastfetch
     ../programs/fzf

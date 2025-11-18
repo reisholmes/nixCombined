@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  wrapWithNixGL,
   ...
 }: {
   # https://home-manager-options.extranix.com/?query=programs.kitty&release=master
@@ -8,10 +9,7 @@
   programs.kitty = {
     enable = false;
 
-    package =
-      if pkgs.stdenv.isDarwin
-      then pkgs.kitty
-      else config.lib.nixGL.wrap pkgs.kitty;
+    package = wrapWithNixGL pkgs.kitty;
 
     keybindings = {
       "ctrl+shift+enter" = "new_window_with_cwd";
@@ -26,18 +24,17 @@
       bold_font = "auto";
       italic_font = "auto";
       bold_italic_font = "auto";
+      # Use stylix terminal font size as base, with platform-specific adjustments
       font_size =
         if pkgs.stdenv.isDarwin
-        then 15.5
-        else 14;
+        then config.stylix.fonts.sizes.terminal + 3.5 # 12 + 3.5 = 15.5
+        else config.stylix.fonts.sizes.terminal + 2; # 12 + 2 = 14
 
       macos_option_as_alt = "yes";
       initial_window_height = 44;
       initial_window_width = 160;
       remember_window_size = "yes";
       titlebar-only = "yes";
-      # minimalising the kitty setup look
-      #draw_minimal_borders = "yes";
       hide_window_decorations = "titlebar-only";
       placement_strategy = "center";
       window_border_width = "1pt";
