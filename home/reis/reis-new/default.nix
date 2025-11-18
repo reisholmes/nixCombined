@@ -25,7 +25,7 @@
   ];
 
   # NixGL settings specific to this machine
-  nixGL = {
+  targets.genericLinux.nixGL = {
     packages = nixgl.packages;
 
     defaultWrapper = "nvidia";

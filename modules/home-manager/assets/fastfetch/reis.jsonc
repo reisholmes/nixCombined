@@ -19,6 +19,7 @@
     "memory",
     "disk",
     "locale",
+    "font",
     "vulkan",
     "opengl",
     "opencl",
