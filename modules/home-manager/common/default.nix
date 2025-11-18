@@ -114,5 +114,4 @@
   # Stylix is configured in each home config (home/*/*/default.nix) to:
   # - Prevent config duplication
   # - Allow platform-specific theming (wallpapers, etc)
-  # - Avoid nixpkgs.overlays conflicts with darwin's useGlobalPkgs
 }

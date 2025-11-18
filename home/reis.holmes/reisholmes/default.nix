@@ -1,6 +1,7 @@
 {
   nhModules,
   inputs,
+  outputs,
   pkgs,
   ...
 }: {
@@ -9,6 +10,16 @@
     "${nhModules}/dev"
     inputs.stylix.homeModules.stylix
   ];
+
+  # Nixpkgs configuration for darwin home-manager
+  nixpkgs = {
+    overlays = [
+      outputs.overlays.stable-packages
+    ];
+    config = {
+      allowUnfree = true;
+    };
+  };
 
   # Enable home-manager
   programs.home-manager.enable = true;

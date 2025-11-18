@@ -59,7 +59,6 @@
 
   # Home Manager configuration
   home-manager = {
-    useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = {
       inherit inputs outputs;
