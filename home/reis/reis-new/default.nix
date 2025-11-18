@@ -1,6 +1,7 @@
 {
   nhModules,
   nixgl,
+  outputs,
   pkgs,
   ...
 }: {
@@ -8,6 +9,16 @@
     "${nhModules}/common"
     "${nhModules}/dev"
   ];
+
+  # Nixpkgs configuration for standalone home-manager
+  nixpkgs = {
+    overlays = [
+      outputs.overlays.stable-packages
+    ];
+    config = {
+      allowUnfree = true;
+    };
+  };
 
   # Enable home-manager
   programs.home-manager.enable = true;
@@ -34,6 +45,9 @@
 
   # Stylix settings specific to this machine
   stylix = {
+    enable = true;
+    autoEnable = true;
+
     # wallpaper https://stylix.danth.me/configuration.html#wallpaper
     # https://basicappleguy.com/basicappleblog/mountains-beyond-mountains
     image = ../../../modules/home-manager/assets/stylix/wallpaper_mountain_mac.png;

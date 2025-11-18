@@ -2,18 +2,13 @@
   lib,
   pkgs,
   ...
-}: let
-  system = builtins.currentSystem or "x86_64-linux"; # Fallback if not set
-  isDarwin = builtins.match ".*-darwin" system != null;
-in {
+}: {
   # Packages that require configuration get placed in relevant place
-  imports =
-    [
-      #../scripts
-    ]
-    ++ lib.optionals isDarwin [
-      ../programs/k9s
-    ];
+  # k9s is conditionally imported for darwin in its own module definition
+  imports = [
+    ../programs/k9s
+    #../scripts
+  ];
 
   # Ensure common packages are installed
   home.packages = with pkgs;
@@ -47,12 +42,15 @@ in {
       (azure-cli.withExtensions [azure-cli.extensions.aks-preview])
       fluxcd
       kubectl
-      kubelogin
+      stable.kubelogin
       terraform
 
       # pre-commit requirements
-      # hgttps://github.com/antonbabenko/pre-commit-terraform
-      checkov
+      # https://github.com/antonbabenko/pre-commit-terraform
+      # Use stable channel for checkov until pyarrow/protobuf issue is resolved
+      # See: https://github.com/nixos/nixpkgs/issues/461396
+      # TODO: Switch back to 'checkov' when issue is resolved (check PR #461569, #461572)
+      stable.checkov
       pre-commit
       terraform-docs
       terragrunt

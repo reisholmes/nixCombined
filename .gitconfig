@@ -1,0 +1,6 @@
+[user]
+  email = "reisholmes@gmail.com"
+  name = "reisholmes"
+
+[core]
+  sshCommand = "ssh -i /Users/reis.holmes/.ssh/GitHub-ReisHolmes-SSHKey"

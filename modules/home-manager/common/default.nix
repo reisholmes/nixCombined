@@ -1,4 +1,5 @@
 {
+  lib,
   nixgl,
   outputs,
   pkgs,
@@ -20,16 +21,11 @@
     #../scripts
   ];
 
-  # Nixpkgs configuration
-  nixpkgs = {
-    overlays = [
-      outputs.overlays.stable-packages
-    ];
-
-    config = {
-      allowUnfree = true;
-    };
-  };
+  # NOTE: nixpkgs configuration is intentionally NOT here for darwin compatibility
+  # When using home-manager with nix-darwin and useGlobalPkgs=true, setting nixpkgs
+  # options here triggers warnings. Instead:
+  # - Darwin: nixpkgs overlays/config are set at the system level (hosts/*/default.nix)
+  # - Linux: nixpkgs overlays/config are set in each home config (home/*/*/default.nix)
 
   # Home-Manager configuration for the user's home environment
   home = {
@@ -62,17 +58,17 @@
       # Packages that don't require configuring
       bat
       btop
-      deskflow
+      claude-code
       dig
       duf
       eza
       fd
-      ferdium
-      filezilla
+      gh
       git
       htop
       inetutils
       jq
+      lsd
       neovim
       oh-my-posh
       pipenv
@@ -80,7 +76,6 @@
       ripgrep
       tldr
       tree
-      vlc
       wget
       yq
 
@@ -104,62 +99,20 @@
     ]
     ++ lib.optionals (!stdenv.isDarwin) [
       libreoffice-fresh
+      ferdium
+      filezilla
       flameshot
       magnetic-catppuccin-gtk
       protonvpn-gui
       rclone
       unzip
       wl-clipboard
+      vlc
     ];
 
-  # Theme support from stylix
-  stylix = {
-    autoEnable = true;
-    enable = true;
-
-    # disable the theme for specific apps
-    targets = {
-      lazygit = {
-        enable = false;
-      };
-      ghostty = {
-        enable = false;
-      };
-      gtk = {
-        enable = false;
-      };
-      kde = {
-        enable = false;
-      };
-      kitty = {
-        enable = false;
-      };
-    };
-
-    # theme, list at https://github.com/tinted-theming/schemes
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
-
-    # fonts https://stylix.danth.me/configuration.html#fonts
-    fonts = {
-      serif = {
-        package = pkgs.ibm-plex;
-        name = "IBM Plex Serif";
-      };
-
-      sansSerif = {
-        package = pkgs.ibm-plex;
-        name = "IBM Plex Sans";
-      };
-
-      monospace = {
-        package = pkgs.ibm-plex;
-        name = "IBM Plex Mono";
-      };
-
-      emoji = {
-        package = pkgs.noto-fonts-color-emoji;
-        name = "Noto Color Emoji";
-      };
-    };
-  };
+  # NOTE: Stylix configuration is intentionally NOT here
+  # Stylix is configured in each home config (home/*/*/default.nix) to:
+  # - Prevent config duplication
+  # - Allow platform-specific theming (wallpapers, etc)
+  # - Avoid nixpkgs.overlays conflicts with darwin's useGlobalPkgs
 }

@@ -62,6 +62,11 @@
       # start Fastfetch
       fastfetch
 
+      # Disable zoxide cd override for Claude Code sessions
+      if [[ -n "$CLAUDE_CODE_SESSION" ]]; then
+        alias cd='builtin cd'
+      fi
+
     '';
 
     sessionVariables =
@@ -79,7 +84,7 @@
 
     shellAliases = {
       # easier rebuilding on darwin
-      nix_work_rebuild = "darwin-rebuild switch --flake /Users/reis.holmes/Documents/code/repos/nix-darwin/#reis-work";
+      nix_work_rebuild = "darwin-rebuild switch --flake /Users/reis.holmes/Documents/code/personal_repos/nixCombined#reisholmes";
 
       # easier rebuilding on surface book
       nix_sb3_rebuild = "home-manager switch --flake .#reis@rh-sb3 --impure";
@@ -93,6 +98,9 @@
       # Next level of an ls
       #options :  --no-filesize --no-time --no-permissions
       ls = "eza --no-filesize --long --color=always --icons=always --no-user";
+
+      # list tree
+      lt = "lsd --tree";
 
       lg = "lazygit";
     };

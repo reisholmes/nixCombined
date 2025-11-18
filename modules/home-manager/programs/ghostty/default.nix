@@ -6,8 +6,10 @@
 }: {
   # https://home-manager-options.extranix.com/?query=programs.ghostty&release=master
   # Ghostty
+  # On macOS, ghostty is installed via Homebrew for better system integration
+  # On Linux, it's installed via Nix with nixGL wrapper
   programs.ghostty = {
-    enable = true;
+    enable = !pkgs.stdenv.isDarwin;
 
     package =
       if pkgs.stdenv.isDarwin

@@ -55,7 +55,7 @@
 
     # Define user configurations
     users = {
-      reis.holmes = {
+      "reis.holmes" = {
         fullName = "Reis Holmes";
         name = "reis.holmes";
       };
@@ -81,12 +81,14 @@
       nix-darwin.lib.darwinSystem {
         system = "aarch64-darwin";
         specialArgs = {
-          inherit inputs outputs hostname;
+          inherit inputs outputs hostname self;
           userConfig = users.${username};
         };
         modules = [
           ./hosts/${hostname}
           home-manager.darwinModules.home-manager
+          # Note: stylix.darwinModules.stylix has compatibility issues
+          # Stylix is disabled on darwin for now
         ];
       };
 
@@ -111,11 +113,11 @@
     };
 
     darwinConfigurations = {
-      "reis-work" = mkDarwinConfiguration "reis-work" "reis.holmes";
+      "reisholmes" = mkDarwinConfiguration "reisholmes" "reis.holmes";
     };
 
     homeConfigurations = {
-      "reis.holmes@reis-work" = mkHomeConfiguration "x86_64-linux" "reis.holmes" "reis-work";
+      "reis.holmes@reisholmes" = mkHomeConfiguration "x86_64-linux" "reis.holmes" "reisholmes";
       "reis@rh-sb3" = mkHomeConfiguration "x86_64-linux" "reis" "rh-sb3";
       "reis@reis-new" = mkHomeConfiguration "x86_64-linux" "reis" "reis-new";
     };

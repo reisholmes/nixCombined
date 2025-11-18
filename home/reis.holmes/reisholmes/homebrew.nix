@@ -18,6 +18,7 @@
     "awscli"
     "azure-cli"
     "lazydocker"
+    "node"
     "podman"
   ];
 
@@ -27,7 +28,9 @@
     "1password"
     "deskflow"
     "gcloud-cli"
+    "ghostty"
     "powershell"
+    "proton-pass"
     # raycast shortcut setup
     # https://www.youtube.com/watch?v=DBifQv9AYhc
     "raycast"

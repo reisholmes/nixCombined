@@ -2,10 +2,12 @@
   pkgs,
   outputs,
   userConfig,
+  inputs,
+  self,
   ...
 }: {
   # Homebrew
-  homebrew = import ../../home/reis.holmes/reis-work/homebrew.nix // {enable = true;};
+  homebrew = import ../../home/reis.holmes/reisholmes/homebrew.nix // {enable = true;};
 
   # Nixpkgs configuration
   nixpkgs = {
@@ -50,6 +52,24 @@
 
   # Define the primary user
   system.primaryUser = "reis.holmes";
+
+  # Note: Stylix darwin system-level module has compatibility issues (stylix.icons error)
+  # Stylix configuration is handled at the home-manager level instead
+  # See home/reis.holmes/reisholmes/default.nix for stylix config
+
+  # Home Manager configuration
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    extraSpecialArgs = {
+      inherit inputs outputs;
+      userConfig = userConfig;
+      nhModules = "${self}/modules/home-manager";
+      nixgl = inputs.nixgl;
+    };
+    users.${userConfig.name} = import ../../home/${userConfig.name}/reisholmes;
+  };
+
   # Used for backwards compatibility, please read the changelog before changing.
   system.stateVersion = 5;
 }
