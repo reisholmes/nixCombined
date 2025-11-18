@@ -10,5 +10,7 @@
   _module.args.wrapWithNixGL = pkg:
     if pkgs.stdenv.isDarwin
     then pkg
-    else config.lib.nixGL.wrap pkg;
+    else if config.lib ? nixGL && config.lib.nixGL ? wrap
+    then config.lib.nixGL.wrap pkg
+    else throw "nixGL not available - ensure nixGL input is configured for Linux hosts";
 }

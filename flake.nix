@@ -86,8 +86,8 @@
         modules = [
           ./hosts/${hostname}
           home-manager.darwinModules.home-manager
-          # Note: stylix.darwinModules.stylix has compatibility issues
-          # Stylix is disabled on darwin for now
+          # Note: stylix.darwinModules.stylix has compatibility issues (stylix.icons error)
+          # Stylix is configured via home-manager module instead (see home/*/reisholmes/default.nix)
         ];
       };
 
