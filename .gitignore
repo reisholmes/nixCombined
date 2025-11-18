@@ -1,0 +1,9 @@
+# Build artifacts
+result
+result-*
+
+# Sensitive configuration
+.gitconfig
+
+# PR review files
+PR-REVIEW-*.md
