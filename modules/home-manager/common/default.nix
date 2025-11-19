@@ -110,16 +110,17 @@
       noto-fonts-color-emoji
 
       # Linux-specific packages
-      libreoffice-fresh
+      deskflow
       ferdium
       filezilla
       flameshot
+      libreoffice-fresh
       magnetic-catppuccin-gtk
       protonvpn-gui
       rclone
       unzip
-      wl-clipboard
       vlc
+      wl-clipboard
     ];
 
   # NOTE: Stylix configuration is intentionally NOT here
