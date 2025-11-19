@@ -17,6 +17,25 @@
     # Base16 color scheme - can be overridden per-host
     base16Scheme = lib.mkDefault "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
 
+    # Disable the theme for specific apps
+    targets = {
+      lazygit = {
+        enable = false;
+      };
+      ghostty = {
+        enable = false;
+      };
+      gtk = {
+        enable = false;
+      };
+      kde = {
+        enable = false;
+      };
+      kitty = {
+        enable = false;
+      };
+    };
+
     # Font configuration - can be overridden per-host
     fonts = lib.mkDefault {
       serif = {
