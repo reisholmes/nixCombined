@@ -15,6 +15,7 @@
       # Packages that don't require configuring
       go
       powershell
+      shellcheck
       yamllint
 
       # NVIM specific requirements

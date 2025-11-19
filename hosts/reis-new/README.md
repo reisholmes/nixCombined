@@ -190,6 +190,37 @@ yay cuda
 
 Ensure you get Sunshine from the built packages or build yourself. Don't install through `yay sunshine` as it did not properly detect CUDA. See [Sunshine documentation](https://docs.lizardbyte.dev/projects/sunshine/latest/md_docs_2getting__started.html).
 
-## Backup
+## Backup & Restore
 
-Backups are performed by Snapper and a GUI with BTRFS-Assistant.
+### System Snapshots
+
+System backups are performed using Snapper with BTRFS-Assistant providing a GUI interface.
+
+#### Quick Restore Reference
+
+**Using BTRFS-Assistant (GUI)**:
+1. Open BTRFS-Assistant
+2. Navigate to the Snapper tab
+3. Select the snapshot to restore
+4. Click "Restore" and choose restore method (in-place or create new snapshot)
+
+**Using Snapper (CLI)**:
+```bash
+# List snapshots
+snapper list
+
+# View differences between current system and snapshot
+snapper status <snapshot-number>
+
+# Restore from snapshot (creates new snapshot of current state first)
+snapper undochange <snapshot-number-from>..<snapshot-number-to>
+
+# Or restore entire snapshot
+snapper rollback <snapshot-number>
+```
+
+**Boot from Snapshot** (for critical failures):
+1. Reboot system
+2. At GRUB menu, select "CachyOS snapshots"
+3. Choose desired snapshot to boot from
+4. Once booted, make snapshot permanent: `snapper rollback`

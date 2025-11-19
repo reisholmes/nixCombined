@@ -4,6 +4,21 @@ An attempt to combine multiple nix configs
 
 Inspired by: <https://github.com/AlexNabokikh/nix-config>
 
+## Prerequisites
+
+Before getting started, ensure you have the following installed:
+
+- **Git**: Required to clone this repository
+- **Nix Package Manager**: [Install Nix](https://nixos.org/download.html) with flakes enabled
+- **For macOS users**: [nix-darwin](https://github.com/LnL7/nix-darwin) for system-level configuration
+- **For NixOS users**: NixOS 24.11 or later
+
+Enable experimental features if not already configured:
+
+```sh
+echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
+```
+
 ## Quick Start (TLDR)
 
 - Add new home manager name and computer (if using NixOS)
@@ -207,6 +222,31 @@ To update all flake inputs to their latest versions:
 ```sh
 nix flake update
 ```
+
+## Package Installation Strategy
+
+This configuration uses different package managers based on the use case:
+
+### Nix Home Manager (Primary)
+- **CLI tools and utilities**: All command-line tools (e.g., `git`, `kubectl`, `terraform`)
+- **Development tools**: Language servers, formatters, linters
+- **Cross-platform applications**: Apps that work consistently across Linux and macOS
+
+### Homebrew (macOS Only)
+- **macOS-native GUI applications**: Apps that integrate deeply with macOS (e.g., `raycast`, `deskflow`)
+- **Apps requiring native installers**: Software where Home Manager packaging is problematic
+- **Preference**: Use sparingly; prefer Home Manager when possible for reproducibility
+
+### System Package Managers (Linux)
+- **Distribution-specific tools**: `yay` on CachyOS for AUR packages
+- **System services**: Applications requiring systemd integration (e.g., `coolercontrol`, `proton-pass`)
+- **Hardware-specific drivers**: DKMS modules and kernel-level tools
+
+### General Rule
+When in doubt, try Home Manager first. Fall back to system package managers only when:
+1. The package isn't available in nixpkgs
+2. The package requires deep system integration (systemd services, kernel modules)
+3. The package has complex runtime dependencies that don't work well with Home Manager's user-space approach
 
 ## Modules
 

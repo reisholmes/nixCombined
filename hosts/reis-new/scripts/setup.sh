@@ -25,6 +25,55 @@ echo_step() {
     echo -e "${BLUE}[STEP]${NC} $1"
 }
 
+show_help() {
+    cat << EOF
+Usage: $(basename "$0") [OPTIONS]
+
+Automated setup script for reis-new CachyOS host.
+
+This script installs and configures:
+  - Gaming packages (cachyos-gaming-meta, cachyos-gaming-applications)
+  - Shell (zsh)
+  - CoolerControl with fan control kernel parameters
+  - Audio tools (EasyEffects, LSP plugins, Calf) with preset restoration
+  - Printing support (CUPS, system-config-printer)
+  - OpenRGB with profile restoration
+  - Gaming drive mount (/mnt/games)
+  - CUDA for game streaming
+  - Backup tools (Snapper, BTRFS-Assistant)
+
+OPTIONS:
+    -h, --help     Show this help message and exit
+
+NOTES:
+  - This script is designed for CachyOS but may work on other Arch-based distributions
+  - Requires sudo access for system-level changes
+  - A reboot is recommended after completion
+  - Configuration files are restored from modules/home-manager/assets/
+
+EXAMPLES:
+  $(basename "$0")              Run the full setup
+  $(basename "$0") --help       Show this help message
+
+EOF
+    exit 0
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h|--help)
+            show_help
+            ;;
+        *)
+            echo_error "Unknown option: $1"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
@@ -46,8 +95,12 @@ echo_info "Repository root: $REPO_ROOT"
 # Install yay if not present
 echo_step "Checking for yay..."
 if ! command -v yay &> /dev/null; then
-    echo_info "Installing yay..."
-    sudo pacman -S --needed --noconfirm yay
+    echo_info "yay not found. Installing..."
+    if ! sudo pacman -S --needed --noconfirm yay; then
+        echo_error "Failed to install yay. Manual intervention is required. Command attempted: sudo pacman -S --needed --noconfirm yay"
+        exit 1
+    fi
+    echo_info "yay installed successfully"
 else
     echo_info "yay already installed"
 fi
@@ -74,9 +127,18 @@ yay -S --needed --noconfirm coolercontrol
 # Restore CoolerControl configuration if available
 if [ -f "$ASSETS_DIR/coolercontrol/coolercontrol-backup.tgz" ]; then
     echo_info "Restoring CoolerControl configuration..."
-    [ ! -d ~/.config/org.coolercontrol.CoolerControl ] && mkdir -p ~/.config/org.coolercontrol.CoolerControl
-    tar -xzf "$ASSETS_DIR/coolercontrol/coolercontrol-backup.tgz" -C ~/.config/org.coolercontrol.CoolerControl
-    echo_info "CoolerControl configuration restored to ~/.config/org.coolercontrol.CoolerControl/"
+    if [ ! -d ~/.config/org.coolercontrol.CoolerControl ]; then
+        mkdir -p ~/.config/org.coolercontrol.CoolerControl || {
+            echo_error "Failed to create CoolerControl config directory"
+            exit 1
+        }
+    fi
+    if tar -xzf "$ASSETS_DIR/coolercontrol/coolercontrol-backup.tgz" -C ~/.config/org.coolercontrol.CoolerControl; then
+        echo_info "CoolerControl configuration restored to ~/.config/org.coolercontrol.CoolerControl/"
+    else
+        echo_error "Failed to restore CoolerControl configuration"
+        exit 1
+    fi
 else
     echo_warn "CoolerControl backup not found, skipping restore"
 fi
@@ -114,9 +176,18 @@ yay -S --needed --noconfirm calf --answerclean None --answerdiff None
 # Restore EasyEffects presets
 if [ -d "$ASSETS_DIR/easyeffects/outputs" ]; then
     echo_info "Restoring EasyEffects presets..."
-    [ ! -d ~/.local/share/easyeffects/output ] && mkdir -p ~/.local/share/easyeffects/output
-    cp -v "$ASSETS_DIR/easyeffects/outputs/"*.json ~/.local/share/easyeffects/output/
-    echo_info "EasyEffects presets restored to ~/.local/share/easyeffects/output/"
+    if [ ! -d ~/.local/share/easyeffects/output ]; then
+        mkdir -p ~/.local/share/easyeffects/output || {
+            echo_error "Failed to create EasyEffects preset directory"
+            exit 1
+        }
+    fi
+    if cp -v "$ASSETS_DIR/easyeffects/outputs/"*.json ~/.local/share/easyeffects/output/; then
+        echo_info "EasyEffects presets restored to ~/.local/share/easyeffects/output/"
+    else
+        echo_error "Failed to restore EasyEffects presets"
+        exit 1
+    fi
 else
     echo_warn "EasyEffects presets not found, skipping restore"
 fi
@@ -138,9 +209,18 @@ yay -S --needed --noconfirm openrgb --answerclean None --answerdiff None
 # Restore OpenRGB profile
 if [ -f "$ASSETS_DIR/openrgb/reis_default.orp" ]; then
     echo_info "Restoring OpenRGB profile..."
-    [ ! -d ~/.config/OpenRGB ] && mkdir -p ~/.config/OpenRGB
-    cp -v "$ASSETS_DIR/openrgb/reis_default.orp" ~/.config/OpenRGB/
-    echo_info "OpenRGB profile restored to ~/.config/OpenRGB/reis_default.orp"
+    if [ ! -d ~/.config/OpenRGB ]; then
+        mkdir -p ~/.config/OpenRGB || {
+            echo_error "Failed to create OpenRGB config directory"
+            exit 1
+        }
+    fi
+    if cp -v "$ASSETS_DIR/openrgb/reis_default.orp" ~/.config/OpenRGB/; then
+        echo_info "OpenRGB profile restored to ~/.config/OpenRGB/reis_default.orp"
+    else
+        echo_error "Failed to restore OpenRGB profile"
+        exit 1
+    fi
 else
     echo_warn "OpenRGB profile not found, skipping restore"
 fi
@@ -154,7 +234,7 @@ if ! grep -q "8E3E36AB3E368C69" /etc/fstab 2>/dev/null; then
 
     yay -S --needed --noconfirm ntfs-3g
 
-    echo "UUID=8E3E36AB3E368C69 /mnt/games ntfs-3g   uid=1000,gid=1000    0       0" | sudo tee -a /etc/fstab
+    echo "UUID=8E3E36AB3E368C69 /mnt/games ntfs-3g   uid=$(id -u),gid=$(id -g)    0       0" | sudo tee -a /etc/fstab
 
     echo_info "Mounting gaming drive..."
     sudo mount -a
