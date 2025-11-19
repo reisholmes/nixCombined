@@ -6,6 +6,20 @@
   userConfig,
   ...
 }: {
+  # Override python313 globally to skip tests for proton-core
+  # See: https://github.com/ProtonVPN/python-proton-core/pull/10
+  nixpkgs.overlays = [
+    (self: super: {
+      python313 = super.python313.override {
+        packageOverrides = pyself: pysuper: {
+          proton-core = pysuper.proton-core.overridePythonAttrs (old: {
+            doCheck = false;
+            doInstallCheck = false;
+          });
+        };
+      };
+    })
+  ];
   # Packages that require configuration get placed in relevant place
   imports = [
     ./nixpkgs-config.nix
@@ -54,7 +68,6 @@
       # Packages that don't require configuring
       bat
       btop
-      claude-code
       dig
       duf
       eza
@@ -76,6 +89,7 @@
       yq
     ]
     ++ lib.optionals stdenv.isDarwin [
+      claude-code
       mas
     ]
     ++ lib.optionals (!stdenv.isDarwin) [
