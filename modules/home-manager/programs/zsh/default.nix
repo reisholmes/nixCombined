@@ -14,6 +14,17 @@
     initContent = ''
       unameOutput="$(uname -m)"
 
+      # Handle non-interactive shells (like Claude Code, LLM tools, CI/CD)
+      # Zoxide's cd override causes issues in non-interactive sessions
+      if [[ ! -o interactive ]]; then
+        # Unset zoxide's cd alias if it was set by oh-my-zsh
+        unalias cd 2>/dev/null || true
+        # Define standard cd behavior
+        builtin cd() {
+          builtin cd "$@"
+        }
+      fi
+
       # homebrew on M based Mac chips
       if [[ $unameOutput == 'arm64' ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -57,11 +68,6 @@
 
       # start Fastfetch
       fastfetch
-
-      # Disable zoxide cd override for Claude Code sessions
-      if [[ -n "$CLAUDE_CODE_SESSION" ]]; then
-        alias cd='builtin cd'
-      fi
 
     '';
 

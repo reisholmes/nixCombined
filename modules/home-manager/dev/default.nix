@@ -14,6 +14,7 @@
     [
       # Packages that don't require configuring
       go
+      grepcidr
       powershell
       shellcheck
       yamllint
