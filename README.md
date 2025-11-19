@@ -59,10 +59,10 @@ sudo pacman -S yay
 yay dkms
 (select - 2 cachyos/dkms 3.2.1-2 (46.7 KiB 151.2 KiB))
 
-sudo LLVM=true make modules
-sudo LLVM=true make modules_install
-sudo LLVM=true make dkms_configure
-sudo LLVM=true make dkms
+sudo CC=gcc make modules
+sudo CC=gcc make modules_install
+sudo CC=gcc make dkms_configure
+sudo CC=gcc make dkms
 ```
 
 - Whilst Home-Manager does provide packages for 1Password, if you want to use
@@ -86,6 +86,15 @@ resolving dependencies...
 ```
 
 I selected option 1
+
+Microphone control, boosting and ensuring it's being presented Stereo to Mono, is performed with the `Stereo Tools` plugin from Calf.
+Install it with `yay calf-no-gui` and select `aur/calf-no-gui`.
+You can test it with `yay audacity`
+
+Printing, I used the command I found online: `sudo pacman -S hplip python-pyqt5 python-reportlab cups cups-filters cups-pdf print-manager`
+I don't think hplip is necessary for my printer.
+Access the cups server with: `http://localhost:631/`
+You can also get a a nice GUI with `yay system-config-printer`
 
 - RGB Control is setup through OpenRGB: `yay openrgb` and selecting from
 `cachyos-extra-v3`
