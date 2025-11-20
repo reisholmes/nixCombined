@@ -28,6 +28,7 @@
       ## lua
       lua-language-server
       stylua
+      luaPackages.luacheck # Lua linter for pre-commit
       ## nix
       alejandra
       nixd
@@ -35,6 +36,10 @@
       # nix linting
       deadnix
       statix
+
+      # pre-commit tools (cross-platform)
+      pre-commit
+      codespell # Spell checker for pre-commit
 
       powershell-editor-services
 
@@ -50,13 +55,12 @@
       stable.kubelogin
       terraform
 
-      # pre-commit requirements
+      # pre-commit requirements (Darwin-specific)
       # https://github.com/antonbabenko/pre-commit-terraform
       # Use stable channel for checkov until pyarrow/protobuf issue is resolved
       # See: https://github.com/nixos/nixpkgs/issues/461396
       # TODO: Switch back to 'checkov' when issue is resolved (check PR #461569, #461572)
       stable.checkov
-      pre-commit
       terraform-docs
       terragrunt
     ];
