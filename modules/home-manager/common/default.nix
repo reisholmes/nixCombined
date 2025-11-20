@@ -77,6 +77,7 @@
       jq
       lsd
       neovim
+      nvd
       oh-my-posh
       pipenv
       python3

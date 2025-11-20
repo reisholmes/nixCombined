@@ -16,7 +16,7 @@
 
   # Host-specific shell aliases
   programs.zsh.shellAliases = {
-    nix_rebuild = "home-manager switch --flake .#reis@rh-sb3 --impure";
+    nix_rebuild = "home-manager switch --flake .#reis@rh-sb3 --impure && nvd diff $(home-manager generations | head -2 | tail -1 | awk '{print $NF}') $(home-manager generations | head -1 | awk '{print $NF}')";
   };
 
   # NixGL configuration for standalone home-manager on Linux
