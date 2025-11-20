@@ -17,7 +17,7 @@
 
   # Host-specific shell aliases
   programs.zsh.shellAliases = {
-    nix_rebuild = "home-manager switch --flake .#reis@reis-new --impure -b backup && nvd diff $(home-manager generations | head -2 | tail -1 | awk '{print $NF}') $(home-manager generations | head -1 | awk '{print $NF}')";
+    nix_rebuild = "home-manager switch --flake .#reis@reis-new --impure -b backup && nvd diff $(home-manager generations | head -2 | tail -1 | awk '{print $7}') $(home-manager generations | head -1 | awk '{print $7}')";
   };
 
   # Packages specific to this machine
