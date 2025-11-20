@@ -17,7 +17,7 @@
 
   # Host-specific shell aliases
   programs.zsh.shellAliases = {
-    nix_rebuild = "sudo darwin-rebuild switch --flake ~/Documents/code/personal_repos/nixCombined#reisholmes && nvd diff $(ls -d1v /nix/var/nix/profiles/system-*-link | tail -2 | head -1) $(ls -d1v /nix/var/nix/profiles/system-*-link | tail -1)";
+    nix_rebuild = "sudo darwin-rebuild switch --flake ~/Documents/code/personal_repos/nixCombined#reisholmes && nvd diff $(/bin/ls -d1v /nix/var/nix/profiles/system-*-link | tail -2 | head -1) $(/bin/ls -d1v /nix/var/nix/profiles/system-*-link | tail -1)";
   };
 
   # Stylix configuration for darwin home-manager
