@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  lib,
   ...
 }: {
   # Helper function to wrap packages with NixGL on Linux

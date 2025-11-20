@@ -1,4 +1,4 @@
-{...}: {
+_: {
   # Install atuin via home-manager module
   programs.atuin = {
     enable = true;

@@ -1,8 +1,4 @@
-{
-  pkgs,
-  userConfig,
-  ...
-}: {
+{pkgs, ...}: {
   # ZSH
   programs.zsh = {
     enable = true;

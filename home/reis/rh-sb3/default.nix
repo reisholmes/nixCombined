@@ -1,7 +1,6 @@
 {
   nhModules,
   nixgl,
-  outputs,
   ...
 }: {
   imports = [
@@ -22,7 +21,7 @@
 
   # NixGL configuration for standalone home-manager on Linux
   targets.genericLinux.nixGL = {
-    packages = nixgl.packages;
+    inherit (nixgl) packages;
     defaultWrapper = "mesa";
     offloadWrapper = "nvidiaPrime";
     # vulkan.enable = true; # not yet tested on sb3, could be fine

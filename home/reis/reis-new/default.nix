@@ -1,7 +1,6 @@
 {
   nhModules,
   nixgl,
-  outputs,
   pkgs,
   ...
 }: {
@@ -28,7 +27,7 @@
 
   # NixGL settings specific to this machine
   targets.genericLinux.nixGL = {
-    packages = nixgl.packages;
+    inherit (nixgl) packages;
 
     defaultWrapper = "nvidia";
     vulkan.enable = true;

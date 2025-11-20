@@ -69,10 +69,9 @@
   home-manager = {
     useUserPackages = true;
     extraSpecialArgs = {
-      inherit inputs outputs;
-      userConfig = userConfig;
+      inherit inputs outputs userConfig;
       nhModules = "${self}/modules/home-manager";
-      nixgl = inputs.nixgl;
+      inherit (inputs) nixgl;
     };
     users.${userConfig.name} = import ../../home/${userConfig.name}/reisholmes;
   };

@@ -44,7 +44,6 @@
   outputs = {
     self,
     home-manager,
-    mac-app-util,
     nix-darwin,
     nixgl,
     nixpkgs,
@@ -65,16 +64,16 @@
       };
     };
 
-    # Function for NixOS system configuration
-    mkNixosConfiguration = hostname: username:
-      nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit inputs outputs hostname;
-          userConfig = users.${username};
-          nixosModules = "${self}/modules/nixos";
-        };
-        modules = [./hosts/${hostname}];
-      };
+    # Function for NixOS system configuration (reserved for future use)
+    # mkNixosConfiguration = hostname: username:
+    #   nixpkgs.lib.nixosSystem {
+    #     specialArgs = {
+    #       inherit inputs outputs hostname;
+    #       userConfig = users.${username};
+    #       nixosModules = "${self}/modules/nixos";
+    #     };
+    #     modules = [./hosts/${hostname}];
+    #   };
 
     # Function for nix-darwin system configuration
     mkDarwinConfiguration = hostname: username:

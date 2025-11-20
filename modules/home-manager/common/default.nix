@@ -1,7 +1,5 @@
 {
   lib,
-  nixgl,
-  outputs,
   pkgs,
   userConfig,
   ...
@@ -9,10 +7,10 @@
   # Override python313 globally to skip tests for proton-core
   # See: https://github.com/ProtonVPN/python-proton-core/pull/10
   nixpkgs.overlays = [
-    (self: super: {
+    (_: super: {
       python313 = super.python313.override {
-        packageOverrides = pyself: pysuper: {
-          proton-core = pysuper.proton-core.overridePythonAttrs (old: {
+        packageOverrides = _: pysuper: {
+          proton-core = pysuper.proton-core.overridePythonAttrs (_: {
             doCheck = false;
             doInstallCheck = false;
           });

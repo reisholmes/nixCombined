@@ -32,6 +32,10 @@
       alejandra
       nixd
 
+      # nix linting
+      deadnix
+      statix
+
       powershell-editor-services
 
       # Terraform

@@ -1,8 +1,6 @@
 {
   nhModules,
   inputs,
-  outputs,
-  pkgs,
   ...
 }: {
   imports = [

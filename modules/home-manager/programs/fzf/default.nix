@@ -1,4 +1,4 @@
-{...}: {
+_: {
   # fzf
   programs.fzf = {
     enable = true;
