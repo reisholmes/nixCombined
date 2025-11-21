@@ -18,10 +18,11 @@
     };
 
     # Nix Darwin (for MacOS machines)
-    darwin = {
+    nix-darwin = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    mac-app-util.url = "github:hraban/mac-app-util";
 
     # NixGL fixes graphics issues on non NixOS systems
     # https://nix-community.github.io/home-manager/index.xhtml#sec-usage-gpu-non-nixos
@@ -42,8 +43,8 @@
 
   outputs = {
     self,
-    darwin,
     home-manager,
+    nix-darwin,
     nixgl,
     nixpkgs,
     stylix,
@@ -53,7 +54,7 @@
 
     # Define user configurations
     users = {
-      reis.holmes = {
+      "reis.holmes" = {
         fullName = "Reis Holmes";
         name = "reis.holmes";
       };
@@ -63,28 +64,29 @@
       };
     };
 
-    # Function for NixOS system configuration
-    mkNixosConfiguration = hostname: username:
-      nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit inputs outputs hostname;
-          userConfig = users.${username};
-          nixosModules = "${self}/modules/nixos";
-        };
-        modules = [./hosts/${hostname}];
-      };
+    # Function for NixOS system configuration (reserved for future use)
+    # mkNixosConfiguration = hostname: username:
+    #   nixpkgs.lib.nixosSystem {
+    #     specialArgs = {
+    #       inherit inputs outputs hostname;
+    #       userConfig = users.${username};
+    #       nixosModules = "${self}/modules/nixos";
+    #     };
+    #     modules = [./hosts/${hostname}];
+    #   };
 
     # Function for nix-darwin system configuration
     mkDarwinConfiguration = hostname: username:
-      darwin.lib.darwinSystem {
-        system = "aarch64-darwin";
+      nix-darwin.lib.darwinSystem {
         specialArgs = {
-          inherit inputs outputs hostname;
+          inherit inputs outputs hostname self;
           userConfig = users.${username};
         };
         modules = [
           ./hosts/${hostname}
           home-manager.darwinModules.home-manager
+          # Note: stylix.darwinModules.stylix has compatibility issues (stylix.icons error)
+          # Stylix is configured via home-manager module instead (see home/*/reisholmes/default.nix)
         ];
       };
 
@@ -99,21 +101,20 @@
         };
         modules = [
           ./home/${username}/${hostname}
-          stylix.homeManagerModules.stylix
+          stylix.homeModules.stylix
         ];
       };
   in {
-    nixosConfigurations = {
-      # leaving in as an example
-      #  energy = mkNixosConfiguration "energy" "nabokikh";
-    };
+    # Reserved for future NixOS host configurations
+    # Example: nixosConfigurations.hostname = mkNixosConfiguration "hostname" "username";
+    nixosConfigurations = {};
 
     darwinConfigurations = {
-      "reis-work" = mkDarwinConfiguration "reis-work" "reis.holmes";
+      "reisholmes" = mkDarwinConfiguration "reisholmes" "reis.holmes";
     };
 
     homeConfigurations = {
-      "reis.holmes@reis-work" = mkHomeConfiguration "x86_64-linux" "reis.holmes" "reis-work";
+      "reis.holmes@reisholmes" = mkHomeConfiguration "x86_64-linux" "reis.holmes" "reisholmes";
       "reis@rh-sb3" = mkHomeConfiguration "x86_64-linux" "reis" "rh-sb3";
       "reis@reis-new" = mkHomeConfiguration "x86_64-linux" "reis" "reis-new";
     };

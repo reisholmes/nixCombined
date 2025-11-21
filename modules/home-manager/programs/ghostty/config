@@ -1,5 +1,7 @@
+alpha-blending = native
+
 background-blur = 32
-background-opacity = 0.95
+background-opacity = 0.85
 
 font-family = "Hack Nerd Font Mono"
 font-family-bold = "Hack Nerd Font Mono"
@@ -19,5 +21,4 @@ keybind = ctrl+shift+t=new_split:down
 window-height = 44
 window-width = 160
 
-theme = catppuccin-mocha
-
+theme = Catppuccin Mocha

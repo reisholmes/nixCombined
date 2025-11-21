@@ -1,0 +1,40 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+
+  - repo: local
+    hooks:
+      # Alejandra - Nix formatter
+      - id: alejandra
+        name: alejandra
+        description: Format Nix files with alejandra
+        entry: alejandra
+        language: system
+        files: \.nix$
+        pass_filenames: true
+
+      # Deadnix - Find unused Nix code
+      - id: deadnix
+        name: deadnix
+        description: Check for unused code in Nix files
+        entry: deadnix
+        args: ["--fail"]
+        language: system
+        files: \.nix$
+        pass_filenames: true
+
+      # Statix - Nix linter
+      - id: statix
+        name: statix
+        description: Lint Nix files with statix
+        entry: statix
+        args: ["check", "."]
+        language: system
+        files: \.nix$
+        pass_filenames: false

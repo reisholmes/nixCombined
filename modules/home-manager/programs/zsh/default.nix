@@ -1,8 +1,4 @@
-{
-  pkgs,
-  userConfig,
-  ...
-}: {
+{pkgs, ...}: {
   # ZSH
   programs.zsh = {
     enable = true;
@@ -14,29 +10,41 @@
     initContent = ''
       unameOutput="$(uname -m)"
 
+      # Handle non-interactive shells (like Claude Code, LLM tools, CI/CD)
+      # Zoxide's cd override causes issues in non-interactive sessions
+      if [[ ! -o interactive ]]; then
+        # Unset zoxide's cd alias if it was set by oh-my-zsh
+        unalias cd 2>/dev/null || true
+        # Define standard cd behavior
+        builtin cd() {
+          builtin cd "$@"
+        }
+      fi
+
       # homebrew on M based Mac chips
       if [[ $unameOutput == 'arm64' ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
 
-        # mac is dumb
+        # macOS keyboard mapping for fzf
         # https://github.com/junegunn/fzf/issues/164#issuecomment-527826925
         bindkey "ç" fzf-cd-widget
       fi
 
       # for atuin
       eval "$(atuin init zsh)"
-      eval "$(oh-my-posh init zsh)"
 
       # for az cli
       autoload -U +X bashcompinit && bashcompinit
 
       if [[ $unameOutput == 'arm64' ]]; then
-        #load the file
-        source $(brew --prefix)/etc/bash_completion.d/az
+        # Load az bash completions if available
+        if [[ -f "$(brew --prefix)/etc/bash_completion.d/az" ]]; then
+          source $(brew --prefix)/etc/bash_completion.d/az
+        fi
 
       elif [[ $unameOutput == 'x86_64' ]]; then
-        #load the file
-        source /home/${userConfig.name}/.nix-profile/share/bash-completion/completions/az.bash
+        # Skip az bash completions on x86_64
+        :
       fi
 
       # for oh-my-posh
@@ -51,27 +59,31 @@
       # nixpkgs allow unfree for "nvidia"
       export NIXPKGS_ALLOW_UNFREE=1
 
+      # lf icons support
+      export LF_ICONS=$(cat ~/.config/lf/icons)
+
       # start Fastfetch
       fastfetch
 
     '';
 
+    sessionVariables =
+      if pkgs.stdenv.isDarwin
+      then {
+        DISABLE_PROMPT_CACHING = "0";
+      }
+      else {};
+
     shellAliases = {
-      # easier rebuilding on darwin
-      nix_work_rebuild = "darwin-rebuild switch --flake /Users/reis.holmes/Documents/code/repos/nix-darwin/#reis-work";
-
-      # easier rebuilding on surface book
-      nix_sb3_rebuild = "home-manager switch --flake .#reis@rh-sb3 --impure";
-
-      # easier rebuilding on desktop
-      nix_desktop_rebuild = "home-manager switch --flake .#reis@reis-new --impure -b backup";
-
       # modern cat command remap
       cat = "bat";
 
       # Next level of an ls
       #options :  --no-filesize --no-time --no-permissions
       ls = "eza --no-filesize --long --color=always --icons=always --no-user";
+
+      # list tree
+      lt = "lsd --tree";
 
       lg = "lazygit";
     };

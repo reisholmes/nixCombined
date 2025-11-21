@@ -1,6 +1,11 @@
-{...}: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   # https://home-manager-options.extranix.com/?query=programs.k9s&release=master
-  programs.k9s = {
+  # k9s is only enabled on darwin systems
+  programs.k9s = lib.mkIf pkgs.stdenv.isDarwin {
     enable = true;
 
     settings = {
