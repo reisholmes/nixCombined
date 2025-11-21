@@ -15,6 +15,25 @@ let
     ${personalEmail} ${userConfig.signingKeyPub}
     ${userConfig.workEmail} ${userConfig.workSigningKeyPub}
   '';
+
+  # Shared git configuration for personal repositories
+  personalGitConfig = {
+    user = {
+      email = personalEmail;
+      name = "reisholmes";
+    };
+    gpg.format = "ssh";
+    user.signingkey = "~/.ssh/github_commit_signing_personal.pub";
+    commit.gpgsign = true;
+    gpg.ssh = {
+      program = "/usr/bin/ssh-keygen";
+      allowedSignersFile = "~/.ssh/allowed_signers";
+    };
+    url."git@github-personal:".insteadOf = [
+      "git@github.com:"
+      "https://github.com/"
+    ];
+  };
 in {
   imports = [
     "${nhModules}/common"
@@ -34,7 +53,10 @@ in {
   };
 
   # Create allowed_signers file for git SSH signing
-  home.file.".ssh/allowed_signers".source = allowedSignersFile;
+  home.file.".ssh/allowed_signers" = {
+    source = allowedSignersFile;
+    force = true;
+  };
 
   # Git configuration
   programs.git = {
@@ -81,23 +103,12 @@ in {
       # Personal repositories
       {
         condition = "gitdir:~/Documents/code/personal_repos/";
-        contents = {
-          user = {
-            email = personalEmail;
-            name = "reisholmes";
-          };
-          gpg.format = "ssh";
-          user.signingkey = "~/.ssh/github_commit_signing_personal.pub";
-          commit.gpgsign = true;
-          gpg.ssh = {
-            program = "/usr/bin/ssh-keygen";
-            allowedSignersFile = "~/.ssh/allowed_signers";
-          };
-          url."git@github-personal:".insteadOf = [
-            "git@github.com:"
-            "https://github.com/"
-          ];
-        };
+        contents = personalGitConfig;
+      }
+      # Neovim configuration
+      {
+        condition = "gitdir:~/.config/nvim/";
+        contents = personalGitConfig;
       }
     ];
   };
