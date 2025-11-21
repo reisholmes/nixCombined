@@ -1,8 +1,16 @@
 {
+  config,
   nhModules,
   nixgl,
+  pkgs,
+  userConfig,
   ...
-}: {
+}: let
+  # Generate allowed_signers file for SSH commit verification
+  allowedSignersFile = pkgs.writeText "git-allowed-signers" ''
+    ${userConfig.email} ${userConfig.signingKeyPub}
+  '';
+in {
   imports = [
     "${nhModules}/common"
     "${nhModules}/dev"
@@ -17,6 +25,30 @@
   # Host-specific shell aliases
   programs.zsh.shellAliases = {
     nix_rebuild = "home-manager switch --flake .#reis@rh-sb3 --impure && nvd diff $(home-manager generations | head -2 | tail -1 | awk '{print $7}') $(home-manager generations | head -1 | awk '{print $7}')";
+  };
+
+  # Create allowed_signers file for git SSH signing
+  home.file.".ssh/allowed_signers".source = allowedSignersFile;
+
+  # Git configuration
+  programs.git = {
+    # Enable SSH signing globally (personal computer - all repos signed)
+    signing = {
+      key = "/home/reis/.ssh/private-signing-key-github";
+      signByDefault = true;
+    };
+
+    # Git settings (new format)
+    settings = {
+      # Set personal email from userConfig
+      user.email = userConfig.email;
+
+      # SSH signing configuration
+      gpg.format = "ssh";
+      gpg.ssh = {
+        allowedSignersFile = "/home/reis/.ssh/allowed_signers";
+      };
+    };
   };
 
   # NixGL configuration for standalone home-manager on Linux

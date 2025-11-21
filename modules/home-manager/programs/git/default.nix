@@ -1,13 +1,32 @@
-_: {
+{
+  lib,
+  pkgs,
+  userConfig,
+  ...
+}: {
   programs.git = {
     enable = true;
 
-    extraConfig = {
+    # Default user name from userConfig (can be overridden per-host)
+    userName = lib.mkDefault userConfig.fullName;
+    # Email is set per-host since it varies by context
+
+    # Git settings (new format)
+    settings = {
       init = {
         defaultBranch = "main";
       };
       pull = {
         rebase = false;
+      };
+      diff = {
+        colorMoved = "dimmed-zebra";
+      };
+
+      # GitHub CLI credential helper
+      credential = {
+        "https://github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
+        "https://gist.github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
       };
     };
 
@@ -21,8 +40,4 @@ _: {
       };
     };
   };
-
-  # Note: userName and userEmail should be configured locally via:
-  # git config --global user.name "Your Name"
-  # git config --global user.email "your.email@example.com"
 }

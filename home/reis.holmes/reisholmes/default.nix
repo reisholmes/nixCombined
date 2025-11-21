@@ -1,8 +1,21 @@
 {
+  config,
+  pkgs,
   nhModules,
   inputs,
+  userConfig,
   ...
-}: {
+}:
+let
+  # Personal email for personal repos
+  personalEmail = "4367558+reisholmes@users.noreply.github.com";
+
+  # Generate allowed_signers file for SSH commit verification (both personal and work keys)
+  allowedSignersFile = pkgs.writeText "git-allowed-signers" ''
+    ${personalEmail} ${userConfig.signingKeyPub}
+    ${userConfig.workEmail} ${userConfig.workSigningKeyPub}
+  '';
+in {
   imports = [
     "${nhModules}/common"
     "${nhModules}/dev"
@@ -18,6 +31,75 @@
   # Host-specific shell aliases
   programs.zsh.shellAliases = {
     nix_rebuild = "sudo darwin-rebuild switch --flake ~/Documents/code/personal_repos/nixCombined#reisholmes && nvd diff $(/bin/ls -d1v /nix/var/nix/profiles/system-*-link | tail -2 | head -1) $(/bin/ls -d1v /nix/var/nix/profiles/system-*-link | tail -1)";
+  };
+
+  # Create allowed_signers file for git SSH signing
+  home.file.".ssh/allowed_signers".source = allowedSignersFile;
+
+  # Git configuration
+  programs.git = {
+    # Git settings (new format)
+    settings = {
+      # No default email - work email stays out of nix, personal email set in conditional includes
+
+      # SSH signing configuration
+      gpg.format = "ssh";
+      gpg.ssh = {
+        allowedSignersFile = "~/.ssh/allowed_signers";
+        program = "/usr/bin/ssh-keygen"; # Use system ssh-keygen on macOS
+      };
+    };
+
+    # Conditional includes for work/personal repositories
+    includes = [
+      # Work repositories
+      {
+        condition = "gitdir:~/Documents/code/repos/";
+        contents = {
+          user = {
+            name = "Reis Holmes";
+            email = userConfig.workEmail;
+          };
+          gpg.format = "ssh";
+          user.signingkey = "~/.ssh/github_work_signing.pub";
+          commit.gpgsign = true;
+          url = {
+            "git@github-work:".insteadOf = [
+              "git@github.com:"
+              "https://github.com/"
+            ];
+            "github-work:optimizely/".insteadOf = [
+              "git@github.com:optimizely/"
+              "https://github.com/optimizely/"
+            ];
+            "github-work:episerver/".insteadOf = [
+              "https://github.com/episerver/"
+            ];
+          };
+        };
+      }
+      # Personal repositories
+      {
+        condition = "gitdir:~/Documents/code/personal_repos/";
+        contents = {
+          user = {
+            email = personalEmail;
+            name = "reisholmes";
+          };
+          gpg.format = "ssh";
+          user.signingkey = "~/.ssh/github_commit_signing_personal.pub";
+          commit.gpgsign = true;
+          gpg.ssh = {
+            program = "/usr/bin/ssh-keygen";
+            allowedSignersFile = "~/.ssh/allowed_signers";
+          };
+          url."git@github-personal:".insteadOf = [
+            "git@github.com:"
+            "https://github.com/"
+          ];
+        };
+      }
+    ];
   };
 
   # Stylix configuration for darwin home-manager
