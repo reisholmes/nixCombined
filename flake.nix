@@ -57,8 +57,9 @@
       "reis.holmes" = {
         fullName = "Reis Holmes";
         name = "reis.holmes";
-        # No email - work email stays out of nix
+        workEmail = "reis.holmes@optimizely.com";
         signingKeyPub = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINNBSXWl4vHikJV3SOXxLdHq005sD3a/QIsvRfXGY3R2 4367558+reisholmes@users.noreply.github.com";
+        workSigningKeyPub = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKouJmVbhP+ojiWpSH4RDiVg/DQb0uHrVxFWztKEQ3u3 work-signing-key";
       };
       reis = {
         fullName = "Reis Holmes";

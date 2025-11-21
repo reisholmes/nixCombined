@@ -7,12 +7,13 @@
   ...
 }:
 let
-  # Personal email for personal repos only (work email stays out of nix)
+  # Personal email for personal repos
   personalEmail = "4367558+reisholmes@users.noreply.github.com";
 
-  # Generate allowed_signers file for SSH commit verification
+  # Generate allowed_signers file for SSH commit verification (both personal and work keys)
   allowedSignersFile = pkgs.writeText "git-allowed-signers" ''
     ${personalEmail} ${userConfig.signingKeyPub}
+    ${userConfig.workEmail} ${userConfig.workSigningKeyPub}
   '';
 in {
   imports = [
@@ -51,15 +52,17 @@ in {
 
     # Conditional includes for work/personal repositories
     includes = [
-      # Work repositories - email not set in nix (set manually if needed)
+      # Work repositories
       {
         condition = "gitdir:~/Documents/code/repos/";
         contents = {
           user = {
             name = "Reis Holmes";
-            # email = "work@company.com"; # Set this manually with: git config --global user.email "your-work-email"
+            email = userConfig.workEmail;
           };
-          commit.gpgsign = false; # Disable signing for work repos
+          gpg.format = "ssh";
+          user.signingkey = "~/.ssh/github_work_signing.pub";
+          commit.gpgsign = true;
           url = {
             "git@github-work:".insteadOf = [
               "git@github.com:"

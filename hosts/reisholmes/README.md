@@ -18,8 +18,8 @@ Git is managed through Nix with conditional includes for work and personal repos
 - Delta for enhanced diffs
 - GitHub CLI credential helper
 - Conditional configuration based on repository location
-- SSH signing setup for personal repos
-- Allowed signers file generation
+- SSH signing setup for both personal and work repos
+- Allowed signers file generation (both keys)
 
 ### Manual Setup Required
 
@@ -37,9 +37,15 @@ The following SSH keys must be manually maintained:
    - Used for signing commits in personal repositories
    - Public key must be added to GitHub as a **Signing Key**
 
-3. **Work GitHub Authentication** (if applicable): `~/.ssh/github-work`
+3. **Work GitHub Authentication**: `~/.ssh/github-work`
    - Used for git operations on work repositories
    - Configured via SSH config with `github-work` host
+
+4. **Work Commit Signing Key**: `~/.ssh/github_work_signing`
+   - **Private key**: `~/.ssh/github_work_signing`
+   - **Public key**: `~/.ssh/github_work_signing.pub`
+   - Used for signing commits in work repositories
+   - Public key must be added to GitHub as a **Signing Key**
 
 #### Initial Setup Steps
 
@@ -112,16 +118,12 @@ Git uses conditional includes to apply different settings based on repository lo
 - **URL Rewrite**: All GitHub URLs use `git@github-personal:`
 
 #### Work Repositories (`~/Documents/code/repos/`)
-- **Email**: Not set in Nix (configure manually if needed)
+- **Email**: `reis.holmes@optimizely.com` (configured in userConfig)
 - **Name**: `Reis Holmes`
-- **Commit Signing**: Disabled
+- **Commit Signing**: Enabled (SSH)
+- **Signing Key**: `~/.ssh/github_work_signing.pub`
 - **SSH Host**: `github-work` (uses work SSH key)
 - **URL Rewrite**: All GitHub URLs use `git@github-work:`
-- **Work Email Setup** (if needed):
-  ```bash
-  cd ~/Documents/code/repos
-  git config user.email "your-work-email@company.com"
-  ```
 
 ### Verification
 
