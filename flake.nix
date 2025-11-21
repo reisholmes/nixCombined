@@ -57,10 +57,14 @@
       "reis.holmes" = {
         fullName = "Reis Holmes";
         name = "reis.holmes";
+        # No email - work email stays out of nix
+        signingKeyPub = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINNBSXWl4vHikJV3SOXxLdHq005sD3a/QIsvRfXGY3R2 4367558+reisholmes@users.noreply.github.com";
       };
       reis = {
         fullName = "Reis Holmes";
         name = "reis";
+        email = "4367558+reisholmes@users.noreply.github.com";
+        signingKeyPub = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINNBSXWl4vHikJV3SOXxLdHq005sD3a/QIsvRfXGY3R2 4367558+reisholmes@users.noreply.github.com";
       };
     };
 
