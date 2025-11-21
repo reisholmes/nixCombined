@@ -28,6 +28,8 @@
       ## lua
       lua-language-server
       stylua
+      lua # Lua runtime for pre-commit
+      luarocks # Lua package manager for pre-commit
       luaPackages.luacheck # Lua linter for pre-commit
       ## nix
       alejandra
