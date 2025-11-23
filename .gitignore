@@ -7,3 +7,7 @@ result-*
 
 # PR review files
 PR-REVIEW-*.md
+
+# Local reference documents (not committed)
+RECOMMENDATIONS.md
+TODO.md

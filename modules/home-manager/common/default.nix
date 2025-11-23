@@ -1,3 +1,23 @@
+# Common Home Manager Configuration
+#
+# This module provides base configuration imported by all systems including:
+# - Core CLI tools (git, fzf, zsh, ripgrep, bat, etc.)
+# - NixGL support for non-NixOS graphics acceleration
+# - Stylix theming framework integration
+# - Common program configurations (kitty, ghostty, lazygit, etc.)
+#
+# Usage:
+#   Import in host configs with: "${nhModules}/common"
+#
+# Platform Support:
+#   - Linux (NixOS and non-NixOS with home-manager standalone)
+#   - macOS (nix-darwin with home-manager module)
+#
+# Dependencies:
+#   - Requires nhModules path injected via extraSpecialArgs
+#   - Requires userConfig for user-specific settings (name, email, etc.)
+#   - Platform detection via pkgs.stdenv.isDarwin
+
 {
   lib,
   pkgs,

@@ -19,6 +19,53 @@ Enable experimental features if not already configured:
 echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
 ```
 
+## Quick Commands
+
+Common operations for managing your configuration:
+
+### Using Makefile (Recommended)
+
+```bash
+# Rebuild configurations
+make darwin    # Rebuild Darwin (macOS) system
+make home      # Rebuild Home Manager (Linux or standalone macOS)
+make nixos     # Rebuild NixOS system
+
+# Maintenance
+make update    # Update all flake inputs
+make gc        # Garbage collect old generations
+make check     # Validate flake configuration
+
+# Bootstrap new machines
+make bootstrap-darwin  # Install nix-darwin and configure
+make bootstrap-home    # Install home-manager and configure
+
+# Get help
+make help      # Show all available commands
+```
+
+### Manual Commands
+
+```bash
+# Darwin (macOS)
+darwin-rebuild switch --flake .#reisholmes
+
+# Home Manager (Linux)
+home-manager switch --flake .#reis@reis-new --impure -b backup
+
+# NixOS
+sudo nixos-rebuild switch --flake .#hostname
+
+# Update flake inputs
+nix flake update
+
+# Garbage collect
+nix-collect-garbage -d
+
+# Compare generations (requires nvd)
+nvd diff /nix/var/nix/profiles/system-{OLD,NEW}-link
+```
+
 ## Quick Start (TLDR)
 
 - Add new home manager name and computer (if using NixOS)
@@ -266,6 +313,90 @@ For detailed module documentation and structure, see:
 
 For machine-specific setup instructions and configuration notes, see the README in each host directory:
 - [hosts/reis-new/README.md](hosts/reis-new/README.md) - CachyOS setup notes
+
+## Changelog
+
+### 2025-01-23 - Home Manager Module Refactoring
+
+**Breaking Changes:**
+
+1. **NixGL Configuration** - Moved to declarative profile-based system
+   ```nix
+   # Before:
+   targets.genericLinux.nixGL = {
+     packages = nixgl.packages;
+     defaultWrapper = "nvidia";
+     vulkan.enable = true;
+   };
+
+   # After:
+   nixgl = {
+     enable = true;
+     profile = "nvidia";  # Options: nvidia, mesa, nvidiaPrime
+   };
+   ```
+
+2. **Stylix Host Configuration** - New host-specific options module
+   ```nix
+   # Before:
+   stylix.image = ./wallpaper.jpg;
+   stylix.autoEnable = true;
+
+   # After:
+   stylix.hostConfig.wallpaper = ./wallpaper.jpg;
+   stylix.hostConfig.autoEnable = true;
+   # Note: Set wallpaper to null to skip (e.g., on work machines)
+   ```
+
+3. **Git SSH Signing** - Declarative submodule for commit signing
+   ```nix
+   # Before:
+   home.file.".ssh/allowed_signers".source = allowedSignersFile;
+   programs.git.settings.gpg.format = "ssh";
+   programs.git.settings.gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
+
+   # After:
+   programs.git.sshSigning = {
+     enable = true;
+     allowedSigners = [
+       { email = "user@example.com"; key = "ssh-ed25519 ..."; }
+       { email = "work@company.com"; key = "ssh-ed25519 ..."; }
+     ];
+     sshKeygenProgram = "/usr/bin/ssh-keygen";  # Optional: macOS native
+     forceFileUpdate = true;  # Optional: force update on each rebuild
+   };
+   ```
+
+**New Features:**
+- Three new shared modules in `modules/home-manager/common/`:
+  - `nixgl-profiles.nix` - Hardware profile abstraction for NixGL
+  - `stylix-host.nix` - Host-specific theming options
+  - `git/ssh-signing.nix` - SSH signing configuration submodule
+- Comprehensive configuration examples in [modules/home-manager/README.md](modules/home-manager/README.md)
+- Module documentation with usage patterns and platform notes
+- Improved DRY principles through declarative options
+
+**Documentation:**
+- Updated `modules/home-manager/README.md` with new module details
+- Added configuration examples for all new features
+- Module headers with usage instructions
+
+**Migration Guide:** See [modules/home-manager/README.md](modules/home-manager/README.md) Configuration Examples section for detailed usage of new declarative patterns.
+
+---
+
+### 2025-01-23 - Documentation & Tooling Improvements
+
+**New Features:**
+- **Makefile** - Convenience commands for common operations:
+  - Short commands: `make darwin`, `make home`, `make update`, `make gc`, `make check`
+  - Automatic hostname/user detection
+  - Built-in nvd diff output after rebuilds
+  - Bootstrap commands for new machines
+  - Backwards-compatible legacy command aliases
+- **Quick Commands** - README section with common rebuild/maintenance commands
+- **Module Headers** - Self-documenting comments in key module files
+- **Changelog** - This section for tracking breaking changes and migrations
 
 ## References
 
