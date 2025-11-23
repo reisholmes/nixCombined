@@ -26,6 +26,7 @@
 
       #lsp requirements
       ## lua
+      copilot-language-server
       lua-language-server
       stylua
       lua # Lua runtime for pre-commit
@@ -52,6 +53,7 @@
     ]
     ++ lib.optionals stdenv.isDarwin [
       (azure-cli.withExtensions [azure-cli.extensions.aks-preview])
+      github-copilot-cli
       fluxcd
       kubectl
       stable.kubelogin

@@ -20,16 +20,22 @@
   ];
   # Packages that require configuration get placed in relevant place
   imports = [
+    # Common modules
+    ./nixgl-profiles.nix
+    ./nixgl-wrapper.nix
     ./nixpkgs-config.nix
     ./stylix-common.nix
-    ./nixgl-wrapper.nix
+    ./stylix-host.nix
+
+    # Program configurations
     ../programs/atuin
     ../programs/fastfetch
     ../programs/fzf
+    ../programs/ghostty
+    ../programs/git
     ../programs/kitty
     ../programs/lazygit
     ../programs/lf
-    ../programs/ghostty
     ../programs/nix-search-tv
     ../programs/zoxide
     ../programs/zsh
