@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# pull-all - Update all git repositories in a directory
+# Usage: pull-all [directory]
+# If no directory specified, uses current directory
+
+TARGET_DIR="${1:-.}"
+
+if [ ! -d "$TARGET_DIR" ]; then
+  echo "Error: Directory $TARGET_DIR does not exist"
+  exit 1
+fi
+
+echo "Updating all git repositories in: $TARGET_DIR"
+echo "================================================"
+
+# Find all git repositories
+find "$TARGET_DIR" -name ".git" -type d | while read -r git_dir; do
+  repo_dir=$(dirname "$git_dir")
+  repo_name=$(basename "$repo_dir")
+
+  echo ""
+  echo "📦 $repo_name"
+  echo "   Path: $repo_dir"
+
+  cd "$repo_dir" || continue
+
+  # Check for uncommitted changes
+  if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+    echo "   ⚠️  Uncommitted changes - skipping"
+    continue
+  fi
+
+  # Get current branch
+  branch=$(git branch --show-current)
+
+  # Pull latest changes
+  if git pull --rebase 2>&1 | grep -q "Already up to date"; then
+    echo "   ✓ Already up to date ($branch)"
+  else
+    echo "   ✓ Updated ($branch)"
+  fi
+done
+
+echo ""
+echo "================================================"
+echo "✓ Repository updates complete"

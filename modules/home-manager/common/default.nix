@@ -47,6 +47,9 @@
     ./stylix-common.nix
     ./stylix-host.nix
 
+    # Custom utility scripts
+    ../scripts
+
     # Program configurations
     ../programs/atuin
     ../programs/fastfetch
