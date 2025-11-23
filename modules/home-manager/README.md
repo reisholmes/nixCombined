@@ -16,9 +16,11 @@ modules/home-manager/programs/
 │   └── assets/              # Program-specific assets (optional)
 ```
 
-**Example:**
+**Examples:**
 - `lf/default.nix` - Main lf configuration
 - `lf/icons` - Icon configuration file for lf
+- `git/default.nix` - Main git configuration and delta (enhanced diff viewer) with git integration enabled
+- `git/ssh-signing.nix` - Git SSH signing submodule with declarative `programs.git.sshSigning` options
 
 ### Common Modules
 
@@ -27,17 +29,21 @@ Shared configuration modules used across all systems:
 ```
 modules/home-manager/common/
 ├── default.nix           # Main entry point, imports all common modules
+├── nixgl-profiles.nix    # NixGL hardware profile configuration (nvidia/mesa/nvidiaPrime)
+├── nixgl-wrapper.nix     # Helper function for NixGL wrapping
 ├── nixpkgs-config.nix    # Nixpkgs overlays and allowUnfree config
 ├── stylix-common.nix     # Shared Stylix theme and font defaults
-└── nixgl-wrapper.nix     # Helper function for NixGL wrapping
+└── stylix-host.nix       # Host-specific Stylix configuration (wallpaper, autoEnable)
 ```
 
 #### Common Module Details
 
 - **`default.nix`**: Entry point that imports all common modules and programs, sets up home environment basics
+- **`nixgl-profiles.nix`**: Declarative NixGL configuration for non-NixOS systems. Provides `nixgl.enable` and `nixgl.profile` options with hardware profiles: `nvidia` (enables Vulkan), `mesa` (Intel/AMD graphics), and `nvidiaPrime` (Optimus/Prime laptops with mesa as default and nvidia as offload)
+- **`nixgl-wrapper.nix`**: Provides `wrapWithNixGL` helper function that wraps GUI packages with NixGL on Linux and returns them unwrapped on Darwin
 - **`nixpkgs-config.nix`**: Configures nixpkgs with overlays and unfree package allowances
 - **`stylix-common.nix`**: Defines default fonts (IBM Plex) and color scheme (Catppuccin Mocha) using `lib.mkDefault` for easy per-host overrides
-- **`nixgl-wrapper.nix`**: Provides `wrapWithNixGL` helper function that wraps GUI packages with NixGL on Linux and returns them unwrapped on Darwin
+- **`stylix-host.nix`**: Provides host-specific Stylix configuration options. Allows setting `stylix.hostConfig.wallpaper` (path or null to skip wallpaper setup) and `stylix.hostConfig.autoEnable` for automatic application theming
 
 ### Development Modules
 
@@ -82,6 +88,69 @@ Most shared configurations use `lib.mkDefault` to allow per-host overrides:
 stylix.fonts.monospace = {
   package = pkgs.jetbrains-mono;
   name = "JetBrains Mono";
+};
+```
+
+### Configuration Examples
+
+#### NixGL Configuration (Non-NixOS Linux)
+
+Configure hardware-accelerated graphics on non-NixOS systems:
+
+```nix
+# For NVIDIA graphics
+nixgl = {
+  enable = true;
+  profile = "nvidia";
+};
+
+# For Intel/AMD graphics
+nixgl = {
+  enable = true;
+  profile = "mesa";
+};
+
+# For NVIDIA Optimus/Prime laptops
+nixgl = {
+  enable = true;
+  profile = "nvidiaPrime";
+};
+```
+
+#### Host-Specific Stylix Configuration
+
+Set wallpapers and theming per host:
+
+```nix
+# Set a wallpaper
+stylix.hostConfig.wallpaper = ../../../modules/home-manager/assets/stylix/wallpaper_wave_mac.jpg;
+
+# Skip wallpaper (e.g., on work machines)
+stylix.hostConfig.wallpaper = null;
+
+# Disable automatic theming for specific applications
+stylix.hostConfig.autoEnable = false;
+```
+
+#### Git SSH Signing
+
+Configure SSH commit signing declaratively:
+
+```nix
+programs.git.sshSigning = {
+  enable = true;
+  allowedSigners = [
+    {
+      email = "user@example.com";
+      key = "ssh-ed25519 AAAAC3...";
+    }
+    {
+      email = "work@company.com";
+      key = "ssh-ed25519 AAAAC3...";
+    }
+  ];
+  sshKeygenProgram = "/usr/bin/ssh-keygen";  # Optional: use system ssh-keygen on macOS
+  forceFileUpdate = true;  # Optional: force update on each rebuild
 };
 ```
 
