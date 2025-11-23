@@ -85,6 +85,7 @@
       nix-darwin.lib.darwinSystem {
         specialArgs = {
           inherit inputs outputs hostname self;
+          darwinModules = "${self}/modules/darwin";
           userConfig = users.${username};
         };
         modules = [
@@ -119,7 +120,7 @@
     };
 
     homeConfigurations = {
-      "reis.holmes@reisholmes" = mkHomeConfiguration "x86_64-linux" "reis.holmes" "reisholmes";
+      "reis.holmes@reisholmes" = mkHomeConfiguration "aarch64-darwin" "reis.holmes" "reisholmes";
       "reis@rh-sb3" = mkHomeConfiguration "x86_64-linux" "reis" "rh-sb3";
       "reis@reis-new" = mkHomeConfiguration "x86_64-linux" "reis" "reis-new";
     };
