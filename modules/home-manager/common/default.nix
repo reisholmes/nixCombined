@@ -17,7 +17,6 @@
 #   - Requires nhModules path injected via extraSpecialArgs
 #   - Requires userConfig for user-specific settings (name, email, etc.)
 #   - Platform detection via pkgs.stdenv.isDarwin
-
 {
   lib,
   pkgs,

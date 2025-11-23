@@ -66,6 +66,44 @@ nix-collect-garbage -d
 nvd diff /nix/var/nix/profiles/system-{OLD,NEW}-link
 ```
 
+## Development & Code Quality
+
+This repository includes automated code quality checks using pre-commit hooks:
+
+### Pre-commit Hooks
+
+The following checks run automatically on every commit:
+- **alejandra** - Nix code formatter
+- **statix** - Nix linter (configured via `statix.toml`)
+- **deadnix** - Detects unused Nix code
+
+### Setup
+
+On first clone or when hooks aren't installed:
+
+```bash
+nix develop
+```
+
+This automatically installs the git hooks. They will then run on every commit.
+
+### Manual Checks
+
+Run all checks manually without committing:
+
+```bash
+nix flake check
+```
+
+### Configuration
+
+- **statix.toml** - Configures statix to ignore style-only warnings (W04, W20)
+- **flake.nix** - Pre-commit hook configuration in `checks` and `devShells` outputs
+
+### New Machines
+
+When cloning this repo on a new machine, remember to run `nix develop` once to install the pre-commit hooks.
+
 ## Quick Start (TLDR)
 
 - Add new home manager name and computer (if using NixOS)
@@ -315,6 +353,29 @@ For machine-specific setup instructions and configuration notes, see the README 
 - [hosts/reis-new/README.md](hosts/reis-new/README.md) - CachyOS setup notes
 
 ## Changelog
+
+### 2025-01-23 - Pre-commit Hooks Integration
+
+**New Features:**
+- **Pre-commit hooks** - Automated code quality checks on every commit
+  - Nix formatter (alejandra)
+  - Nix linter (statix)
+  - Unused code detection (deadnix)
+- **Development shell** - `nix develop` installs git hooks automatically
+- **statix.toml** - Configuration to disable style-only warnings (manual_inherit_from, repeated_keys)
+- **Code quality improvements** - Cleaned up formatting and removed unused parameters across codebase
+
+**Setup:**
+```bash
+nix develop  # Run once to install hooks
+```
+
+**Files:**
+- `flake.nix:137-166` - Pre-commit checks and devShell configuration
+- `statix.toml` - Statix linter configuration
+- `.gitignore` - Ignores auto-generated pre-commit configs
+
+---
 
 ### 2025-01-23 - Home Manager Module Refactoring
 

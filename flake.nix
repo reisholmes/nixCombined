@@ -39,6 +39,12 @@
     # fonts to a wide range of applications.
     stylix.url = "github:danth/stylix";
     stylix-stable.url = "github:danth/stylix/release-24.11";
+
+    # Pre-commit hooks for code quality checks
+    pre-commit-hooks = {
+      url = "github:cachix/pre-commit-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -47,6 +53,7 @@
     nix-darwin,
     nixgl,
     nixpkgs,
+    pre-commit-hooks,
     stylix,
     ...
   } @ inputs: let
@@ -126,5 +133,36 @@
     };
 
     overlays = import ./overlays {inherit inputs;};
+
+    # Pre-commit hooks for code quality
+    checks = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-darwin"] (system: {
+      pre-commit-check = pre-commit-hooks.lib.${system}.run {
+        src = ./.;
+        hooks = {
+          # Nix formatter
+          alejandra.enable = true;
+          # Nix linter (configured via statix.toml to ignore style-only warnings)
+          statix = {
+            enable = true;
+            settings = {
+              config = "${./.}/statix.toml";
+            };
+          };
+          # Find and remove unused code
+          deadnix.enable = true;
+        };
+      };
+    });
+
+    # Development shell with pre-commit hooks
+    # Run 'nix develop' once to install git hooks, then they run automatically on commit
+    devShells = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-darwin"] (system: let
+      pkgs = import nixpkgs {inherit system;};
+    in {
+      default = pkgs.mkShell {
+        inherit (self.checks.${system}.pre-commit-check) shellHook;
+        buildInputs = self.checks.${system}.pre-commit-check.enabledPackages;
+      };
+    });
   };
 }

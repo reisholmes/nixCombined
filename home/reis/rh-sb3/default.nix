@@ -1,8 +1,6 @@
 {
   config,
   nhModules,
-  nixgl,
-  pkgs,
   userConfig,
   ...
 }: {

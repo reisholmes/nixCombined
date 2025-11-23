@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }: let
   cfg = config.programs.git.sshSigning;
@@ -49,7 +48,8 @@ in {
   config = lib.mkIf cfg.enable {
     # Create allowed_signers file for git SSH signing
     home.file.".ssh/allowed_signers" = {
-      text = lib.concatMapStringsSep "\n"
+      text =
+        lib.concatMapStringsSep "\n"
         (signer: "${signer.email} ${signer.key}")
         cfg.allowedSigners;
       force = cfg.forceFileUpdate;
@@ -58,11 +58,13 @@ in {
     # Git SSH signing configuration
     programs.git.settings = {
       gpg.format = "ssh";
-      gpg.ssh = {
-        allowedSignersFile = cfg.allowedSignersPath;
-      } // lib.optionalAttrs (cfg.sshKeygenProgram != null) {
-        program = cfg.sshKeygenProgram;
-      };
+      gpg.ssh =
+        {
+          allowedSignersFile = cfg.allowedSignersPath;
+        }
+        // lib.optionalAttrs (cfg.sshKeygenProgram != null) {
+          program = cfg.sshKeygenProgram;
+        };
     };
   };
 }

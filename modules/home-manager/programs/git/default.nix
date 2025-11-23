@@ -20,7 +20,6 @@
 #   Configure per-host settings:
 #     programs.git.settings.user.email = "your@email.com";
 #     programs.git.sshSigning.enable = true;
-
 {
   lib,
   pkgs,

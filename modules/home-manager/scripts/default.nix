@@ -11,9 +11,11 @@
 # Usage:
 #   Automatically imported via common module
 #   Scripts available in PATH after home-manager switch
-
-{ lib, pkgs, ... }:
 {
+  lib,
+  pkgs,
+  ...
+}: {
   home.file.".local/bin" = {
     source = ./bin;
     recursive = true;
@@ -25,5 +27,5 @@
   '';
 
   # Add to PATH (especially important for macOS)
-  home.sessionPath = lib.mkIf pkgs.stdenv.isDarwin [ "$HOME/.local/bin" ];
+  home.sessionPath = lib.mkIf pkgs.stdenv.isDarwin ["$HOME/.local/bin"];
 }

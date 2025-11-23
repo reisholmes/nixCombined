@@ -1,12 +1,9 @@
 {
-  config,
-  pkgs,
   nhModules,
   inputs,
   userConfig,
   ...
-}:
-let
+}: let
   # Personal email for personal repos
   personalEmail = "4367558+reisholmes@users.noreply.github.com";
 

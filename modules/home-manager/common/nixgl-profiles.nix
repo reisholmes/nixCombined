@@ -23,7 +23,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     targets.genericLinux.nixGL = {
-      inherit (nixgl) packages;
+      packages = nixgl.packages;
 
       defaultWrapper =
         if cfg.profile == "nvidia"
