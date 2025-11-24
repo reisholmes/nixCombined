@@ -308,6 +308,23 @@ To update all flake inputs to their latest versions:
 nix flake update
 ```
 
+## Advanced Package Management
+
+### Pinning Specific Package Versions
+
+Sometimes you need a specific version of a package that isn't in your current nixpkgs channels. See the comprehensive guide:
+
+**[Package Version Pinning Documentation](docs/package-version-pinning.md)**
+
+This guide covers:
+- Finding specific package versions across nixpkgs history
+- Multiple search tools (web and CLI)
+- Implementing version pins in your flake
+- Alternative approaches (overrides, custom derivations)
+- Best practices and troubleshooting
+
+**Example use case:** Install `cowsay 3.8.3` when both unstable and stable channels only have `3.8.4`.
+
 ## Package Installation Strategy
 
 This configuration uses different package managers based on the use case:

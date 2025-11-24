@@ -53,6 +53,12 @@
       "alignment": "left",
       "segments": [
         {
+          "foreground": "p:blue",
+          "style": "plain",
+          "template": " {{ .Type }} ",
+          "type": "nix-shell"
+        },
+        {
           "foreground": "p:lavender",
           "properties": {
             "branch_icon": " ",
