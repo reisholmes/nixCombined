@@ -27,5 +27,7 @@
   '';
 
   # Add to PATH (especially important for macOS)
+  # Note: On Linux, ~/.local/bin is typically already in default PATH
+  # Darwin requires explicit PATH addition for user-installed scripts
   home.sessionPath = lib.mkIf pkgs.stdenv.isDarwin ["$HOME/.local/bin"];
 }

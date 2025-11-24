@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   # ZSH
   programs.zsh = {
     enable = true;
@@ -8,8 +12,6 @@
     enableCompletion = false;
 
     initContent = ''
-      unameOutput="$(uname -m)"
-
       # Handle non-interactive shells (like Claude Code, LLM tools, CI/CD)
       # Zoxide's cd override causes issues in non-interactive sessions
       if [[ ! -o interactive ]]; then
@@ -21,14 +23,19 @@
         }
       fi
 
-      # homebrew on M based Mac chips
-      if [[ $unameOutput == 'arm64' ]]; then
-        eval "$(/opt/homebrew/bin/brew shellenv)"
+      ${lib.optionalString pkgs.stdenv.isDarwin ''
+        # Homebrew initialization (Darwin-only)
+        # ARM64 Macs use /opt/homebrew, Intel Macs use /usr/local
+        if [[ $(uname -m) == 'arm64' ]]; then
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+        else
+          eval "$(/usr/local/bin/brew shellenv)"
+        fi
 
         # macOS keyboard mapping for fzf
         # https://github.com/junegunn/fzf/issues/164#issuecomment-527826925
         bindkey "ç" fzf-cd-widget
-      fi
+      ''}
 
       # for atuin
       eval "$(atuin init zsh)"
@@ -36,17 +43,24 @@
       # for az cli - defer completions loading
       autoload -U +X bashcompinit && bashcompinit
 
-      # Lazy load az completions only when needed
-      if [[ $unameOutput == 'arm64' ]]; then
-        # Defer az completion loading until first use
+      ${lib.optionalString pkgs.stdenv.isDarwin ''
+        # Lazy load az completions only when needed (Darwin-only)
+        # Homebrew path differs by architecture: ARM64 uses /opt/homebrew, Intel uses /usr/local
         az() {
           unfunction az
-          if [[ -f "/opt/homebrew/etc/bash_completion.d/az" ]]; then
-            source /opt/homebrew/etc/bash_completion.d/az
+          local brew_prefix
+          if [[ $(uname -m) == 'arm64' ]]; then
+            brew_prefix="/opt/homebrew"
+          else
+            brew_prefix="/usr/local"
+          fi
+
+          if [[ -f "$brew_prefix/etc/bash_completion.d/az" ]]; then
+            source "$brew_prefix/etc/bash_completion.d/az"
           fi
           az "$@"
         }
-      fi
+      ''}
 
       # for oh-my-posh
       eval "$(${pkgs.oh-my-posh}/bin/oh-my-posh init zsh --config ~/catppuccin.omp.json)"
@@ -72,12 +86,10 @@
 
     '';
 
-    sessionVariables =
-      if pkgs.stdenv.isDarwin
-      then {
-        DISABLE_PROMPT_CACHING = "0";
-      }
-      else {};
+    # Darwin-only session variables
+    sessionVariables = lib.optionalAttrs pkgs.stdenv.isDarwin {
+      DISABLE_PROMPT_CACHING = "0";
+    };
 
     shellAliases = {
       # modern cat command remap
