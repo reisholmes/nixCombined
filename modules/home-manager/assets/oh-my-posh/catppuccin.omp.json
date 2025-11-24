@@ -10,118 +10,130 @@
     "pink": "#f6bde6",
     "yellow": "#eed49f"
   },
+  "transient_prompt": {
+    "template": "❯ ",
+    "foreground": "#B48EAD",
+    "foreground_templates": [
+      "{{ if gt .Code 0 }}#BF616A{{ end }}"
+    ]
+  },
+  "console_title_template": "{{if .Root}}(Admin){{end}} {{.PWD}}",
   "blocks": [
     {
+      "type": "prompt",
       "alignment": "left",
       "segments": [
         {
+          "properties": {
+            "cache_duration": "none",
+            "discharging_icon": "\udb85\udfde",
+            "style": "plain"
+          },
+          "template": "{{ if .Error }}{{ .Error }}{{ else if eq .State.String \"Discharging\" }}{{ .Icon }}{{ .Percentage }}% {{ end }}",
+          "type": "battery",
+          "style": "plain",
           "foreground_templates": [
             "{{if eq \"Charged\" .State.String}}p:os{{end}}",
             "{{if eq \"Charging\" .State.String}}p:os{{end}}",
             "{{if eq \"Discharging\" .State.String}}p:yellow{{end}}",
             "{{if eq \"Full\" .State.String}}p:os{{end}}",
             "{{if eq \"Not Charging\" .State.String}}p:os{{end}}"
-          ],
+          ]
+        },
+        {
           "properties": {
-            "discharging_icon": "󱟞",
-            "style": "plain"
+            "cache_duration": "none"
           },
-          "style": "plain",
-          "template": "{{ if .Error }}{{ .Error }}{{ else if eq .State.String \"Discharging\" }}{{ .Icon }}{{ .Percentage }}% {{ end }}",
-          "type": "battery"
-        },
-        {
-          "foreground": "p:blue",
-          "style": "plain",
           "template": "{{ .UserName }} ",
-          "type": "session"
+          "foreground": "p:blue",
+          "type": "session",
+          "style": "plain"
         },
         {
-          "foreground": "p:pink",
           "properties": {
+            "cache_duration": "none",
             "max_depth": 2,
             "style": "agnoster_short"
           },
-          "style": "plain",
           "template": "{{ .Path }} ",
-          "type": "path"
+          "foreground": "p:pink",
+          "type": "path",
+          "style": "plain"
         }
-      ],
-      "type": "prompt"
+      ]
     },
     {
+      "type": "prompt",
       "alignment": "left",
       "segments": [
         {
+          "properties": {
+            "cache_duration": "5s",
+            "command": "/bin/sh $HOME/.config/oh-my-posh/nix-packages.sh"
+          },
+          "template": "{{ if ne .Output \"\" }} 📦 nix:{{ .Output }} depth:{{ .Env.SHLVL }} {{ end }}",
           "foreground": "p:blue",
-          "style": "plain",
-          "template": " {{ .Type }} ",
-          "type": "nix-shell"
+          "type": "command",
+          "style": "plain"
         },
         {
-          "foreground": "p:lavender",
           "properties": {
-            "branch_icon": " ",
-            "cherry_pick_icon": " ",
-            "commit_icon": " ",
+            "branch_icon": "\ue725 ",
+            "cache_duration": "none",
+            "cherry_pick_icon": "\ue29b ",
+            "commit_icon": "\uf417 ",
             "fetch_stash_count": true,
             "fetch_status": true,
             "fetch_upstream_icon": true,
-            "merge_icon": " ",
-            "no_commits_icon": " ",
-            "rebase_icon": " ",
-            "revert_icon": " ",
-            "tag_icon": " "
+            "merge_icon": "\ue727 ",
+            "no_commits_icon": "\uf0c3 ",
+            "rebase_icon": "\ue728 ",
+            "revert_icon": "\uf0e2 ",
+            "tag_icon": "\uf412 "
           },
-          "style": "plain",
-          "template": "{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }} ",
-          "type": "git"
+          "template": "{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if gt .StashCount 0 }} \ueb4b {{ .StashCount }}{{ end }} ",
+          "foreground": "p:lavender",
+          "type": "git",
+          "style": "plain"
         }
-      ],
-      "type": "prompt"
+      ]
     },
     {
+      "type": "prompt",
       "alignment": "right",
       "segments": [
         {
-          "foreground": "#A3BE8C",
           "properties": {
+            "cache_duration": "none",
             "style": "austin"
           },
-          "style": "plain",
           "template": " {{ .FormattedMs }} ",
-          "type": "executiontime"
+          "foreground": "#A3BE8C",
+          "type": "executiontime",
+          "style": "plain"
         }
-      ],
-      "type": "prompt"
+      ]
     },
     {
+      "type": "prompt",
       "alignment": "left",
-      "newline": true,
       "segments": [
         {
+          "properties": {
+            "always_enabled": true,
+            "cache_duration": "none"
+          },
+          "template": "❯ ",
           "foreground": "#B48EAD",
+          "type": "status",
+          "style": "plain",
           "foreground_templates": [
             "{{ if gt .Code 0 }}#BF616A{{ end }}"
-          ],
-          "properties": {
-            "always_enabled": true
-          },
-          "style": "plain",
-          "template": "❯ ",
-          "type": "status"
+          ]
         }
       ],
-      "type": "prompt"
+      "newline": true
     }
   ],
-  "console_title_template": "{{if .Root}}(Admin){{end}} {{.PWD}}",
-  "transient_prompt": {
-    "foreground": "#B48EAD",
-    "foreground_templates": [
-      "{{ if gt .Code 0 }}#BF616A{{ end }}"
-    ],
-    "template": "❯ "
-  },
-  "version": 2
+  "version": 3
 }

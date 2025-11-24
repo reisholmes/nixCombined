@@ -33,18 +33,19 @@
       # for atuin
       eval "$(atuin init zsh)"
 
-      # for az cli
+      # for az cli - defer completions loading
       autoload -U +X bashcompinit && bashcompinit
 
+      # Lazy load az completions only when needed
       if [[ $unameOutput == 'arm64' ]]; then
-        # Load az bash completions if available
-        if [[ -f "$(brew --prefix)/etc/bash_completion.d/az" ]]; then
-          source $(brew --prefix)/etc/bash_completion.d/az
-        fi
-
-      elif [[ $unameOutput == 'x86_64' ]]; then
-        # Skip az bash completions on x86_64
-        :
+        # Defer az completion loading until first use
+        az() {
+          unfunction az
+          if [[ -f "/opt/homebrew/etc/bash_completion.d/az" ]]; then
+            source /opt/homebrew/etc/bash_completion.d/az
+          fi
+          az "$@"
+        }
       fi
 
       # for oh-my-posh
@@ -59,11 +60,15 @@
       # nixpkgs allow unfree for "nvidia"
       export NIXPKGS_ALLOW_UNFREE=1
 
-      # lf icons support
-      export LF_ICONS=$(cat ~/.config/lf/icons)
+      # lf icons support - cache the icons to avoid reading file every time
+      if [[ -z "$LF_ICONS" && -f ~/.config/lf/icons ]]; then
+        export LF_ICONS=$(cat ~/.config/lf/icons)
+      fi
 
-      # start Fastfetch
-      fastfetch
+      # Only run fastfetch in login shells or first shell (check if it's a new terminal)
+      if [[ -o login ]] || [[ "$SHLVL" -eq 1 ]]; then
+        fastfetch
+      fi
 
     '';
 

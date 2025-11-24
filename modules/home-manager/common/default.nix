@@ -80,6 +80,12 @@
         source = ../assets/oh-my-posh/catppuccin.omp.json;
         target = "catppuccin.omp.json";
       };
+      # oh-my-posh - nix packages parser script
+      nixPackagesScript = {
+        source = ../assets/oh-my-posh/nix-packages.sh;
+        target = ".config/oh-my-posh/nix-packages.sh";
+        executable = true;
+      };
     };
 
     # declare our editor
