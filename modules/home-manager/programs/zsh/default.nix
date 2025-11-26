@@ -13,7 +13,7 @@
 
     # Useful shell options for better navigation and UX
     setOptions = [
-      "AUTOCD" # cd by typing directory name alone
+      # "AUTOCD" removed - causes shell to exit when commands include flags like -la
       "AUTOPUSHD" # Make cd push old directory onto directory stack
       "HIST_VERIFY" # Show command before executing from history
       "PUSHD_IGNORE_DUPS" # Don't push duplicate directories
@@ -110,11 +110,8 @@
     syntaxHighlighting.enable = true;
 
     plugins = [
-      {
-        name = "zsh-autocomplete";
-        src = pkgs.zsh-autocomplete;
-        file = "share/zsh-autocomplete/zsh-autocomplete.plugin.zsh";
-      }
+      # zsh-autocomplete removed - causes shell crashes with -la flags and has known stability issues
+      # Using programs.zsh.autosuggestion.enable = true instead (zsh-autosuggestions is more stable)
       {
         name = "fzf-tab";
         src = pkgs.zsh-fzf-tab;

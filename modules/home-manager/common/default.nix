@@ -35,6 +35,15 @@
           });
         };
       };
+      # Test tealdeer 1.7.2 to see if SSL works
+      tealdeer =
+        if super.stdenv.isDarwin
+        then
+          (import (builtins.fetchTarball {
+            url = "https://github.com/NixOS/nixpkgs/archive/e6f23dc08d3624daab7094b701aa3954923c6bbb.tar.gz";
+            sha256 = "0m0xmk8sjb5gv2pq7s8w7qxf7qggqsd3rxzv3xrqkhfimy2x7bnx";
+          }) {system = super.stdenv.system;}).tealdeer
+        else super.tealdeer;
     })
   ];
   # Packages that require configuration get placed in relevant place
@@ -89,9 +98,15 @@
     };
 
     # declare our editor
-    sessionVariables = {
-      EDITOR = "nvim";
-    };
+    sessionVariables =
+      {
+        EDITOR = "nvim";
+      }
+      // lib.optionalAttrs pkgs.stdenv.isDarwin {
+        # Fix SSL certificates for Nix packages on macOS
+        NIX_SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+        SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+      };
   };
 
   # Ensure common packages are installed
@@ -116,7 +131,6 @@
       pipenv
       python3
       ripgrep
-      tldr
       tree
       wget
       yq
@@ -124,6 +138,7 @@
     ++ lib.optionals stdenv.isDarwin [
       claude-code
       mas
+      tealdeer
     ]
     ++ lib.optionals (!stdenv.isDarwin) [
       # Fonts for stylix to apply on Linux
@@ -151,6 +166,7 @@
       magnetic-catppuccin-gtk
       protonvpn-gui
       rclone
+      tealdeer
       unzip
       vlc
       wl-clipboard
