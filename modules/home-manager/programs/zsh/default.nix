@@ -19,6 +19,11 @@
       "PUSHD_IGNORE_DUPS" # Don't push duplicate directories
     ];
 
+    # Allow unfree packages (e.g., nvidia drivers)
+    envExtra = ''
+      export NIXPKGS_ALLOW_UNFREE=1
+    '';
+
     initContent = ''
       # Handle non-interactive shells (like Claude Code, LLM tools, CI/CD)
       # Zoxide's cd override causes issues in non-interactive sessions
@@ -84,15 +89,10 @@
 
     '';
 
-    sessionVariables =
-      {
-        # Allow unfree packages (e.g., nvidia drivers)
-        NIXPKGS_ALLOW_UNFREE = "1";
-      }
-      // lib.optionalAttrs pkgs.stdenv.isDarwin {
-        # Darwin-only: disable prompt caching
-        DISABLE_PROMPT_CACHING = "0";
-      };
+    sessionVariables = lib.optionalAttrs pkgs.stdenv.isDarwin {
+      # Darwin-only: disable prompt caching
+      DISABLE_PROMPT_CACHING = "0";
+    };
 
     shellAliases = {
       # modern cat command remap
