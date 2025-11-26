@@ -5,6 +5,7 @@ This guide explains how to install a specific version of a package when the desi
 ## The Problem
 
 Sometimes you need a specific version of a package that isn't in your current nixpkgs:
+
 - Latest version has breaking changes
 - Need to match a specific environment
 - Bug in newer version, need older stable version
@@ -23,16 +24,19 @@ Multiple tools are available for searching package versions across nixpkgs histo
 #### Web-based Search Tools
 
 **[Nix Package Versions](https://lazamar.co.uk/nix-versions/)** (lazamar)
+
 - Simple, fast interface
 - Shows package version history with commit hashes
 - Great for quick lookups
 
 **[Nix Package History](https://history.nix-packages.com/search)** (history.nix-packages.com)
+
 - Comprehensive package version database
 - Advanced filtering options
 - Shows availability across channels
 
 **[NixHub](https://www.nixhub.io)** (nixhub.io)
+
 - Modern UI with detailed package information
 - Version comparison features
 - Links to source and documentation
@@ -42,12 +46,13 @@ Multiple tools are available for searching package versions across nixpkgs histo
 **[nix_version_search_cli](https://github.com/jeff-hykin/nix_version_search_cli)**
 
 Run in isolated environment (no installation required):
+
 ```bash
 # Run in temporary nix shell
 nix shell https://github.com/jeff-hykin/nix_version_search_cli/archive/50a3fef5c9826d1e08b360b7255808e53165e9b2.tar.gz
 
 # Search for package version
-nix-version-search cowsay 3.8.3
+nvs cowsay 3.8.3
 
 # Output includes commit hash and date
 ```
@@ -57,6 +62,7 @@ nix-version-search cowsay 3.8.3
 #### Manual Search (GitHub)
 
 Search nixpkgs commit history directly:
+
 ```bash
 # Clone nixpkgs (if you haven't already)
 git clone https://github.com/NixOS/nixpkgs.git
@@ -70,6 +76,7 @@ git show COMMIT_HASH:pkgs/tools/misc/cowsay/default.nix
 ```
 
 **Using any tool above:**
+
 1. Search for your package (e.g., "cowsay")
 2. Find the row/entry with your desired version (e.g., "3.8.3")
 3. Copy the commit hash (e.g., `abc123def456...`)
@@ -161,6 +168,7 @@ In your home configuration or system configuration:
 Here's a full working example for pinning cowsay 3.8.3:
 
 ### flake.nix
+
 ```nix
 {
   inputs = {
@@ -196,6 +204,7 @@ Here's a full working example for pinning cowsay 3.8.3:
 ```
 
 ### home/user/hostname/default.nix
+
 ```nix
 {
   pkgs,
@@ -223,6 +232,7 @@ nix-store -q --references $(which cowsay) | grep nixpkgs
 ## Best Practices
 
 1. **Document why you're pinning**
+
    ```nix
    # Pin cowsay 3.8.3 because version 3.8.4 has a bug with unicode characters
    # See: https://github.com/...
@@ -272,6 +282,7 @@ If you just need to override version/source, use overrides:
 ```
 
 **When to use:**
+
 - Simple version/source changes
 - Don't need to rebuild dependencies
 - Want to keep same nixpkgs version for everything else
@@ -302,6 +313,7 @@ in {
 ```
 
 **When to use:**
+
 - Package not in nixpkgs
 - Need significant customization
 - Learning/understanding Nix packaging
@@ -309,19 +321,25 @@ in {
 ## Troubleshooting
 
 ### Hash Mismatch
+
 ```
 error: hash mismatch in fixed-output derivation
 ```
+
 **Solution:** Update the sha256 hash or remove it to let Nix compute it.
 
 ### Package Doesn't Exist in That Revision
+
 ```
 error: attribute 'cowsay' missing
 ```
+
 **Solution:** The package didn't exist or had a different name in that revision. Try a different commit.
 
 ### Build Failures
+
 **Solution:** Older packages may not build with newer dependencies. Consider:
+
 - Using a closer revision
 - Overriding dependencies
 - Using binary cache if available
@@ -329,12 +347,14 @@ error: attribute 'cowsay' missing
 ## Resources
 
 ### Version Search Tools
+
 - [Nix Package Versions](https://lazamar.co.uk/nix-versions/) - Fast, simple version search
 - [Nix Package History](https://history.nix-packages.com/search) - Comprehensive package database
 - [NixHub](https://www.nixhub.io) - Modern UI with detailed info
 - [nix_version_search_cli](https://github.com/jeff-hykin/nix_version_search_cli) - CLI search tool
 
 ### Documentation
+
 - [nixpkgs GitHub](https://github.com/NixOS/nixpkgs) - Browse source and commits
 - [Nix Pills](https://nixos.org/guides/nix-pills/) - Deep dive into Nix
 - [nix.dev](https://nix.dev/) - Official Nix documentation
