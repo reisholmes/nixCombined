@@ -1,39 +1,37 @@
 #!/bin/sh
-# Extract nix package names from PATH
-# This script parses PATH to find nix store entries and extracts package names
+# Extract nix package names from PATH for oh-my-posh prompt display
+# Parses /nix/store paths to show up to 3 unique package names
 
-# Split PATH by : and extract nix packages
-IFS=:
+IFS=:  # Split PATH on colons
 packages=""
 count=0
 
 for path_entry in $PATH; do
-    # Only process /nix/store/ paths that aren't profile paths
     case "$path_entry" in
         /nix/store/*)
+            # Skip system profiles and terminal emulators to avoid false positives
             case "$path_entry" in
-                */profiles/*) continue ;;
+                */profiles/*) continue ;;  # Skip nix profile paths
+                *ghostty*) continue ;;     # Skip ghostty terminal paths
             esac
 
-            # Extract package name from path
-            # Format: /nix/store/hash-name-version/bin -> name
-            pkg_full="${path_entry#/nix/store/}"
-            pkg_full="${pkg_full#*-}"  # Remove hash
-            pkg_full="${pkg_full%%/*}" # Remove /bin or other suffix
+            # Parse /nix/store/hash-name-version/bin -> name
+            pkg_full="${path_entry#/nix/store/}"  # Remove /nix/store/ prefix
+            pkg_full="${pkg_full#*-}"              # Remove hash prefix
+            pkg_full="${pkg_full%%/*}"             # Remove /bin suffix
 
-            # Remove -man, -doc, -dev suffixes
+            # Strip documentation/development suffixes
             case "$pkg_full" in
                 *-man) pkg_full="${pkg_full%-man}" ;;
                 *-doc) pkg_full="${pkg_full%-doc}" ;;
                 *-dev) pkg_full="${pkg_full%-dev}" ;;
             esac
 
-            # Extract just name without version (remove -X.Y.Z pattern)
+            # Remove version numbers (e.g., -1.2.3)
             pkg_name="$pkg_full"
-            # Try to remove version pattern: -number.anything
             case "$pkg_name" in
                 *-[0-9]*)
-                    # Keep removing from the last dash if it starts with a number
+                    # Strip version suffixes iteratively
                     temp="${pkg_name%-[0-9]*}"
                     while [ "$temp" != "$pkg_name" ]; do
                         pkg_name="$temp"
@@ -42,12 +40,12 @@ for path_entry in $PATH; do
                     ;;
             esac
 
-            # Check if already added (simple substring check)
+            # Skip duplicates
             case ",$packages," in
                 *,"$pkg_name",*) continue ;;
             esac
 
-            # Add to list
+            # Append to comma-separated list
             if [ -z "$packages" ]; then
                 packages="$pkg_name"
             else
@@ -56,7 +54,7 @@ for path_entry in $PATH; do
 
             count=$((count + 1))
 
-            # Limit to 3 packages
+            # Cap at 3 packages for readability
             if [ "$count" -ge 3 ]; then
                 packages="$packages,..."
                 break
@@ -65,15 +63,14 @@ for path_entry in $PATH; do
     esac
 done
 
-# Output result only if we have packages or are in a nix-shell
+# Output packages found in PATH, or fall back to nix-shell variables
 if [ -n "$packages" ]; then
     echo "$packages"
 elif [ -n "$pname" ]; then
-    echo "$pname"
+    echo "$pname"  # nix-shell package name variable
 elif [ -n "$name" ]; then
-    echo "$name"
+    echo "$name"   # nix-shell name variable
 elif [ -n "$IN_NIX_SHELL" ]; then
-    # We're in a nix-shell but couldn't determine packages
-    echo "shell"
+    echo "shell"   # Generic nix-shell indicator
 fi
-# Otherwise output nothing (not in a nix environment)
+# Output nothing if not in a nix environment
