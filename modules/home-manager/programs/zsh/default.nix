@@ -9,7 +9,7 @@
 
     autosuggestion.enable = true;
     defaultKeymap = "viins";
-    enableCompletion = false;
+    enableCompletion = true;
 
     # Useful shell options for better navigation and UX
     setOptions = [
