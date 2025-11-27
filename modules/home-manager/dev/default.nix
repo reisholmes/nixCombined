@@ -13,6 +13,7 @@
   home.packages = with pkgs;
     [
       # Packages that don't require configuring
+      devenv
       go
       grepcidr
       powershell

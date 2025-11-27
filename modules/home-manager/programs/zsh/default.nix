@@ -31,7 +31,7 @@
         # Unset zoxide's cd alias if it was set
         unalias cd 2>/dev/null || true
         # Define standard cd behavior
-        builtin cd() {
+        cd() {
           builtin cd "$@"
         }
       fi
