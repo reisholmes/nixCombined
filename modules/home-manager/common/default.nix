@@ -35,15 +35,6 @@
           });
         };
       };
-      # Test tealdeer 1.7.2 to see if SSL works
-      tealdeer =
-        if super.stdenv.isDarwin
-        then
-          (import (builtins.fetchTarball {
-            url = "https://github.com/NixOS/nixpkgs/archive/e6f23dc08d3624daab7094b701aa3954923c6bbb.tar.gz";
-            sha256 = "0m0xmk8sjb5gv2pq7s8w7qxf7qggqsd3rxzv3xrqkhfimy2x7bnx";
-          }) {system = super.stdenv.system;}).tealdeer
-        else super.tealdeer;
     })
   ];
   # Packages that require configuration get placed in relevant place
@@ -94,6 +85,12 @@
         source = ../assets/oh-my-posh/nix-packages.sh;
         target = ".config/oh-my-posh/nix-packages.sh";
         executable = true;
+      };
+      # tealdeer config, used to stop ssl errors on macOS in 1.8.1
+      # https://github.com/tealdeer-rs/tealdeer/issues/452
+      tealdeerScript = {
+        source = ../assets/tealdeer/config.toml;
+        target = "Library/Application\ Support/tealdeer/config.toml";
       };
     };
 

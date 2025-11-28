@@ -17,6 +17,7 @@ font-style-bold-italic = "Bold Italic"
 
 keybind = ctrl+shift+enter=new_window
 keybind = ctrl+shift+t=new_split:down
+keybind = ctrl+shift+y=new_split:right
 
 right-click-action = copy-or-paste
 
