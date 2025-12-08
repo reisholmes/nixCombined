@@ -15,6 +15,7 @@ Run the main setup script to install and configure most packages automatically:
 ```
 
 This script will:
+
 - Install yay and gaming packages
 - Configure shell (zsh)
 - Install and configure CoolerControl with fan control kernel parameters
@@ -27,16 +28,17 @@ This script will:
 
 ### Temperature Sensors DKMS Module
 
-After running the bootstrap script (or after each major CachyOS update), install/update the temperature sensors module:
+After running the bootstrap script (or after each major CachyOS update), install/update the temperature sensors module. At the time of writing this is in a branch but should be merged soon:
 
 ```bash
-./scripts/asus-ec-sensors.sh
+git clone -b h2ram-mmio https://github.com/frankcrawford/it87.git
+cd ./it87
+sudo ./dkms-install.sh
+echo "options it87 mmio=on" | sudo tee /etc/modprobe.d/it87.conf
+echo "it87" | sudo tee /etc/modules-load.d/it87.conf
+sudo update-initramfs -u -k all
+sudo reboot
 ```
-
-This script will:
-- Clone the asus-ec-sensors repository if not present
-- Build and install the DKMS module
-- Run sensors auto-detection
 
 ## Git Configuration
 
@@ -69,6 +71,7 @@ The following SSH keys must be manually maintained:
 #### Initial Setup Steps
 
 1. **Import Signing Key from Proton Pass**:
+
    ```bash
    # Copy private key from Proton Pass
    cat > ~/.ssh/private-signing-key-github
@@ -84,10 +87,12 @@ The following SSH keys must be manually maintained:
    ```
 
 2. **Add Signing Key to GitHub**:
+
    ```bash
    # Display public key
    cat ~/.ssh/private-signing-key-github.pub
    ```
+
    - Go to GitHub Settings → SSH and GPG keys
    - Click "New SSH key"
    - Title: "reis-new Commit Signing Key"
@@ -95,6 +100,7 @@ The following SSH keys must be manually maintained:
    - Paste the public key
 
 3. **Verify SSH Config** (`~/.ssh/config`):
+
    ```
    Host github.com
      HostName github.com
@@ -104,6 +110,7 @@ The following SSH keys must be manually maintained:
    ```
 
 4. **Test Configuration**:
+
    ```bash
    # Test SSH connection
    ssh -T git@github.com
@@ -143,17 +150,20 @@ git config --list --show-origin | grep -E "(user\.|gpg\.|commit\.)"
 #### Signing Not Working
 
 1. **Check signing key exists**:
+
    ```bash
    ls -la ~/.ssh/private-signing-key-github*
    ```
 
 2. **Verify allowed_signers file**:
+
    ```bash
    cat ~/.ssh/allowed_signers
    # Should contain: 4367558+reisholmes@users.noreply.github.com ssh-ed25519 ...
    ```
 
 3. **Test signing**:
+
    ```bash
    cd ~/Documents/code/personal_repos/*
    git commit --allow-empty -m "test"
@@ -321,12 +331,14 @@ System backups are performed using Snapper with BTRFS-Assistant providing a GUI 
 #### Quick Restore Reference
 
 **Using BTRFS-Assistant (GUI)**:
+
 1. Open BTRFS-Assistant
 2. Navigate to the Snapper tab
 3. Select the snapshot to restore
 4. Click "Restore" and choose restore method (in-place or create new snapshot)
 
 **Using Snapper (CLI)**:
+
 ```bash
 # List snapshots
 snapper list
@@ -342,6 +354,7 @@ snapper rollback <snapshot-number>
 ```
 
 **Boot from Snapshot** (for critical failures):
+
 1. Reboot system
 2. At GRUB menu, select "CachyOS snapshots"
 3. Choose desired snapshot to boot from

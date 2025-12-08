@@ -34,7 +34,7 @@ Automated setup script for reis-new CachyOS host.
 This script installs and configures:
   - Gaming packages (cachyos-gaming-meta, cachyos-gaming-applications)
   - Shell (zsh)
-  - CoolerControl with fan control kernel parameters
+  - CoolerControl
   - Audio tools (EasyEffects, LSP plugins, Calf) with preset restoration
   - Printing support (CUPS, system-config-printer)
   - OpenRGB with profile restoration
@@ -141,17 +141,6 @@ if [ -f "$ASSETS_DIR/coolercontrol/coolercontrol-backup.tgz" ]; then
     fi
 else
     echo_warn "CoolerControl backup not found, skipping restore"
-fi
-
-# Configure fan control kernel parameter
-echo_step "Configuring fan control kernel parameter..."
-if ! grep -q "acpi_enforce_resources=lax" /etc/default/limine 2>/dev/null; then
-    echo "acpi_enforce_resources=lax" | sudo tee -a /etc/default/limine
-    echo_info "Running limine-update..."
-    sudo limine-update
-    echo_warn "Reboot required for fan control to work"
-else
-    echo_info "Fan control kernel parameter already configured"
 fi
 
 # Install password manager
