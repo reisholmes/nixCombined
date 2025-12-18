@@ -1,0 +1,69 @@
+version: 5
+daemon:
+  log_level: info
+  admin_group: wheel
+  disable_clocks_cleanup: false
+apply_settings_timer: 5
+gpus:
+  10DE:2216-1462:3896-0000:01:00.0:
+    fan_control_enabled: false
+profiles:
+  overclock1:
+    gpus:
+      10DE:2216-1462:3896-0000:01:00.0:
+        fan_control_enabled: false
+        power_cap: 260.0
+        gpu_clock_offsets:
+          0: 250
+  undervolt 1755 @ 750mv:
+    gpus:
+      10DE:2216-1462:3896-0000:01:00.0:
+        fan_control_enabled: false
+        min_core_clock: 210
+        max_core_clock: 1755
+        gpu_clock_offsets:
+          0: 320
+        mem_clock_offsets:
+          0: 500
+  undervolt 1800 @ 793mv:
+    gpus:
+      10DE:2216-1462:3896-0000:01:00.0:
+        fan_control_enabled: false
+        min_core_clock: 210
+        max_core_clock: 1800
+        gpu_clock_offsets:
+          0: 265
+        mem_clock_offsets:
+          0: 400
+  undervolt 1815 @ 825mv:
+    gpus:
+      10DE:2216-1462:3896-0000:01:00.0:
+        fan_control_enabled: false
+        min_core_clock: 210
+        max_core_clock: 1820
+        gpu_clock_offsets:
+          0: 200
+        mem_clock_offsets:
+          0: 400
+  undervolt 1830 @ 818mv:
+    gpus:
+      10DE:2216-1462:3896-0000:01:00.0:
+        fan_control_enabled: false
+        min_core_clock: 210
+        max_core_clock: 1830
+        gpu_clock_offsets:
+          0: 230
+        mem_clock_offsets:
+          0: 400
+  undervolt 1845 @ 850mv:
+    gpus:
+      10DE:2216-1462:3896-0000:01:00.0:
+        fan_control_enabled: false
+        min_core_clock: 210
+        max_core_clock: 1845
+        gpu_clock_offsets:
+          0: 155
+        mem_clock_offsets:
+          0: 800
+current_profile: undervolt 1830 @ 818mv
+auto_switch_profiles: false

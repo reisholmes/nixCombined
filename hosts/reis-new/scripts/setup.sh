@@ -35,6 +35,7 @@ This script installs and configures:
   - Gaming packages (cachyos-gaming-meta, cachyos-gaming-applications)
   - Shell (zsh)
   - CoolerControl
+  - Lact
   - Audio tools (EasyEffects, LSP plugins, Calf) with preset restoration
   - Printing support (CUPS, system-config-printer)
   - OpenRGB with profile restoration
@@ -143,6 +144,27 @@ else
     echo_warn "CoolerControl backup not found, skipping restore"
 fi
 
+# Install lact
+echo_step "Installing lact..."
+yay -S --needed --noconfirm lact
+
+# Restore lact configuration if available
+if [ -f "$ASSETS_DIR/lact/config.yaml" ]; then
+    echo_info "Restoring lact configuration..."
+    if [ ! -d /etc/lact/ ]; then
+        echo_error "Failed to find /etc/lact directory to restore configuration"
+        exit 1
+    fi
+    if cp "$ASSETS_DIR/lact/config.yaml" /etc/lact/config.yaml; then
+        echo_info "lact configuration restored to /etc/lact/config.yaml"
+    else
+        echo_error "Failed to restore lact configuration"
+        exit 1
+    fi
+else
+    echo_warn "lact backup not found, skipping restore"
+fi
+
 # Install password manager
 echo_step "Installing Proton Pass..."
 yay -S --needed --noconfirm proton-pass-bin
@@ -162,19 +184,13 @@ yay -S --needed --noconfirm lsp-plugins-lv2 --answerclean None --answerdiff None
 echo_info "Installing Calf (no-gui version)..."
 yay -S --needed --noconfirm calf --answerclean None --answerdiff None
 
-# Restore EasyEffects presets
-if [ -d "$ASSETS_DIR/easyeffects/outputs" ]; then
+# Restore EasyEffects
+if [ -d "$ASSETS_DIR/easyeffects/" ]; then
     echo_info "Restoring EasyEffects presets..."
-    if [ ! -d ~/.local/share/easyeffects/output ]; then
-        mkdir -p ~/.local/share/easyeffects/output || {
-            echo_error "Failed to create EasyEffects preset directory"
-            exit 1
-        }
-    fi
-    if cp -v "$ASSETS_DIR/easyeffects/outputs/"*.json ~/.local/share/easyeffects/output/; then
-        echo_info "EasyEffects presets restored to ~/.local/share/easyeffects/output/"
+    if cp -r -v "$ASSETS_DIR/easyeffects/" ~/.local/share/easyeffects/; then
+        echo_info "EasyEffects restored to ~/.local/share/easyeffects/"
     else
-        echo_error "Failed to restore EasyEffects presets"
+        echo_error "Failed to restore EasyEffects"
         exit 1
     fi
 else
@@ -216,15 +232,18 @@ fi
 
 # Setup gaming drive mount
 echo_step "Setting up gaming drive mount..."
-if ! grep -q "8E3E36AB3E368C69" /etc/fstab 2>/dev/null; then
+if ! grep -q "6ce52a72-75af-4708-92d5-2e56754e1b1b" /etc/fstab 2>/dev/null; then
     if [ ! -d "/mnt/games" ]; then
         sudo mkdir -p /mnt/games
     fi
 
-    yay -S --needed --noconfirm ntfs-3g
+    echo "UUID=6ce52a72-75af-4708-92d5-2e56754e1b1b /mnt/games     btrfs   defaults,noatime,compress=zstd,commit=120 0 0" | sudo tee -a /etc/fstab
 
-    echo "UUID=8E3E36AB3E368C69 /mnt/games ntfs-3g   uid=$(id -u),gid=$(id -g)    0       0" | sudo tee -a /etc/fstab
-
+    if [[ "$(stat -c "%U %G" /mnt/games)" != "reis reis" ]]; then
+      sudo chown -R reis:reis /mnt/games
+      sudo chmod 755 /mnt/games
+    fi
+    
     echo_info "Mounting gaming drive..."
     sudo mount -a
 
