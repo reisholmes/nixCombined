@@ -1,11 +1,113 @@
-# rh-sb3 Configuration
+# rh-sb3 (Linux)
 
-Personal Linux machine configuration.
+Personal Microsoft Surface Book 2 - Linux development machine.
 
-## System Information
+## Machine Info
 
+- **Hostname**: rh-sb3
+- **Platform**: Linux Mint (standalone home-manager)
 - **User**: reis
-- **Configuration**: home-manager (standalone)
+- **Architecture**: x86_64-linux
+- **Hardware**: Microsoft Surface Book 2
+- **Graphics**: Intel iGPU (tablet) + NVIDIA dGPU (keyboard base, Optimus)
+
+## Hardware Configuration
+
+### Microsoft Surface Book 2
+
+This is a Surface Book 2 with detachable screen and hybrid graphics.
+
+**Key Features**:
+- Detachable screen (tablet/laptop modes)
+- NVIDIA GPU in keyboard base (performance mode)
+- Intel GPU in tablet portion (battery efficiency)
+- Hybrid graphics via NVIDIA Optimus
+
+**Graphics Setup**:
+- **Intel iGPU**: Always available, used in tablet mode and for power efficiency
+- **NVIDIA dGPU**: Only available when keyboard base is attached, used for performance
+- **NixGL Configuration**: Uses `nvidiaPrime` profile for hybrid graphics
+
+### NixGL Configuration
+
+Since this is a non-NixOS Linux system, NixGL is used for proper graphics acceleration:
+
+```nix
+nixgl = {
+  enable = true;
+  profile = "nvidiaPrime";  # Hybrid Intel + NVIDIA
+};
+```
+
+**How it works**:
+- GUI applications are automatically wrapped with NixGL
+- Intel GPU is used by default (mesa)
+- NVIDIA GPU available via prime offload when keyboard base attached
+- No manual wrapper needed for most applications
+
+**Testing Graphics**:
+```bash
+# Check which GPU is being used
+glxinfo | grep "OpenGL renderer"
+
+# List available GPUs
+lspci | grep -E "VGA|3D"
+
+# Force NVIDIA GPU for specific application (only works with keyboard base attached)
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia application-name
+```
+
+**Surface Book 2 Notes**:
+- NVIDIA GPU only functional when keyboard base is attached
+- Detaching screen switches to Intel GPU only
+- Battery life significantly better in tablet mode (Intel GPU only)
+
+## Setup
+
+### Initial Bootstrap
+
+```bash
+# Install Nix (if not already installed)
+sh <(curl -L https://nixos.org/nix/install) --daemon
+
+# Enable flakes
+echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
+
+# Restart nix-daemon
+sudo systemctl restart nix-daemon
+
+# Clone this repository
+cd ~/Documents/code/personal_repos
+git clone git@github.com:reisholmes/nixCombined.git
+cd nixCombined
+
+# Bootstrap home-manager
+make bootstrap-home
+
+# Or manually:
+nix-shell -p home-manager
+home-manager switch --flake .#reis@rh-sb3 --impure -b backup
+```
+
+### Rebuilding
+
+```bash
+# Using Makefile (recommended)
+make home
+
+# Or using alias (defined in home-manager config)
+nix_rebuild
+
+# Or manually:
+home-manager switch --flake .#reis@rh-sb3 --impure -b backup
+```
+
+## System Notes
+
+- **Display Manager**: Linux Mint default (not managed by home-manager)
+- **Shell**: zsh (configured via home-manager)
+- **Package Manager**: Home-manager for user packages, apt for system packages
+- **Graphics**: NixGL handles OpenGL/Vulkan for nix-installed GUI applications
 
 ## Git Configuration
 

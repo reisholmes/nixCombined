@@ -17,8 +17,14 @@ font-style-bold-italic = "Bold Italic"
 
 keybind = ctrl+shift+enter=new_window
 keybind = ctrl+shift+t=new_split:down
+keybind = ctrl+shift+y=new_split:right
+keybind = ctrl+shift+x=increase_font_size:1
+keybind = ctrl+shift+z=decrease_font_size:1
+keybind = ctrl+shift+-=reset_font_size
+
+right-click-action = copy-or-paste
+
+theme = Catppuccin Mocha
 
 window-height = 44
 window-width = 160
-
-theme = Catppuccin Mocha

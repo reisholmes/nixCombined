@@ -1,65 +1,27 @@
 {
-  pkgs,
   outputs,
   userConfig,
   inputs,
   self,
+  darwinModules,
   ...
 }: {
-  # Homebrew
-  homebrew = import ./homebrew.nix // {enable = true;};
+  # Import darwin modules for common configurations
+  imports = [
+    "${darwinModules}/common"
+    "${darwinModules}/programs/homebrew.nix"
+  ];
 
-  # Nixpkgs configuration
-  nixpkgs = {
-    config = {
-      allowUnfree = true;
-      allowUnfreePredicate = _: true;
-    };
-    hostPlatform = "aarch64-darwin";
-    overlays = [
-      outputs.overlays.stable-packages
-    ];
-  };
-
-  # Nix settings
-  nix = {
-    gc = {
-      automatic = true;
-      interval = [
-        {
-          Hour = 3;
-          Minute = 15;
-          Weekday = 7;
-        }
-      ];
-      options = "--delete-older-than 21d";
-    };
-    optimise.automatic = true;
-    package = pkgs.nix;
-    settings = {
-      experimental-features = "nix-command flakes";
-    };
-  };
+  # Host-specific nixpkgs configuration
+  nixpkgs.hostPlatform = "aarch64-darwin";
 
   # User configuration
   users.users.${userConfig.name} = {
     home = "/Users/${userConfig.name}";
   };
 
-  # Add ability to use TouchID for sudo
-  security.pam.services.sudo_local.touchIdAuth = true;
-
   # Define the primary user
   system.primaryUser = "reis.holmes";
-
-  # Fonts - Install fonts at system level on darwin
-  # These fonts are installed to /Library/Fonts/Nix Fonts
-  fonts.packages = with pkgs; [
-    ibm-plex
-    nerd-fonts.hack
-    nerd-fonts.jetbrains-mono
-    noto-fonts-color-emoji
-  ];
 
   # Note: Stylix darwin system-level module has compatibility issues (stylix.icons error)
   # Stylix configuration is handled at the home-manager level instead

@@ -1,3 +1,22 @@
+# Common Home Manager Configuration
+#
+# This module provides base configuration imported by all systems including:
+# - Core CLI tools (git, fzf, zsh, ripgrep, bat, etc.)
+# - NixGL support for non-NixOS graphics acceleration
+# - Stylix theming framework integration
+# - Common program configurations (kitty, ghostty, lazygit, etc.)
+#
+# Usage:
+#   Import in host configs with: "${nhModules}/common"
+#
+# Platform Support:
+#   - Linux (NixOS and non-NixOS with home-manager standalone)
+#   - macOS (nix-darwin with home-manager module)
+#
+# Dependencies:
+#   - Requires nhModules path injected via extraSpecialArgs
+#   - Requires userConfig for user-specific settings (name, email, etc.)
+#   - Platform detection via pkgs.stdenv.isDarwin
 {
   lib,
   pkgs,
@@ -20,16 +39,25 @@
   ];
   # Packages that require configuration get placed in relevant place
   imports = [
+    # Common modules
+    ./nixgl-profiles.nix
+    ./nixgl-wrapper.nix
     ./nixpkgs-config.nix
     ./stylix-common.nix
-    ./nixgl-wrapper.nix
+    ./stylix-host.nix
+
+    # Custom utility scripts
+    ../scripts
+
+    # Program configurations
     ../programs/atuin
     ../programs/fastfetch
     ../programs/fzf
+    ../programs/ghostty
+    ../programs/git
     ../programs/kitty
     ../programs/lazygit
     ../programs/lf
-    ../programs/ghostty
     ../programs/nix-search-tv
     ../programs/zoxide
     ../programs/zsh
@@ -52,12 +80,30 @@
         source = ../assets/oh-my-posh/catppuccin.omp.json;
         target = "catppuccin.omp.json";
       };
+      # oh-my-posh - nix packages parser script
+      nixPackagesScript = {
+        source = ../assets/oh-my-posh/nix-packages.sh;
+        target = ".config/oh-my-posh/nix-packages.sh";
+        executable = true;
+      };
+      # tealdeer config, used to stop ssl errors on macOS in 1.8.1
+      # https://github.com/tealdeer-rs/tealdeer/issues/452
+      tealdeerScript = {
+        source = ../assets/tealdeer/config.toml;
+        target = "Library/Application\ Support/tealdeer/config.toml";
+      };
     };
 
     # declare our editor
-    sessionVariables = {
-      EDITOR = "nvim";
-    };
+    sessionVariables =
+      {
+        EDITOR = "nvim";
+      }
+      // lib.optionalAttrs pkgs.stdenv.isDarwin {
+        # Fix SSL certificates for Nix packages on macOS
+        NIX_SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+        SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+      };
   };
 
   # Ensure common packages are installed
@@ -82,7 +128,7 @@
       pipenv
       python3
       ripgrep
-      tldr
+      tealdeer
       tree
       wget
       yq

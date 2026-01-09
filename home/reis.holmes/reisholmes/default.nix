@@ -1,20 +1,11 @@
 {
-  config,
-  pkgs,
   nhModules,
   inputs,
   userConfig,
   ...
-}:
-let
+}: let
   # Personal email for personal repos
   personalEmail = "4367558+reisholmes@users.noreply.github.com";
-
-  # Generate allowed_signers file for SSH commit verification (both personal and work keys)
-  allowedSignersFile = pkgs.writeText "git-allowed-signers" ''
-    ${personalEmail} ${userConfig.signingKeyPub}
-    ${userConfig.workEmail} ${userConfig.workSigningKeyPub}
-  '';
 
   # Shared git configuration for personal repositories
   personalGitConfig = {
@@ -25,10 +16,6 @@ let
     gpg.format = "ssh";
     user.signingkey = "~/.ssh/github_commit_signing_personal.pub";
     commit.gpgsign = true;
-    gpg.ssh = {
-      program = "/usr/bin/ssh-keygen";
-      allowedSignersFile = "~/.ssh/allowed_signers";
-    };
     url."git@github-personal:".insteadOf = [
       "git@github.com:"
       "https://github.com/"
@@ -52,10 +39,21 @@ in {
     nix_rebuild = "sudo darwin-rebuild switch --flake ~/Documents/code/personal_repos/nixCombined#reisholmes && nvd diff $(/bin/ls -d1v /nix/var/nix/profiles/system-*-link | tail -2 | head -1) $(/bin/ls -d1v /nix/var/nix/profiles/system-*-link | tail -1)";
   };
 
-  # Create allowed_signers file for git SSH signing
-  home.file.".ssh/allowed_signers" = {
-    source = allowedSignersFile;
-    force = true;
+  # SSH signing configuration for git (both personal and work keys)
+  programs.git.sshSigning = {
+    enable = true;
+    allowedSigners = [
+      {
+        email = personalEmail;
+        key = userConfig.signingKeyPub;
+      }
+      {
+        email = userConfig.workEmail;
+        key = userConfig.workSigningKeyPub;
+      }
+    ];
+    sshKeygenProgram = "/usr/bin/ssh-keygen"; # Use system ssh-keygen on macOS
+    forceFileUpdate = true; # Force update on Darwin
   };
 
   # Git configuration
@@ -63,13 +61,6 @@ in {
     # Git settings (new format)
     settings = {
       # No default email - work email stays out of nix, personal email set in conditional includes
-
-      # SSH signing configuration
-      gpg.format = "ssh";
-      gpg.ssh = {
-        allowedSignersFile = "~/.ssh/allowed_signers";
-        program = "/usr/bin/ssh-keygen"; # Use system ssh-keygen on macOS
-      };
     };
 
     # Conditional includes for work/personal repositories
@@ -117,8 +108,8 @@ in {
   # Note: stylix.darwinModules has compatibility issues, so we use home-manager module instead
   stylix = {
     enable = true;
-    image = ../../modules/home-manager/assets/stylix/wallpaper_wave_mac.jpg;
 
+    # No wallpaper set - company-managed on work machine
     # base16Scheme and fonts inherited from stylix-common.nix
 
     # Disable theming for apps that have manual configuration or that cause overlay conflicts

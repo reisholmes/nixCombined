@@ -7,3 +7,11 @@ result-*
 
 # PR review files
 PR-REVIEW-*.md
+
+# Local reference documents (not committed)
+RECOMMENDATIONS.md
+TODO.md
+
+# Pre-commit config (managed by nix)
+.pre-commit-config.yaml
+.pre-commit-config.yaml.backup

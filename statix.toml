@@ -1,0 +1,13 @@
+# Statix configuration
+# Disable specific lints that are style-only warnings
+
+# Disabled diagnostic codes:
+# - manual_inherit_from (W04): Suggests using inherit instead of assignments
+# - repeated_keys (W20): Suggests consolidating repeated attribute keys
+disabled = ["manual_inherit_from", "repeated_keys"]
+
+# Nix version for compatibility checks
+nix_version = '2.4'
+
+# File patterns to ignore
+ignore = ['.direnv']
