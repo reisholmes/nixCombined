@@ -128,6 +128,7 @@
       pipenv
       python3
       ripgrep
+      tealdeer
       tree
       wget
       yq
@@ -135,7 +136,6 @@
     ++ lib.optionals stdenv.isDarwin [
       claude-code
       mas
-      tealdeer
     ]
     ++ lib.optionals (!stdenv.isDarwin) [
       # Fonts for stylix to apply on Linux
@@ -163,7 +163,6 @@
       magnetic-catppuccin-gtk
       protonvpn-gui
       rclone
-      tealdeer
       unzip
       vlc
       wl-clipboard
