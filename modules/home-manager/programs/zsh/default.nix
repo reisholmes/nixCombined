@@ -83,8 +83,9 @@
       fi
 
       # Only run fastfetch in login shells or first shell (check if it's a new terminal)
+      # Run in background subshell with small delay to allow terminal to initialize dimensions
       if [[ -o login ]] || [[ "$SHLVL" -eq 1 ]]; then
-        fastfetch
+        sleep 0.2 && fastfetch
       fi
 
     '';

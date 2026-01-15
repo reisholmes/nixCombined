@@ -60,7 +60,7 @@
   # NixGL configuration for standalone home-manager on Linux
   nixgl = {
     enable = true;
-    profile = "nvidia";
+    profile = "mesa";
   };
 
   # Stylix settings specific to this machine
