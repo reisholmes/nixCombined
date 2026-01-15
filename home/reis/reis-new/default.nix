@@ -19,6 +19,11 @@
   # Host-specific shell aliases
   programs.zsh.shellAliases = {
     nix_rebuild = "home-manager switch --flake .#reis@reis-new --impure -b backup && nvd diff $(home-manager generations | head -2 | tail -1 | awk '{print $7}') $(home-manager generations | head -1 | awk '{print $7}')";
+
+    # Monitor management aliases for KDE Plasma Wayland
+    monitor-disable-left = "kscreen-doctor output.DP-1.position.0,0 output.DP-2.disable";
+    monitor-enable-left = "kscreen-doctor output.DP-2.enable output.DP-2.position.0,0 output.DP-2.rotation.left output.DP-1.position.1440,786";
+    monitor-status = "kscreen-doctor -o";
   };
 
   # SSH signing configuration for git
