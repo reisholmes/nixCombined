@@ -3,7 +3,8 @@
   "logo": {
     "padding": {
       "top": 2
-    }
+    },
+    "type": "small"
   },
   "modules": [
     "title",

@@ -1,0 +1,6 @@
+{
+    "device": "alsa_output.usb-Topping_E70-00.HiFi__Headphones__sink",
+    "device-description": "E70 Headphones",
+    "device-profile": "HiFi: Headphones: sink",
+    "preset-name": "Speakers"
+}
