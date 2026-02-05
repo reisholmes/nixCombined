@@ -36,8 +36,14 @@
       ## nix
       alejandra
       nixd
+      ## go
+      gopls
 
-      # nix linting
+      #linting
+      ## go
+      golangci-lint
+      golangci-lint-langserver
+      ## nix
       deadnix
       statix
 
