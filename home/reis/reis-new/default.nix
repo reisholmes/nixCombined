@@ -26,6 +26,34 @@
     monitor-status = "kscreen-doctor -o";
   };
 
+  # SSH settings per host
+  programs.ssh = {
+    enable = true;
+    enableDefaultConfig = false;
+
+    matchBlocks = {
+      # Only personal Github
+      "github.com" = {
+        hostname = "github.com";
+        identityFile = "~/.ssh/github_reish";
+        extraOptions = {
+          PreferredAuthentications = "publickey";
+          UpdateHostKeys = "yes";
+        };
+      };
+
+      # Wildcard
+      "*" = {
+        extraOptions = {
+          AddKeysToAgent = "yes";
+          IdentitiesOnly = "yes";
+          SetEnv = "TERM=xterm-256color";
+          UseRoaming = "no";
+        };
+      };
+    };
+  };
+
   # SSH signing configuration for git
   programs.git.sshSigning = {
     enable = true;

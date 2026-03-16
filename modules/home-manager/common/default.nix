@@ -59,7 +59,6 @@
     ../programs/lazygit
     ../programs/lf
     ../programs/nix-search-tv
-    ../programs/ssh
     ../programs/zoxide
     ../programs/zsh
   ];
