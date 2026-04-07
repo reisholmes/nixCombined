@@ -49,6 +49,8 @@ _: {
       "lazydocker"
       "node"
       "podman"
+      "tree-sitter"
+      "uv"
     ];
 
     # Casks (macOS native GUI applications)

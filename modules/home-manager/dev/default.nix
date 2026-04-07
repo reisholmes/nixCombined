@@ -2,7 +2,23 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  # nixpkgs has 0.25.10; nvim 0.12 requires >= 0.26.8
+  tree-sitter-bin = pkgs.stdenv.mkDerivation rec {
+    pname = "tree-sitter";
+    version = "0.26.8";
+    src = pkgs.fetchurl {
+      url = "https://github.com/tree-sitter/tree-sitter/releases/download/v${version}/tree-sitter-linux-x64.gz";
+      hash = "0vhkz8lvvn44ng77l6k59vii3is799xigpw24wap1fgh00la6m4p";
+    };
+    dontUnpack = true;
+    installPhase = ''
+      mkdir -p $out/bin
+      gunzip -c $src > $out/bin/tree-sitter
+      chmod +x $out/bin/tree-sitter
+    '';
+  };
+in {
   # Packages that require configuration get placed in relevant place
   # k9s is conditionally imported for darwin in its own module definition
   imports = [
@@ -57,6 +73,9 @@
       terraform-ls
       # also used in pre-commit
       tflint
+    ]
+    ++ lib.optionals (!stdenv.isDarwin) [
+      tree-sitter-bin # nvim 0.12 requires tree-sitter >= 0.26.8
     ]
     ++ lib.optionals stdenv.isDarwin [
       (azure-cli.withExtensions [azure-cli.extensions.aks-preview])
