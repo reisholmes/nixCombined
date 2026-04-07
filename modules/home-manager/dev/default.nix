@@ -9,7 +9,10 @@
     version = "0.26.8";
     src = pkgs.fetchurl {
       url = "https://github.com/tree-sitter/tree-sitter/releases/download/v${version}/tree-sitter-linux-x64.gz";
-      hash = "0vhkz8lvvn44ng77l6k59vii3is799xigpw24wap1fgh00la6m4p";
+      # To update: change version, then run:
+      #   nix-prefetch-url https://github.com/tree-sitter/tree-sitter/releases/download/v<VERSION>/tree-sitter-linux-x64.gz
+      # Prefix the output with "sha256:" below.
+      hash = "sha256:0vhkz8lvvn44ng77l6k59vii3is799xigpw24wap1fgh00la6m4p";
     };
     dontUnpack = true;
     installPhase = ''
