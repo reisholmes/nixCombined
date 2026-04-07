@@ -27,10 +27,7 @@
     # NixGL fixes graphics issues on non NixOS systems
     # https://nix-community.github.io/home-manager/index.xhtml#sec-usage-gpu-non-nixos
     nixgl = {
-      # url = "github:nix-community/nixGL";
-      # fixes a bug where correct nvidia version is not calculated
-      # can be set to default url when PR is merged
-      url = "github:nix-community/nixGL/pull/187/head";
+      url = "github:nix-community/nixGL";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

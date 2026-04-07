@@ -161,7 +161,7 @@
       flameshot
       libreoffice-fresh
       magnetic-catppuccin-gtk
-      protonvpn-gui
+      proton-vpn
       rclone
       unzip
       vlc

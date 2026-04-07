@@ -33,6 +33,9 @@
   programs.git = {
     enable = true;
 
+    # Explicit signing format (home-manager 25.05+ requires this)
+    signing.format = "ssh";
+
     # Git settings
     settings = {
       # Default user name from userConfig (can be overridden per-host)
