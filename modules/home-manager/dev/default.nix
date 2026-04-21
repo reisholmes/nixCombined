@@ -4,23 +4,36 @@
   ...
 }: let
   # nixpkgs has 0.25.10; nvim 0.12 requires >= 0.26.8
-  tree-sitter-bin = pkgs.stdenv.mkDerivation rec {
-    pname = "tree-sitter";
+  # To update hashes: change version, then run:
+  #   curl -sL <url> -o /tmp/ts.gz && nix-hash --type sha256 --flat /tmp/ts.gz | xargs nix-hash --type sha256 --to-base32
+  # Prefix the output with "sha256:" below.
+  tree-sitter-bin = let
     version = "0.26.8";
-    src = pkgs.fetchurl {
-      url = "https://github.com/tree-sitter/tree-sitter/releases/download/v${version}/tree-sitter-linux-x64.gz";
-      # To update: change version, then run:
-      #   nix-prefetch-url https://github.com/tree-sitter/tree-sitter/releases/download/v<VERSION>/tree-sitter-linux-x64.gz
-      # Prefix the output with "sha256:" below.
-      hash = "sha256:0vhkz8lvvn44ng77l6k59vii3is799xigpw24wap1fgh00la6m4p";
+    sources = {
+      "x86_64-linux" = {
+        url = "https://github.com/tree-sitter/tree-sitter/releases/download/v${version}/tree-sitter-linux-x64.gz";
+        hash = "sha256:0vhkz8lvvn44ng77l6k59vii3is799xigpw24wap1fgh00la6m4p";
+      };
+      "aarch64-darwin" = {
+        url = "https://github.com/tree-sitter/tree-sitter/releases/download/v${version}/tree-sitter-macos-arm64.gz";
+        hash = "sha256:17l8fnapvcy0g5n12vi3w2xwh8xgnk9f9ga15pb28dbj6kp2qkh2";
+      };
     };
-    dontUnpack = true;
-    installPhase = ''
-      mkdir -p $out/bin
-      gunzip -c $src > $out/bin/tree-sitter
-      chmod +x $out/bin/tree-sitter
-    '';
-  };
+    source = sources.${pkgs.stdenv.hostPlatform.system};
+  in
+    pkgs.stdenv.mkDerivation {
+      pname = "tree-sitter";
+      inherit version;
+      src = pkgs.fetchurl {
+        inherit (source) url hash;
+      };
+      dontUnpack = true;
+      installPhase = ''
+        mkdir -p $out/bin
+        gunzip -c $src > $out/bin/tree-sitter
+        chmod +x $out/bin/tree-sitter
+      '';
+    };
 in {
   # Packages that require configuration get placed in relevant place
   # k9s is conditionally imported for darwin in its own module definition
@@ -41,6 +54,8 @@ in {
 
       # NVIM specific requirements
       ######
+      #nvim_0.12 requires treesitter-cli binary
+      tree-sitter-bin
       # markdown conform requirement
       markdownlint-cli2
 
@@ -77,14 +92,12 @@ in {
       # also used in pre-commit
       tflint
     ]
-    ++ lib.optionals (!stdenv.isDarwin) [
-      tree-sitter-bin # nvim 0.12 requires tree-sitter >= 0.26.8
-    ]
     ++ lib.optionals stdenv.isDarwin [
       (azure-cli.withExtensions [azure-cli.extensions.aks-preview])
       github-copilot-cli
       fluxcd
       kubectl
+      python313Packages.pip
       stable.kubelogin
       terraform
 

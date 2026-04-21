@@ -49,7 +49,6 @@ _: {
       "lazydocker"
       "node"
       "podman"
-      "tree-sitter"
       "uv"
     ];
 
