@@ -51,6 +51,7 @@
 
     # Program configurations
     ../programs/atuin
+    ../programs/direnv
     ../programs/fastfetch
     ../programs/fzf
     ../programs/ghostty
