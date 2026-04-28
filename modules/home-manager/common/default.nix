@@ -23,11 +23,11 @@
   userConfig,
   ...
 }: {
-  # Override python313 globally to skip tests for proton-core
+  # Override python314 globally to skip tests for proton-core
   # See: https://github.com/ProtonVPN/python-proton-core/pull/10
   nixpkgs.overlays = [
     (_: super: {
-      python313 = super.python313.override {
+      python314 = super.python314.override {
         packageOverrides = _: pysuper: {
           proton-core = pysuper.proton-core.overridePythonAttrs (_: {
             doCheck = false;
@@ -126,7 +126,7 @@
       nvd
       oh-my-posh
       pipenv
-      python3
+      python314
       ripgrep
       tealdeer
       tree

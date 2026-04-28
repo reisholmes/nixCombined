@@ -14,8 +14,14 @@
         ui = {
           logoless = true;
           noIcons = false;
+          skin = "catppuccin-mocha";
         };
       };
     };
+  };
+
+  home.file = lib.mkIf pkgs.stdenv.isDarwin {
+    "Library/Application Support/k9s/views.yaml".source = ../../assets/k9s/views.yaml;
+    "Library/Application Support/k9s/skins/catppuccin-mocha.yaml".source = ../../assets/k9s/catppuccin-mocha.yaml;
   };
 }

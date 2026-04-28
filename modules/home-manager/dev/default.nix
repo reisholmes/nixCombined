@@ -97,7 +97,8 @@ in {
       github-copilot-cli
       fluxcd
       kubectl
-      python313Packages.pip
+      pipx
+      python314Packages.pip
       stable.kubelogin
       terraform
 
