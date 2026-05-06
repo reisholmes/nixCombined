@@ -26,5 +26,8 @@ right-click-action = copy-or-paste
 
 theme = Catppuccin Mocha
 
+custom-shader = ~/.config/ghostty/shaders/cursor_tail.glsl
+custom-shader-animation = always
+
 window-height = 44
 window-width = 160

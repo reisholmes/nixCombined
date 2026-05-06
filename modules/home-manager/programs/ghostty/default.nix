@@ -22,6 +22,10 @@
         source = ./config;
         target = "${config.home.homeDirectory}/.config/ghostty/config";
       };
+      ghosttyCursorTrailShader = {
+        source = ./shaders/cursor_tail.glsl;
+        target = "${config.home.homeDirectory}/.config/ghostty/shaders/cursor_tail.glsl";
+      };
     };
   };
 }
