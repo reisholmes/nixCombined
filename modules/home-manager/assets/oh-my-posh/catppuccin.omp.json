@@ -1,20 +1,20 @@
 {
   "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
   "palette": {
-    "blue": "#8aadf4",
+    "blue": "#89b4fa",
     "closer": "p:os",
-    "crust": "#181926",
-    "lavender": "#b7bdf8",
-    "mantle": "#1e2030",
-    "os": "#5b6078",
-    "pink": "#f6bde6",
-    "yellow": "#eed49f"
+    "crust": "#11111b",
+    "lavender": "#b4befe",
+    "mantle": "#181825",
+    "os": "#6c7086",
+    "pink": "#f5c2e7",
+    "yellow": "#f9e2af"
   },
   "transient_prompt": {
     "template": "❯ ",
-    "foreground": "#B48EAD",
+    "foreground": "#cba6f7",
     "foreground_templates": [
-      "{{ if gt .Code 0 }}#BF616A{{ end }}"
+      "{{ if gt .Code 0 }}#f38ba8{{ end }}"
     ]
   },
   "console_title_template": "{{if .Root}}(Admin){{end}} {{.PWD}}",
@@ -108,7 +108,7 @@
             "style": "austin"
           },
           "template": " {{ .FormattedMs }} ",
-          "foreground": "#A3BE8C",
+          "foreground": "#a6e3a1",
           "type": "executiontime",
           "style": "plain"
         }
@@ -124,11 +124,11 @@
             "cache_duration": "none"
           },
           "template": "❯ ",
-          "foreground": "#B48EAD",
+          "foreground": "#cba6f7",
           "type": "status",
           "style": "plain",
           "foreground_templates": [
-            "{{ if gt .Code 0 }}#BF616A{{ end }}"
+            "{{ if gt .Code 0 }}#f38ba8{{ end }}"
           ]
         }
       ],
