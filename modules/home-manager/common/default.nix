@@ -81,12 +81,6 @@
         source = ../assets/oh-my-posh/catppuccin.omp.json;
         target = "catppuccin.omp.json";
       };
-      # oh-my-posh - nix packages parser script
-      nixPackagesScript = {
-        source = ../assets/oh-my-posh/nix-packages.sh;
-        target = ".config/oh-my-posh/nix-packages.sh";
-        executable = true;
-      };
       # tealdeer config, used to stop ssl errors on macOS in 1.8.1
       # https://github.com/tealdeer-rs/tealdeer/issues/452
       tealdeerScript = {

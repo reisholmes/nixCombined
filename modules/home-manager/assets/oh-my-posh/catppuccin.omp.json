@@ -67,13 +67,9 @@
       "alignment": "left",
       "segments": [
         {
-          "properties": {
-            "cache_duration": "5s",
-            "command": "/bin/sh $HOME/.config/oh-my-posh/nix-packages.sh"
-          },
-          "template": "{{ if ne .Output \"\" }} 📦 nix:{{ .Output }} depth:{{ .Env.SHLVL }} {{ end }}",
+          "template": "{{ if .Env.IN_NIX_SHELL }}\u2744 nix {{ end }}",
           "foreground": "p:blue",
-          "type": "command",
+          "type": "text",
           "style": "plain"
         },
         {
