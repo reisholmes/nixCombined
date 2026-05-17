@@ -1,11 +1,15 @@
-{
-  lib,
-  pkgs,
-  ...
-}: {
-  # https://home-manager-options.extranix.com/?query=programs.k9s&release=master
-  # k9s is only enabled on darwin systems
-  programs.k9s = lib.mkIf pkgs.stdenv.isDarwin {
+# k9s — Kubernetes TUI with Catppuccin Mocha theme and custom pod view.
+#
+# Config paths differ by platform: ~/Library/Application Support/k9s on
+# macOS, ~/.config/k9s on Linux. The skin and views assets are imported
+# from ../../assets/k9s/.
+{pkgs, ...}: let
+  k9sConfigDir =
+    if pkgs.stdenv.isDarwin
+    then "Library/Application Support/k9s"
+    else ".config/k9s";
+in {
+  programs.k9s = {
     enable = true;
 
     settings = {
@@ -20,8 +24,8 @@
     };
   };
 
-  home.file = lib.mkIf pkgs.stdenv.isDarwin {
-    "Library/Application Support/k9s/views.yaml".source = ../../assets/k9s/views.yaml;
-    "Library/Application Support/k9s/skins/catppuccin-mocha.yaml".source = ../../assets/k9s/catppuccin-mocha.yaml;
+  home.file = {
+    "${k9sConfigDir}/views.yaml".source = ../../assets/k9s/views.yaml;
+    "${k9sConfigDir}/skins/catppuccin-mocha.yaml".source = ../../assets/k9s/catppuccin-mocha.yaml;
   };
 }

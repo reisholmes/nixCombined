@@ -1,0 +1,16 @@
+readOnly: true
+defaultNamespace: flux-system
+defaultControllerNamespace: flux-system
+defaultResourceFilter: Kustomization
+
+ui:
+  enableMouse: false
+  headless: false
+  noIcons: false
+  skin: catppuccin-mocha
+  skinReadOnly: catppuccin-mocha
+  splashless: true
+
+namespaceHotkeys:
+  - all
+  - flux-system

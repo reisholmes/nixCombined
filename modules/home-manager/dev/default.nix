@@ -35,9 +35,8 @@
       '';
     };
 in {
-  # Packages that require configuration get placed in relevant place
-  # k9s is conditionally imported for darwin in its own module definition
   imports = [
+    ../programs/flux9s
     ../programs/k9s
   ];
 
