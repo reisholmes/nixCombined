@@ -80,6 +80,10 @@ in {
       deadnix
       statix
 
+      # Kubernetes
+      fluxcd
+      kubectl
+
       # pre-commit tools (cross-platform)
       pre-commit
       codespell # Spell checker for pre-commit
@@ -94,8 +98,6 @@ in {
     ++ lib.optionals stdenv.isDarwin [
       (azure-cli.withExtensions [azure-cli.extensions.aks-preview])
       github-copilot-cli
-      fluxcd
-      kubectl
       pipx
       python314Packages.pip
       stable.kubelogin
