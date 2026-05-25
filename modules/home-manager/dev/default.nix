@@ -38,6 +38,7 @@ in {
   imports = [
     ../programs/flux9s
     ../programs/k9s
+    ../programs/opencode
   ];
 
   # Ensure common packages are installed

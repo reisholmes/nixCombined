@@ -48,6 +48,7 @@ _: {
       "azure-cli"
       "lazydocker"
       "node"
+      "opencode"
       "podman"
       "uv"
     ];
