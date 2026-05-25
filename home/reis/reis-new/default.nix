@@ -31,25 +31,23 @@
     enable = true;
     enableDefaultConfig = false;
 
-    matchBlocks = {
+    settings = {
       # Only personal Github
       "github.com" = {
-        hostname = "github.com";
-        identityFile = "~/.ssh/github_reish";
-        extraOptions = {
-          PreferredAuthentications = "publickey";
-          UpdateHostKeys = "yes";
-        };
+        HostName = "github.com";
+        IdentityFile = "~/.ssh/github_reish";
+        PreferredAuthentications = "publickey";
+        UpdateHostKeys = "yes";
       };
 
       # Wildcard
       "*" = {
-        extraOptions = {
-          AddKeysToAgent = "yes";
-          IdentitiesOnly = "yes";
-          SetEnv = "TERM=xterm-256color";
-          UseRoaming = "no";
+        AddKeysToAgent = "yes";
+        IdentitiesOnly = "yes";
+        SetEnv = {
+          TERM = "xterm-256color";
         };
+        UseRoaming = "no";
       };
     };
   };
@@ -90,6 +88,9 @@
     enable = true;
     profile = "mesa";
   };
+
+  # Silence Hyprland configType warning while home.stateVersion < "26.05"
+  wayland.windowManager.hyprland.configType = "hyprlang";
 
   # Stylix settings specific to this machine
   stylix = {

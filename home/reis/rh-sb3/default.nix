@@ -52,6 +52,9 @@
     profile = "nvidiaPrime";
   };
 
+  # Silence Hyprland configType warning while home.stateVersion < "26.05"
+  wayland.windowManager.hyprland.configType = "hyprlang";
+
   # gtk styling settings
   gtk = {
     cursorTheme = {
