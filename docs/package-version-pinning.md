@@ -90,7 +90,7 @@ Add a new input to your `flake.nix` pointing to the specific revision:
   inputs = {
     # Existing inputs...
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.11";
 
     # Pinned nixpkgs for specific package versions
     # Example: cowsay 3.8.3 (replace with actual commit hash)
