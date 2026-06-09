@@ -32,6 +32,7 @@
     };
     overlays = [
       outputs.overlays.stable-packages
+      outputs.overlays.pipx-fix
     ];
   };
 
