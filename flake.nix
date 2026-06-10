@@ -9,7 +9,7 @@
   inputs = {
     # Nixpkgs
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.11";
 
     # Home manager
     home-manager = {
@@ -35,7 +35,7 @@
     # Nix-on-Droid that applies color schemes, wallpapers, and
     # fonts to a wide range of applications.
     stylix.url = "github:danth/stylix";
-    stylix-stable.url = "github:danth/stylix/release-24.11";
+    stylix-stable.url = "github:danth/stylix/release-25.11";
 
     # Pre-commit hooks for code quality checks
     pre-commit-hooks = {
