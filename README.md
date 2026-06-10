@@ -11,7 +11,7 @@ Before getting started, ensure you have the following installed:
 - **Git**: Required to clone this repository
 - **Nix Package Manager**: [Install Nix](https://nixos.org/download.html) with flakes enabled
 - **For macOS users**: [nix-darwin](https://github.com/LnL7/nix-darwin) for system-level configuration
-- **For NixOS users**: NixOS 24.11 or later
+- **For NixOS users**: NixOS 25.11 or later
 
 Enable experimental features if not already configured:
 
@@ -138,8 +138,8 @@ home-manager switch --flake .#newuser@newmachine --impure -b backup
 ### Key Inputs
 
 - **nixpkgs**: Points to the `nixos-unstable` channel for access to the latest packages
-- **nixpkgs-stable**: Points to the `nixos-24.11` channel, providing stable NixOS packages
-- **home-manager**: Manages user-specific configurations, following the `nixpkgs` input (release-24.11)
+- **nixpkgs-stable**: Points to the `nixos-25.11` channel, providing stable NixOS packages
+- **home-manager**: Manages user-specific configurations, following the `nixpkgs` input (release-25.11)
 - **hardware**: Optimizes settings for different hardware configurations
 - **catppuccin**: Provides global Catppuccin theme integration
 - **spicetify-nix**: Enhances Spotify client customization
