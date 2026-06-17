@@ -82,6 +82,12 @@
         export LF_ICONS=$(cat ~/.config/lf/icons)
       fi
 
+      # Vi mode fixes
+      bindkey -M viins '^?' backward-delete-char
+      bindkey -M viins '^H' backward-delete-char
+      bindkey -M viins '^W' backward-kill-word
+      bindkey -M viins '^[[3~' delete-char
+
       # Only run fastfetch in login shells or first shell (check if it's a new terminal)
       # Run in background subshell with small delay to allow terminal to initialize dimensions
       if [[ -o login ]] || [[ "$SHLVL" -eq 1 ]]; then
