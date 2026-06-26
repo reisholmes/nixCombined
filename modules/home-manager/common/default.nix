@@ -23,20 +23,6 @@
   userConfig,
   ...
 }: {
-  # Override python314 globally to skip tests for proton-core
-  # See: https://github.com/ProtonVPN/python-proton-core/pull/10
-  nixpkgs.overlays = [
-    (_: super: {
-      python314 = super.python314.override {
-        packageOverrides = _: pysuper: {
-          proton-core = pysuper.proton-core.overridePythonAttrs (_: {
-            doCheck = false;
-            doInstallCheck = false;
-          });
-        };
-      };
-    })
-  ];
   # Packages that require configuration get placed in relevant place
   imports = [
     # Common modules
@@ -167,7 +153,6 @@
       flameshot
       libreoffice-fresh
       magnetic-catppuccin-gtk
-      proton-vpn
       rclone
       unzip
       vlc
