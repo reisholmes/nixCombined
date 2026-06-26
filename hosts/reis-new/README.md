@@ -362,6 +362,24 @@ sudo nmcli connection modify "<wired-profile>" \
   +ipv4.routes "192.168.20.0/24 192.168.10.1"
 ```
 
+`nmcli connection modify` only writes the routes into the stored profile; it
+does **not** push them into the live connection. Reactivate the wired profile so
+they take effect, then confirm the Pi-hole route bypasses the tunnel:
+
+```bash
+sudo nmcli connection up "<wired-profile>"   # or: sudo nmcli device reapply <wired-iface>
+ip route get 192.168.1.92                     # must be via 192.168.10.1 dev <wired-iface>, NOT dev wg0
+```
+
+Order matters: the wired routes must be live **before** `wg0` comes up. If `wg0`
+is already up, bounce it afterwards so DNS to the Pi-hole stops being pulled into
+the tunnel:
+
+```bash
+sudo nmcli connection down wg0 && sudo nmcli connection up wg0
+resolvectl flush-caches
+```
+
 Your own subnet (`192.168.10.0/24`) is directly connected and needs no route.
 These two cover the Pi-hole (`192.168.1.92`) and the Deskflow peer
 (`192.168.20.x`) reaching them over the LAN while everything else tunnels.
