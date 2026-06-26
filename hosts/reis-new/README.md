@@ -290,6 +290,98 @@ yay openrgb
 # Select from cachyos-extra-v3
 ```
 
+## Networking
+
+### Proton VPN over WireGuard (NetworkManager + split tunnel)
+
+Why not the Proton VPN app: its consumer client forces Proton's own DNS (with
+leak protection) and only auto-allows your *immediate* subnet, so it can't (a)
+use the Pi-hole at `192.168.1.92` for DNS or (b) reach other VLANs (e.g.
+Deskflow on the Work VLAN) while connected. A manual WireGuard config imported
+into NetworkManager restores both, and KDE's `plasma-nm` still gives the
+autostart + one-click tray toggle the app was used for.
+
+This is **system-level** (NetworkManager, root-owned profile under
+`/etc/NetworkManager/system-connections/`) and is **not** managed by this Nix
+config: WireGuard needs root to create the interface, and the private key must
+not land in the world-readable Nix store. These steps are imperative and run
+once per machine.
+
+> [!NOTE]
+> Values below assume: desktop on the Trusted VLAN (`192.168.10.0/24`, gateway
+> `192.168.10.1`), wired interface `enp16s0`, Pi-hole/DNS at `192.168.1.92`
+> (Management VLAN), Deskflow peer on the Work VLAN (`192.168.20.0/24`).
+> Confirm with `ip route` and `resolvectl status` before applying.
+
+#### 1. Get the config
+
+Proton account → Downloads → WireGuard configuration → generate one for this
+device. Rename the downloaded file to `wg0.conf` (NetworkManager requires the
+interface-name match).
+
+#### 2. Set the Pi-hole as DNS in the config
+
+Edit the `[Interface]` block before importing. NetworkManager ignores wg-quick
+`PostUp`/`PostDown` scripts, so routes are added separately in step 4:
+
+```ini
+[Interface]
+...
+DNS = 192.168.1.92
+```
+
+Leave `[Peer]` `AllowedIPs = 0.0.0.0/0` (add `::/0` if you use IPv6).
+
+#### 3. Import and configure autostart + DNS
+
+```bash
+sudo nmcli connection import type wireguard file wg0.conf
+sudo nmcli connection modify wg0 \
+  connection.autoconnect yes \
+  connection.autoconnect-priority 10 \
+  ipv4.dns 192.168.1.92 \
+  ipv4.ignore-auto-dns yes \
+  ipv4.dns-priority -10
+shred -u wg0.conf   # key now lives in the root-owned profile; remove the plaintext copy
+```
+
+`ipv4.dns-priority -10` (negative) makes the Pi-hole the exclusive resolver
+while connected, instead of Proton's tunnel DNS.
+
+#### 4. Keep LAN / other VLANs off the tunnel
+
+With `AllowedIPs = 0.0.0.0/0`, NetworkManager installs a `suppress_prefixlength
+0` policy rule that ignores the *default* route but honours more-specific ones.
+Add explicit routes for the subnets that must stay on the LAN, on the **wired**
+profile (they use `enp16s0` via the VLAN gateway, not the tunnel):
+
+```bash
+# find the wired profile name: nmcli connection show
+sudo nmcli connection modify "<wired-profile>" \
+  +ipv4.routes "192.168.1.0/24 192.168.10.1" \
+  +ipv4.routes "192.168.20.0/24 192.168.10.1"
+```
+
+Your own subnet (`192.168.10.0/24`) is directly connected and needs no route.
+These two cover the Pi-hole (`192.168.1.92`) and the Deskflow peer
+(`192.168.20.x`) reaching them over the LAN while everything else tunnels.
+
+#### 5. Toggle from the tray
+
+Click the network icon (plasma-nm) → toggle the `wg0` VPN on/off. Autoconnect
+brings it up at login; turn it off for low-latency gaming.
+
+#### Verify
+
+```bash
+nmcli connection show --active     # wg0 active
+sudo wg show                       # handshake + transfer counters
+resolvectl status                  # DNS = 192.168.1.92 in use
+dig @192.168.1.92 example.com      # Pi-hole answers over the LAN
+ip route get 192.168.20.10         # Deskflow peer routes via 192.168.10.1, not wg0
+ip route get 1.1.1.1               # public traffic routes via wg0
+```
+
 ## Gaming Configuration
 
 ### Mount Gaming Drive

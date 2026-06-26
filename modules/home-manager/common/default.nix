@@ -98,6 +98,17 @@
         # Fix SSL certificates for Nix packages on macOS
         NIX_SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
         SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+      }
+      // lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+        # sudoedit runs nvim as the invoking user but with a reset environment
+        # (sudo's env_reset strips/repoints HOME and XDG_*), so nvim can't find
+        # ~/.config/nvim and falls back to no config. Restore the user's HOME
+        # and XDG dirs so `sudoedit` loads our real nvim config and writes
+        # state/cache to user-owned dirs. nvim still runs unprivileged here —
+        # only sudoedit's file copy-back is elevated, so no privilege escalation.
+        # Linux-only: the /home path and the env_reset behaviour are Linux
+        # concerns; the Darwin home dir differs (/Users/<name>).
+        SUDO_EDITOR = "/usr/bin/env HOME=/home/${userConfig.name} XDG_CONFIG_HOME=/home/${userConfig.name}/.config XDG_DATA_HOME=/home/${userConfig.name}/.local/share XDG_STATE_HOME=/home/${userConfig.name}/.local/state XDG_CACHE_HOME=/home/${userConfig.name}/.cache nvim";
       };
   };
 
