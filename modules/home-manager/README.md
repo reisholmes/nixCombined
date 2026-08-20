@@ -17,6 +17,7 @@ modules/home-manager/programs/
 ```
 
 **Examples:**
+
 - `lf/default.nix` - Main lf configuration
 - `lf/icons` - Icon configuration file for lf
 - `git/default.nix` - Main git configuration and delta (enhanced diff viewer) with git integration enabled
@@ -174,7 +175,7 @@ Many modules handle platform differences internally:
 - **Darwin (macOS)**: Uses system paths and Homebrew integration where needed
 - **Linux**: Uses NixGL wrappers for GUI applications and different font paths
 
-Use `pkgs.stdenv.isDarwin` for conditional logic when needed.
+Use `pkgs.stdenv.hostPlatform.isDarwin` for conditional logic when needed.
 
 ## Special Arguments
 

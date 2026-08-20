@@ -96,7 +96,7 @@ in {
       # also used in pre-commit
       tflint
     ]
-    ++ lib.optionals stdenv.isDarwin [
+    ++ lib.optionals stdenv.hostPlatform.isDarwin [
       (azure-cli.withExtensions [azure-cli.extensions.aks-preview])
       github-copilot-cli
       pipx

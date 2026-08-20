@@ -16,7 +16,7 @@
 # Dependencies:
 #   - Requires nhModules path injected via extraSpecialArgs
 #   - Requires userConfig for user-specific settings (name, email, etc.)
-#   - Platform detection via pkgs.stdenv.isDarwin
+#   - Platform detection via pkgs.stdenv.hostPlatform.isDarwin
 {
   lib,
   pkgs,
@@ -57,7 +57,7 @@
   home = {
     username = "${userConfig.name}";
     homeDirectory =
-      if pkgs.stdenv.isDarwin
+      if pkgs.stdenv.hostPlatform.isDarwin
       then "/Users/${userConfig.name}"
       else "/home/${userConfig.name}";
 
@@ -80,12 +80,12 @@
       {
         EDITOR = "nvim";
       }
-      // lib.optionalAttrs pkgs.stdenv.isDarwin {
+      // lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
         # Fix SSL certificates for Nix packages on macOS
         NIX_SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
         SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
       }
-      // lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+      // lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin) {
         # sudoedit runs nvim as the invoking user but with a reset environment
         # (sudo's env_reset strips/repoints HOME and XDG_*), so nvim can't find
         # ~/.config/nvim and falls back to no config. Restore the user's HOME
@@ -125,11 +125,11 @@
       wget
       yq
     ]
-    ++ lib.optionals stdenv.isDarwin [
+    ++ lib.optionals stdenv.hostPlatform.isDarwin [
       claude-code
       mas
     ]
-    ++ lib.optionals (!stdenv.isDarwin) [
+    ++ lib.optionals (!stdenv.hostPlatform.isDarwin) [
       # Fonts for stylix to apply on Linux
       # On darwin, fonts are managed at system level via fonts.packages
       # Kitty overrides this in its config for Hack

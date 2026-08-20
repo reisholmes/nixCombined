@@ -36,7 +36,7 @@
         }
       fi
 
-      ${lib.optionalString pkgs.stdenv.isDarwin ''
+      ${lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
         # Homebrew initialization (Darwin-only)
         # Set brew prefix based on architecture: ARM64 uses /opt/homebrew, Intel uses /usr/local
         if [[ $(uname -m) == 'arm64' ]]; then
@@ -57,7 +57,7 @@
       # for az cli - defer completions loading
       autoload -U +X bashcompinit && bashcompinit
 
-      ${lib.optionalString pkgs.stdenv.isDarwin ''
+      ${lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
         # Lazy load az completions only when needed (Darwin-only)
         az() {
           unfunction az
@@ -96,7 +96,7 @@
 
     '';
 
-    sessionVariables = lib.optionalAttrs pkgs.stdenv.isDarwin {
+    sessionVariables = lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
       # Darwin-only: disable prompt caching
       DISABLE_PROMPT_CACHING = "0";
     };

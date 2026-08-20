@@ -26,7 +26,7 @@
       bold_italic_font = "auto";
       # Use stylix terminal font size as base, with platform-specific adjustments
       font_size =
-        if pkgs.stdenv.isDarwin
+        if pkgs.stdenv.hostPlatform.isDarwin
         then config.stylix.fonts.sizes.terminal + 3.5 # 12 + 3.5 = 15.5
         else config.stylix.fonts.sizes.terminal + 2; # 12 + 2 = 14
 

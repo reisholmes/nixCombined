@@ -22,7 +22,7 @@
     theme = "system";
   };
 in
-  lib.mkIf pkgs.stdenv.isDarwin {
+  lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     home.file = {
       ".config/opencode/tui.json".text = tuiConfig;
     };

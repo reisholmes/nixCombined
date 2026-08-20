@@ -5,7 +5,7 @@
 # from ../../assets/k9s/.
 {pkgs, ...}: let
   k9sConfigDir =
-    if pkgs.stdenv.isDarwin
+    if pkgs.stdenv.hostPlatform.isDarwin
     then "Library/Application Support/k9s"
     else ".config/k9s";
 in {

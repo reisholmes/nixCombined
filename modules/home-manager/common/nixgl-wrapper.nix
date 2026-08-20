@@ -7,7 +7,7 @@
   # On Darwin, packages are returned unwrapped
   # Usage: wrapWithNixGL pkgs.kitty
   _module.args.wrapWithNixGL = pkg:
-    if pkgs.stdenv.isDarwin
+    if pkgs.stdenv.hostPlatform.isDarwin
     then pkg
     else if config.lib ? nixGL && config.lib.nixGL ? wrap
     then config.lib.nixGL.wrap pkg

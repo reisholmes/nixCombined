@@ -9,7 +9,7 @@
   # On macOS, ghostty is installed via Homebrew for better system integration
   # On Linux, it's installed via Nix with nixGL wrapper
   programs.ghostty = {
-    enable = !pkgs.stdenv.isDarwin;
+    enable = !pkgs.stdenv.hostPlatform.isDarwin;
 
     package = wrapWithNixGL pkgs.ghostty;
   };
