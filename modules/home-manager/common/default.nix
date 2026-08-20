@@ -147,7 +147,7 @@
       noto-fonts-color-emoji
 
       # Linux-specific packages
-      deskflow
+      #deskflow
       ferdium
       filezilla
       flameshot

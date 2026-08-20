@@ -11,10 +11,13 @@ _: {
     defaultCommand = "fd --hidden --strip-cwd-prefix --exclude .git";
     defaultOptions = ["--height 50%" "--layout=default" "--border" "--color=hl:#2dd4bf"];
     # Command that gets executed when pressing ctrl+t
-    fileWidgetCommand = "fd --hidden --strip-cwd-prefix --exclude .git";
-    fileWidgetOptions = ["--preview 'bat --color=always -n --line-range :500 {}'"];
+    fileWidget.command = "fd --hidden --strip-cwd-prefix --exclude .git";
+    fileWidget.options = ["--preview 'bat --color=always -n --line-range :500 {}'"];
     # Command that gets executed when pressing ctrl+c
-    changeDirWidgetCommand = "fd --type=d --hidden --strip-cwd-prefix --exclude .git";
-    changeDirWidgetOptions = ["--preview 'eza --icons=always --tree --color=always {} | head -200'"];
+    changeDirWidget.command = "fd --type=d --hidden --strip-cwd-prefix --exclude .git";
+    changeDirWidget.options = ["--preview 'eza --icons=always --tree --color=always {} | head -200'"];
+
+    # atuin owns history
+    historyWidget.command = "";
   };
 }
