@@ -151,7 +151,7 @@
       ferdium
       filezilla
       flameshot
-      libreoffice-fresh
+      libreoffice
       magnetic-catppuccin-gtk
       rclone
       unzip
