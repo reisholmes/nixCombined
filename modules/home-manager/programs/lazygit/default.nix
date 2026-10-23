@@ -9,6 +9,9 @@ _: {
         theme = {
           # https://github.com/catppuccin/lazygit/blob/main/themes/macchiato/pink.yml
           activeBorderColor = ["#f5bde6" "bold"];
+          authorColors = {
+            "*" = "#b7bdf8";
+          };
           inactiveBorderColor = ["#a5adcb"];
           optionsTextColor = ["#8aadf4"];
           selectedLineBgColor = ["#363a4f"];
@@ -17,9 +20,6 @@ _: {
           unstagedChangesColor = ["#ed8796"];
           defaultFgColor = ["#cad3f5"];
           searchingActiveBorderColor = ["#eed49f"];
-        };
-        authorColors = {
-          "*" = "#b7bdf8";
         };
       };
     };
