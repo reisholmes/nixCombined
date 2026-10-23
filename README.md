@@ -11,7 +11,7 @@ Before getting started, ensure you have the following installed:
 - **Git**: Required to clone this repository
 - **Nix Package Manager**: [Install Nix](https://nixos.org/download.html) with flakes enabled
 - **For macOS users**: [nix-darwin](https://github.com/LnL7/nix-darwin) for system-level configuration
-- **For NixOS users**: NixOS 25.11 or later
+- **For NixOS users**: NixOS 25.11 or later (reserved for future use — this flake currently has no NixOS machines)
 
 Enable experimental features if not already configured:
 
@@ -29,7 +29,7 @@ Common operations for managing your configuration:
 # Rebuild configurations
 make darwin    # Rebuild Darwin (macOS) system
 make home      # Rebuild Home Manager (Linux or standalone macOS)
-make nixos     # Rebuild NixOS system
+make nixos     # Rebuild NixOS system (reserved — no NixOS machines yet)
 
 # Maintenance
 make update    # Update all flake inputs
@@ -53,7 +53,7 @@ darwin-rebuild switch --flake .#reisholmes
 # Home Manager (Linux)
 home-manager switch --flake .#reis@reis-new --impure -b backup
 
-# NixOS
+# NixOS (reserved for future use — nixosConfigurations is currently empty)
 sudo nixos-rebuild switch --flake .#hostname
 
 # Update flake inputs
@@ -65,6 +65,15 @@ nix-collect-garbage -d
 # Compare generations (requires nvd)
 nvd diff /nix/var/nix/profiles/system-{OLD,NEW}-link
 ```
+
+### `nix_rebuild` Alias
+
+Every host defines a `nix_rebuild` shell alias (managed via `programs.zsh.shellAliases` in each `home/<user>/<host>/default.nix`). It runs the right rebuild for that machine and then prints the package differences between the last two generations using `nvd diff`:
+
+- **Linux hosts** (`reis@reis-new`, `reis@rh-sb3`): `home-manager switch` + nvd diff
+- **macOS** (`reis.holmes@reisholmes`): `darwin-rebuild switch` + nvd diff
+
+So on any of the managed machines, `nix_rebuild` is the one-liner for "rebuild me and show what changed".
 
 ## Development & Code Quality
 
@@ -116,6 +125,9 @@ nix-shell -p home-manager
 home-manager switch --flake .#newuser@newmachine --impure -b backup
 ```
 
+> [!NOTE]
+> `nix-shell -p home-manager` pulls the *latest unstable* home-manager, not the version pinned by the flake. This is only for bootstrapping a fresh machine so that the `home-manager` command exists. Afterwards every rebuild re-uses the flake-pinned home-manager (installed by the first `switch`), so the two converge.
+
 - From now on you can do:
 
 ```sh
@@ -125,11 +137,9 @@ home-manager switch --flake .#newuser@newmachine --impure -b backup
 ## Structure
 
 - `flake.nix`: The flake itself, defining inputs and outputs for NixOS, nix-darwin, and Home Manager configurations.
-- `hosts/`: NixOS and nix-darwin configurations for each machine
+- `hosts/`: nix-darwin configurations for each machine (NixOS reserved for future use)
 - `home/`: Home Manager configurations for each machine
-- `files/`: Miscellaneous configuration files and scripts used across various applications and services
 - `modules/`: Reusable platform-specific modules
-  - `nixos/`: NixOS-specific modules
   - `darwin/`: macOS-specific modules
   - `home-manager/`: User-space configuration modules (see [modules/home-manager/README.md](modules/home-manager/README.md))
 - `flake.lock`: Lock file ensuring reproducible builds by pinning input versions
@@ -138,18 +148,22 @@ home-manager switch --flake .#newuser@newmachine --impure -b backup
 ### Key Inputs
 
 - **nixpkgs**: Points to the `nixos-unstable` channel for access to the latest packages
-- **nixpkgs-stable**: Points to the `nixos-25.11` channel, providing stable NixOS packages
-- **home-manager**: Manages user-specific configurations, following the `nixpkgs` input (release-25.11)
-- **hardware**: Optimizes settings for different hardware configurations
-- **catppuccin**: Provides global Catppuccin theme integration
-- **spicetify-nix**: Enhances Spotify client customization
-- **darwin**: Enables nix-darwin for macOS system configuration
+- **nixpkgs-stable**: Points to the `nixos-25.11` channel, providing stable packages (used by `overlays/`)
+- **home-manager**: Manages user-specific configurations, following the `nixpkgs` input
+- **nix-darwin**: Enables nix-darwin for macOS system configuration
+- **mac-app-util**: Building and managing macOS apps
+- **nixgl**: Fixes graphics issues on non-NixOS systems
+- **stylix**: Theming framework (colors, fonts, wallpapers) applied via home-manager. `stylix-stable` pins the `release-25.11` branch
+- **pre-commit-hooks**: Code quality hooks (alejandra, statix, deadnix) used by the `checks` and `devShells` outputs
 
 ## Usage
 
 ### Adding a New Machine with a New User
 
-To add a new machine with a new user to your NixOS or nix-darwin configuration, follow these steps:
+To add a new machine with a new user to your nix-darwin or NixOS configuration, follow these steps:
+
+> [!NOTE]
+> This flake currently has no NixOS machines (`nixosConfigurations = {}` and `mkNixosConfiguration` is commented out). The NixOS-specific steps below are reserved for future use. For now the supported configurations are nix-darwin (macOS) and standalone Home Manager (Linux).
 
 1. **Update `flake.nix`**:
 
@@ -159,11 +173,13 @@ To add a new machine with a new user to your NixOS or nix-darwin configuration, 
    users = {
      # Existing users...
      newuser = {
-       avatar = ./files/avatar/face;
-       email = "newuser@example.com";
        fullName = "New User";
-       gitKey = "YOUR_GIT_KEY";
        name = "newuser";
+       email = "newuser@example.com";
+       signingKeyPub = "ssh-ed25519 AAAA... your@example.com";
+       # Optional for work users:
+       # workEmail = "newuser@company.com";
+       # workSigningKeyPub = "ssh-ed25519 BBBB... work-signing-key";
      };
    };
    ```
@@ -298,6 +314,9 @@ nix-shell -p home-manager
 home-manager switch --flake .#newuser@newmachine
 ```
 
+> [!NOTE]
+> `nix-shell -p home-manager` installs the latest unstable home-manager, not the flake-pinned one. It's only needed once so the `home-manager` command exists. From then on the flake-pinned version takes over.
+
 After this initial setup, you can rebuild configurations separately and home-manager will be available without additional steps
 
 ## Updating Flakes
@@ -355,19 +374,12 @@ When in doubt, try Home Manager first. Fall back to system package managers only
 For detailed module documentation and structure, see:
 - [modules/home-manager/README.md](modules/home-manager/README.md) - Home Manager module documentation
 
-### System Modules (in `modules/nixos/`)
-
-- `common/`: Common system configurations
-- `desktop/gnome.nix`: GNOME desktop environment
-- `desktop/hyprland.nix`: Hyprland window manager
-- `programs/corectrl.nix`: CoreCtrl for AMD GPU management
-- `programs/steam.nix`: Steam gaming platform
-- `services/tlp.nix`: Laptop power management
-
 ## Host-Specific Notes
 
 For machine-specific setup instructions and configuration notes, see the README in each host directory:
+- [hosts/reisholmes/README.md](hosts/reisholmes/README.md) - macOS setup notes
 - [hosts/reis-new/README.md](hosts/reis-new/README.md) - CachyOS setup notes
+- [hosts/rh-sb3/README.md](hosts/rh-sb3/README.md) - Linux Mint setup notes
 
 ## Changelog
 
@@ -388,7 +400,7 @@ nix develop  # Run once to install hooks
 ```
 
 **Files:**
-- `flake.nix:137-166` - Pre-commit checks and devShell configuration
+- `flake.nix:134-163` - Pre-commit checks and devShell configuration
 - `statix.toml` - Statix linter configuration
 - `.gitignore` - Ignores auto-generated pre-commit configs
 
