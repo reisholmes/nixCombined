@@ -35,6 +35,9 @@
     # Custom utility scripts
     ../scripts
 
+    # User-level systemd units
+    ../systemd
+
     # Program configurations
     ../programs/atuin
     ../programs/direnv
