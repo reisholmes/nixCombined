@@ -18,6 +18,3 @@ TODO.md
 # Pre-commit config (managed by nix)
 .pre-commit-config.yaml
 .pre-commit-config.yaml.backup
-
-# Local-only files
-qwen-docs/
