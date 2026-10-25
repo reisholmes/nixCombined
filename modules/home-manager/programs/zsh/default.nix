@@ -69,7 +69,11 @@
       ''}
 
       # for oh-my-posh
-      eval "$(${pkgs.oh-my-posh}/bin/oh-my-posh init zsh --config ~/catppuccin.omp.json)"
+      # --strict makes the init script resolve oh-my-posh through PATH at
+      # prompt render time instead of baking in an absolute /nix/store path.
+      # The cached init script then survives nix rebuilds and garbage
+      # collection.
+      eval "$(${pkgs.oh-my-posh}/bin/oh-my-posh init zsh --strict --config ~/catppuccin.omp.json)"
 
       # https://old.reddit.com/r/KittyTerminal/comments/13ephdh/xtermkitty_ssh_woes_i_know_about_the_kitten_but/https://old.reddit.com/r/KittyTerminal/comments/13ephdh/xtermkitty_ssh_woes_i_know_about_the_kitten_but/
       # fixes unknown terminal prompt on SSH sessions
