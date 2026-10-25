@@ -18,7 +18,9 @@
 
   # Host-specific shell aliases
   programs.zsh.shellAliases = {
-    nix_rebuild = "home-manager switch --flake .#reis@reis-new --impure -b backup && nvd diff $(home-manager generations | head -2 | tail -1 | awk '{print $7}') $(home-manager generations | head -1 | awk '{print $7}')";
+    # Capture the current generation before switching so a no-op rebuild (same
+    # generation path) does not re-diff a stale frozen generation pair.
+    nix_rebuild = "old=$(home-manager generations | head -1 | awk \"{print $7}\"); home-manager switch --flake .#reis@reis-new --impure -b backup && new=$(home-manager generations | head -1 | awk \"{print $7}\"); if [ \"$old\" = \"$new\" ]; then echo \"No changes (generation unchanged: $new)\"; else nvd diff \"$old\" \"$new\"; fi";
 
     # Monitor management aliases for KDE Plasma Wayland
     monitor-disable-left = "kscreen-doctor output.DP-1.position.0,0 output.DP-2.disable";
