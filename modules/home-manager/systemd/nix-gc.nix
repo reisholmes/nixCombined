@@ -3,8 +3,11 @@
 # Mirrors the macOS nix-darwin auto-GC in modules/darwin/common/default.nix
 # (--delete-older-than 21d, plus optimise), adapted for a desktop that is not
 # left on overnight:
-#   - runs at every login (WantedBy = default.target)
 #   - a Mon 11:00 timer catches up on the rare days the machine is left on
+#
+# Not wanted by default.target: home-manager's reloadSystemd activation would
+# then restart the finished oneshot on every `home-manager switch`, running a
+# full GC scan on every rebuild. The timer alone covers the intent.
 #
 # User-level systemd units, so home-manager can manage them without root.
 {
@@ -21,10 +24,9 @@
 in
   lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     systemd.user = {
-      # Runs at every login; the timer also triggers it.
+      # Timer-only: started on demand by the nix-gc timer.
       services."nix-gc" = {
         Unit.Description = "Nix store garbage collection";
-        Install.WantedBy = ["default.target"];
         Service = {
           Type = "oneshot";
           ExecStart = "${gcScript}/bin/nix-gc-weekly";
