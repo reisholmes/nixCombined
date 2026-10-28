@@ -98,7 +98,7 @@ Configure hardware-accelerated graphics on non-NixOS systems using home-manager'
 targets.genericLinux.gpu.enable = true;
 ```
 
-At activation home-manager prints a one-off `sudo /nix/store/<hash>-non-nixos-gpu/bin/non-nixos-gpu-setup` command. Run it once (and again whenever the store path changes) so `/run/opengl-driver` points into the Nix store. See the GPU Setup section in the root README.
+At activation home-manager prints a one-off `sudo /nix/store/<hash>-non-nixos-gpu/bin/non-nixos-gpu-setup` command. Run it once (and again whenever the store path changes) so `/run/opengl-driver` points into the Nix store. See the GPU Setup section in the root README and the [upstream home-manager docs](https://nix-community.github.io/home-manager/usage/gpu-non-nixos.html#when-sudo-is-available-fixing-the-host-os).
 
 #### Host-Specific Stylix Configuration
 

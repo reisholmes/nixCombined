@@ -98,6 +98,8 @@ ls -l /run/opengl-driver   # must be a symlink into /nix/store
 LIBGL_DEBUG=1 kitty        # must report the real GPU, not llvmpipe
 ```
 
+Upstream documentation: [home-manager, GPU drivers on non-NixOS systems (fixing the host OS)](https://nix-community.github.io/home-manager/usage/gpu-non-nixos.html#when-sudo-is-available-fixing-the-host-os).
+
 ## Development & Code Quality
 
 This repository includes automated code quality checks using pre-commit hooks:

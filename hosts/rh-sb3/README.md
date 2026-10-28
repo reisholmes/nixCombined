@@ -44,6 +44,8 @@ sudo /nix/store/<hash>-non-nixos-gpu/bin/non-nixos-gpu-setup
 
 This writes a tmpfiles.d rule so `/run/opengl-driver` points into the Nix store. Every Nix package then finds the (Intel/mesa) GPU driver through that symlink, with no per-app wrapping. Without it, GPU apps silently fall back to llvmpipe software rendering.
 
+Upstream documentation: [home-manager, GPU drivers on non-NixOS systems (fixing the host OS)](https://nix-community.github.io/home-manager/usage/gpu-non-nixos.html#when-sudo-is-available-fixing-the-host-os).
+
 **Testing Graphics**:
 ```bash
 # Check which GPU is being used
