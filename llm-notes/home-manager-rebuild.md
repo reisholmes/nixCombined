@@ -14,6 +14,14 @@
 - **Fix**: Remove `Install.WantedBy` from rarely-run oneshot units and let a timer own the schedule (`Persistent = true` covers missed runs). `nix-gc` is timer-only (Mon 11:00) since commit `f09007a`.
 - **Rule**: Never put a rarely-run oneshot into `default.target` under home-manager.
 
+## `nix_rebuild` failed at eval on the nixGL wrapper
+
+- **Symptom**: `nix_rebuild` / `home-manager switch --flake .#reis@reis-new --impure` aborted during evaluation before activation, with a nixGL wrapper failure.
+- **Cause**: The `nixgl` flake input builds GL wrappers whose `checkPhase` runs `pcregrep`, which throws against the nixpkgs revision pinned in `flake.lock`. Evaluating any config that sets `targets.genericLinux.nixGL.packages` (our `nixgl = { enable = ...; profile = ...; }` modules) pulls in that wrapper, so the whole config fails to evaluate. Upstream fix is PR "nixGL: use pcre2grep instead of pcregrep" (still open/unmerged).
+- **Fix**: Drop the `nixgl` flake input and both wrapper modules (`modules/home-manager/common/nixgl-profiles.nix`, `nixgl-wrapper.nix`) and their usages — ghostty/kitty now use bare `pkgs.ghostty` / `pkgs.kitty`. Both Linux hosts (`reis-new`, `rh-sb3`) set `targets.genericLinux.gpu.enable = true` (home-manager's "fix the host OS" approach). At activation home-manager builds a `non-nixos-gpu` env from nixpkgs (mesa, libglvnd, ...) and prints a one-off `sudo /nix/store/<hash>-non-nixos-gpu/bin/non-nixos-gpu-setup`, which symlinks `/run/opengl-driver` via a tmpfiles.d rule so all Nix packages find GPU drivers without per-app wrapping.
+- **Verify**: `home-manager switch --flake .#reis@reis-new --impure --dry-run` exits 0 and prints the `non-nixos-gpu-setup` command. Run that sudo command once (and again after every mesa/driver update); then `ls -l /run/opengl-driver` is a symlink into the store and ghostty renders on the real GPU (not llvmpipe).
+- **Rule**: Do not set `targets.genericLinux.nixGL.packages` together with `targets.genericLinux.gpu.enable` — home-manager warns the two are mutually exclusive. To give one app GPU access later, prefer the host-OS approach; do not re-add the nixGL input.
+
 ## Profile location
 
 - The home-manager profile generations live in `~/.local/state/nix/profiles/` as `home-manager-<N>-link` symlinks plus a `home-manager` symlink to the newest link. `~/.nix-profile/` holds the activated tree only and contains no `home-manager` profile directory there.

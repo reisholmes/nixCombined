@@ -75,6 +75,29 @@ Every host defines a `nix_rebuild` shell alias (managed via `programs.zsh.shellA
 
 So on any of the managed machines, `nix_rebuild` is the one-liner for "rebuild me and show what changed".
 
+## GPU Setup (non-NixOS Linux)
+
+Both Linux hosts (`reis-new`, `rh-sb3`) set `targets.genericLinux.gpu.enable = true`. This is home-manager's "fix the host OS" GPU approach: instead of wrapping each GUI app with nixGL, home-manager builds a `non-nixos-gpu` environment (mesa, libglvnd, ...) and installs a tmpfiles.d rule that symlinks `/run/opengl-driver` into it. Every Nix package then finds the GPU drivers through that single symlink.
+
+**Why not nixGL**: the `nixgl` flake input builds GL wrappers whose `checkPhase` runs `pcregrep`, which no longer exists in the pinned nixpkgs, so any config referencing it failed to evaluate. The nixGL input and wrapper modules were removed; see `llm-notes/home-manager-rebuild.md` for the full write-up.
+
+### One-off `sudo` setup
+
+At activation, home-manager prints a one-off command:
+
+```sh
+sudo /nix/store/<hash>-non-nixos-gpu/bin/non-nixos-gpu-setup
+```
+
+Run it once with `sudo`. It writes the tmpfiles.d rule so `/run/opengl-driver` points into the Nix store. Re-run it whenever the `non-nixos-gpu` store path changes, i.e. after nixpkgs or mesa updates. Without it, GPU apps silently fall back to llvmpipe software rendering.
+
+Verify after running it:
+
+```sh
+ls -l /run/opengl-driver   # must be a symlink into /nix/store
+LIBGL_DEBUG=1 kitty        # must report the real GPU, not llvmpipe
+```
+
 ## Development & Code Quality
 
 This repository includes automated code quality checks using pre-commit hooks:
@@ -152,7 +175,6 @@ home-manager switch --flake .#newuser@newmachine --impure -b backup
 - **home-manager**: Manages user-specific configurations, following the `nixpkgs` input
 - **nix-darwin**: Enables nix-darwin for macOS system configuration
 - **mac-app-util**: Building and managing macOS apps
-- **nixgl**: Fixes graphics issues on non-NixOS systems
 - **stylix**: Theming framework (colors, fonts, wallpapers) applied via home-manager. `stylix-stable` pins the `release-25.11` branch
 - **pre-commit-hooks**: Code quality hooks (alejandra, statix, deadnix) used by the `checks` and `devShells` outputs
 
@@ -382,6 +404,15 @@ For machine-specific setup instructions and configuration notes, see the README 
 - [hosts/rh-sb3/README.md](hosts/rh-sb3/README.md) - Linux Mint setup notes
 
 ## Changelog
+
+### 2026-10-28 - NixGL removed, host-OS GPU approach
+
+**Breaking Changes:**
+
+- **NixGL removed** - The `nixgl` flake input and the `nixgl-profiles.nix` / `nixgl-wrapper.nix` modules are gone. The wrapper `checkPhase` (pcregrep) broke evaluation against current nixpkgs. ghostty and kitty now use bare `pkgs.ghostty` / `pkgs.kitty`.
+- **GPU** - Linux hosts set `targets.genericLinux.gpu.enable = true` (rh-sb3 is iGPU/mesa only, no NVIDIA offload). After a rebuild that changes the `non-nixos-gpu` store path, run the printed one-off `sudo non-nixos-gpu-setup` command. See the GPU Setup section above.
+
+---
 
 ### 2025-01-23 - Pre-commit Hooks Integration
 

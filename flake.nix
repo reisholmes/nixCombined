@@ -24,13 +24,6 @@
     };
     mac-app-util.url = "github:hraban/mac-app-util";
 
-    # NixGL fixes graphics issues on non NixOS systems
-    # https://nix-community.github.io/home-manager/index.xhtml#sec-usage-gpu-non-nixos
-    nixgl = {
-      url = "github:nix-community/nixGL";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Stylix is a theming framework for NixOS, Home Manager, nix-darwin, and
     # Nix-on-Droid that applies color schemes, wallpapers, and
     # fonts to a wide range of applications.
@@ -48,7 +41,6 @@
     self,
     home-manager,
     nix-darwin,
-    nixgl,
     nixpkgs,
     pre-commit-hooks,
     stylix,
@@ -105,7 +97,7 @@
       home-manager.lib.homeManagerConfiguration {
         pkgs = import nixpkgs {inherit system;};
         extraSpecialArgs = {
-          inherit inputs outputs nixgl;
+          inherit inputs outputs;
           userConfig = users.${username};
           nhModules = "${self}/modules/home-manager";
         };

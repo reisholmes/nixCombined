@@ -25,25 +25,24 @@ This is a Surface Book 2 with detachable screen and hybrid graphics.
 
 **Graphics Setup**:
 - **Intel iGPU**: Always available, used in tablet mode and for power efficiency
-- **NVIDIA dGPU**: Only available when keyboard base is attached, used for performance
-- **NixGL Configuration**: Uses `nvidiaPrime` profile for hybrid graphics
+- **NVIDIA dGPU**: Only available when keyboard base is attached
+- **Nix config**: iGPU/mesa only — the NVIDIA dGPU is not offloaded from Nix
 
-### NixGL Configuration
+### GPU Configuration (non-NixOS)
 
-Since this is a non-NixOS Linux system, NixGL is used for proper graphics acceleration:
+Since this is a non-NixOS Linux system, home-manager's "fix the host OS" GPU approach is used instead of per-app NixGL wrappers:
 
 ```nix
-nixgl = {
-  enable = true;
-  profile = "nvidiaPrime";  # Hybrid Intel + NVIDIA
-};
+targets.genericLinux.gpu.enable = true;
 ```
 
-**How it works**:
-- GUI applications are automatically wrapped with NixGL
-- Intel GPU is used by default (mesa)
-- NVIDIA GPU available via prime offload when keyboard base attached
-- No manual wrapper needed for most applications
+At activation it prints a one-off command. Run it once with `sudo`, and again whenever the `non-nixos-gpu` store path changes (i.e. after nixpkgs/mesa updates):
+
+```sh
+sudo /nix/store/<hash>-non-nixos-gpu/bin/non-nixos-gpu-setup
+```
+
+This writes a tmpfiles.d rule so `/run/opengl-driver` points into the Nix store. Every Nix package then finds the (Intel/mesa) GPU driver through that symlink, with no per-app wrapping. Without it, GPU apps silently fall back to llvmpipe software rendering.
 
 **Testing Graphics**:
 ```bash
@@ -53,7 +52,7 @@ glxinfo | grep "OpenGL renderer"
 # List available GPUs
 lspci | grep -E "VGA|3D"
 
-# Force NVIDIA GPU for specific application (only works with keyboard base attached)
+# Manual NVIDIA offload (keyboard base attached, host NVIDIA driver required)
 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia application-name
 ```
 
@@ -107,7 +106,7 @@ home-manager switch --flake .#reis@rh-sb3 --impure -b backup
 - **Display Manager**: Linux Mint default (not managed by home-manager)
 - **Shell**: zsh (configured via home-manager)
 - **Package Manager**: Home-manager for user packages, apt for system packages
-- **Graphics**: NixGL handles OpenGL/Vulkan for nix-installed GUI applications
+- **Graphics**: host-OS GPU setup (`targets.genericLinux.gpu`, iGPU/mesa only) for nix-installed GUI applications
 
 ## Git Configuration
 

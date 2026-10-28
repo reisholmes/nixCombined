@@ -30,8 +30,6 @@ Shared configuration modules used across all systems:
 ```
 modules/home-manager/common/
 ├── default.nix           # Main entry point, imports all common modules
-├── nixgl-profiles.nix    # NixGL hardware profile configuration (nvidia/mesa/nvidiaPrime)
-├── nixgl-wrapper.nix     # Helper function for NixGL wrapping
 ├── nixpkgs-config.nix    # Nixpkgs overlays and allowUnfree config
 ├── stylix-common.nix     # Shared Stylix theme and font defaults
 └── stylix-host.nix       # Host-specific Stylix configuration (wallpaper, autoEnable)
@@ -40,8 +38,6 @@ modules/home-manager/common/
 #### Common Module Details
 
 - **`default.nix`**: Entry point that imports all common modules and programs, sets up home environment basics
-- **`nixgl-profiles.nix`**: Declarative NixGL configuration for non-NixOS systems. Provides `nixgl.enable` and `nixgl.profile` options with hardware profiles: `nvidia` (enables Vulkan), `mesa` (Intel/AMD graphics), and `nvidiaPrime` (Optimus/Prime laptops with mesa as default and nvidia as offload)
-- **`nixgl-wrapper.nix`**: Provides `wrapWithNixGL` helper function that wraps GUI packages with NixGL on Linux and returns them unwrapped on Darwin
 - **`nixpkgs-config.nix`**: Configures nixpkgs with overlays and unfree package allowances
 - **`stylix-common.nix`**: Defines default fonts (IBM Plex) and color scheme (Catppuccin Mocha) using `lib.mkDefault` for easy per-host overrides
 - **`stylix-host.nix`**: Provides host-specific Stylix configuration options. Allows setting `stylix.hostConfig.wallpaper` (path or null to skip wallpaper setup) and `stylix.hostConfig.autoEnable` for automatic application theming
@@ -94,29 +90,15 @@ stylix.fonts.monospace = {
 
 ### Configuration Examples
 
-#### NixGL Configuration (Non-NixOS Linux)
+#### GPU Configuration (Non-NixOS Linux)
 
-Configure hardware-accelerated graphics on non-NixOS systems:
+Configure hardware-accelerated graphics on non-NixOS systems using home-manager's "fix the host OS" approach (no per-app wrapping):
 
 ```nix
-# For NVIDIA graphics
-nixgl = {
-  enable = true;
-  profile = "nvidia";
-};
-
-# For Intel/AMD graphics
-nixgl = {
-  enable = true;
-  profile = "mesa";
-};
-
-# For NVIDIA Optimus/Prime laptops
-nixgl = {
-  enable = true;
-  profile = "nvidiaPrime";
-};
+targets.genericLinux.gpu.enable = true;
 ```
+
+At activation home-manager prints a one-off `sudo /nix/store/<hash>-non-nixos-gpu/bin/non-nixos-gpu-setup` command. Run it once (and again whenever the store path changes) so `/run/opengl-driver` points into the Nix store. See the GPU Setup section in the root README.
 
 #### Host-Specific Stylix Configuration
 
@@ -173,7 +155,7 @@ imports = [
 Many modules handle platform differences internally:
 
 - **Darwin (macOS)**: Uses system paths and Homebrew integration where needed
-- **Linux**: Uses NixGL wrappers for GUI applications and different font paths
+- **Linux**: GPU access goes through the `targets.genericLinux.gpu` host-OS setup (see root README) plus different font paths
 
 Use `pkgs.stdenv.hostPlatform.isDarwin` for conditional logic when needed.
 
@@ -183,8 +165,6 @@ Custom arguments passed to all modules:
 
 - `userConfig`: Contains user-specific settings (e.g., `userConfig.name`)
 - `nhModules`: Path to home-manager modules directory
-- `nixgl`: NixGL packages for Linux GUI support
-- `wrapWithNixGL`: Helper function from `nixgl-wrapper.nix`
 
 ## Best Practices
 

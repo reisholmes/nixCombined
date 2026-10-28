@@ -85,11 +85,8 @@
     lm_sensors
   ];
 
-  # NixGL configuration for standalone home-manager on Linux
-  nixgl = {
-    enable = true;
-    profile = "mesa";
-  };
+  # GPU drivers for standalone home-manager on Linux (host-OS /run/opengl-driver)
+  targets.genericLinux.gpu.enable = true;
 
   # Silence Hyprland configType warning while home.stateVersion < "26.05"
   wayland.windowManager.hyprland.configType = "hyprlang";

@@ -2,7 +2,6 @@
 #
 # This module provides base configuration imported by all systems including:
 # - Core CLI tools (git, fzf, zsh, ripgrep, bat, etc.)
-# - NixGL support for non-NixOS graphics acceleration
 # - Stylix theming framework integration
 # - Common program configurations (kitty, ghostty, lazygit, etc.)
 #
@@ -26,8 +25,6 @@
   # Packages that require configuration get placed in relevant place
   imports = [
     # Common modules
-    ./nixgl-profiles.nix
-    ./nixgl-wrapper.nix
     ./nixpkgs-config.nix
     ./stylix-common.nix
     ./stylix-host.nix

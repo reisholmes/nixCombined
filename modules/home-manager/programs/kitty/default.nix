@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  wrapWithNixGL,
   ...
 }: {
   # https://home-manager-options.extranix.com/?query=programs.kitty&release=master
@@ -9,7 +8,7 @@
   programs.kitty = {
     enable = false;
 
-    package = wrapWithNixGL pkgs.kitty;
+    package = pkgs.kitty;
 
     keybindings = {
       "ctrl+shift+enter" = "new_window_with_cwd";
