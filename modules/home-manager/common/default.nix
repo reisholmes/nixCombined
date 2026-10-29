@@ -126,7 +126,6 @@
       yq
     ]
     ++ lib.optionals stdenv.hostPlatform.isDarwin [
-      claude-code
       mas
     ]
     ++ lib.optionals (!stdenv.hostPlatform.isDarwin) [
