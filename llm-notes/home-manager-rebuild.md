@@ -30,3 +30,12 @@
 
 - The user `nix-gc` unit runs `nix-collect-garbage --delete-older-than 21d` plus `nix-store --optimise`. It only deletes unreachable paths older than 21 days. Profile generations are GC roots; GC can never delete paths that `nvd diff` compares.
 - If a diff looks stale or repeats, check which generations are actually being compared (see the `nix_rebuild` note above) before suspecting GC.
+
+## Darwin eval failed: `python3.14-fabric` is broken (via azure-cli)
+
+- **Symptom**: `nix_rebuild` on `reisholmes` aborted at eval with "Refusing to evaluate package 'python3.14-fabric-3.2.3' ... broken". The trace passes through `python3.14-azure-cli-2.91.0` `postFixup`.
+- **Cause**: nixpkgs-unstable's `azure-cli` depends on the Python `fabric` package, which is marked broken on python 3.14 at the pinned rev. The `programs.rofi.font` rename warning in the same output is unrelated.
+- **Fix**: Remove `azure-cli` from the Nix package list in `modules/home-manager/dev/default.nix`. `az` comes from Homebrew (`modules/darwin/programs/homebrew.nix`). Install the extension by hand: `az extension add --name aks-preview`. Extensions are not Homebrew packages and are not tracked in this repo. On a fresh machine, repeat the manual install, or `az aks` commands fail with "not a known command".
+- **Verify**: `nix eval .#darwinConfigurations.reisholmes.system.drvPath` prints a `.drv` path, and `command -v az` prints `/opt/homebrew/bin/az`.
+- **Revisit**: When nixpkgs marks `fabric` as working on python 3.14, restore `(azure-cli.withExtensions [azure-cli.extensions.aks-preview])` in the Darwin list and delete this note.
+- **Alternatives rejected**: `stable.azure-cli` (2.79.0, a large downgrade), `problems.handlers.fabric.broken = "warn"` (may still fail in fabric's build).
