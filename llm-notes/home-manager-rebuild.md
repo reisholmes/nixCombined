@@ -7,6 +7,14 @@
 - **Fix**: The `nix_rebuild` alias in `home/reis/reis-new/default.nix` now captures the current generation before the switch and only runs `nvd diff` if the generation changed; otherwise it prints "No changes (generation unchanged: ...)". (Commit `f09007a`.)
 - **Verify**: Two consecutive `nix_rebuild` runs; the second must print "No changes".
 
+## `nix_rebuild` printed "Path does not exist" after a real generation change
+
+- **Symptom**: After a rebuild that actually created a new generation, the alias ended with `Path does not exist: 2026-11-02 14:58 : id 165 -> /nix/store/...-home-manager-generation (current)` instead of an `nvd diff`.
+- **Cause**: The awk program was double-quoted inside the alias (`awk "{print $7}"`). zsh aliases are re-parsed on use, so `$7` expanded to the (empty) positional parameter before awk ran; awk then printed the whole generations line. The junk never reached `nvd diff` while no new generation was created, because `old == new` took the "No changes" branch, which masked the bug.
+- **Fix**: Single-quote the awk program in the alias in `home/reis/reis-new/default.nix` (`awk '{print $7}'`).
+- **Verify**: A `nix_rebuild` that creates a new generation prints a real `nvd diff`. Note the no-op-rebuild check cannot catch path-extraction bugs.
+- **Rule**: In aliases passed through `programs.zsh.shellAliases`, single-quote awk/sed programs. Double quotes make zsh expand `$n` at alias-use time.
+
 ## Oneshot systemd unit restarted on every `home-manager switch`
 
 - **Symptom**: "Starting units: nix-gc.service" on every rebuild, not just the scheduled run.
