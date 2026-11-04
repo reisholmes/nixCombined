@@ -61,6 +61,11 @@ in {
     # Git settings (new format)
     settings = {
       # No default email - work email stays out of nix, personal email set in conditional includes
+
+      # CommonInfrastructure is a work-only GitHub org, so its ssh:// URLs always use the work key.
+      # This rule sits outside the work include on purpose: uv fetches git dependencies from its
+      # own cache folder (~/.cache/uv), where the gitdir include never loads.
+      url."git@github-work:CommonInfrastructure/".insteadOf = ["ssh://git@github.com/CommonInfrastructure/"];
     };
 
     # Conditional includes for work/personal repositories
@@ -80,13 +85,7 @@ in {
             "git@github-work:".insteadOf = [
               "git@github.com:"
               "https://github.com/"
-            ];
-            "github-work:optimizely/".insteadOf = [
-              "git@github.com:optimizely/"
-              "https://github.com/optimizely/"
-            ];
-            "github-work:episerver/".insteadOf = [
-              "https://github.com/episerver/"
+              "ssh://git@github.com/"
             ];
           };
         };
