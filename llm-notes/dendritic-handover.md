@@ -1,6 +1,6 @@
 # Dendritic Nix migration handover
 
-Status at 2026-11-09: option B approved. Work is on branch `dendritic`. Step 0 (rh-sb3 alias) done, pattern migration not started.
+Status at 2026-11-09: option B approved. Work is on branch `dendritic`. reis-new ported and verified. rh-sb3 and reisholmes still on the old layout and therefore missing from the flake outputs until ported.
 All background lives in `llm-research/` (self-contained, re-read those before any implementation work).
 
 ## What we did
@@ -31,12 +31,12 @@ Key facts (details in the linked docs):
 0. Done 2026-11-09: user accepted option B in `llm-research/03-decision.md`.
 1. Done 2026-11-09, uncommitted: copied the fixed `nix_rebuild` alias from `home/reis/reis-new/default.nix` to `home/reis/rh-sb3/default.nix`. `nix flake check` passes.
 2. Done: on branch `dendritic`.
-3. Add `flake-parts` (`github:hercules-ci/flake-parts`) and `import-tree` (`github:vic/import-tree`) inputs. Commit lockfile update.
-4. Add `modules/parts.nix` (systems `x86_64-linux` + `aarch64-darwin`, pre-commit checks unchanged, devShell with hook shellHook) and `modules/users.nix` (identity data as flake-level option).
-5. Port `reis-new` (pilot). Verify per `llm-research/04-migration-plan.md` "Verification per host".
-6. Port `rh-sb3`. Verify.
-7. Port `reisholmes` (darwin + its HM profile). Needs the Mac.
-8. Delete old `home/`, `hosts/`, `modules/` layout, update Makefile/AGENTS.md, write `llm-notes/dendritic-migration.md`, `nix flake check` on both systems, merge.
+3. Done: added `flake-parts` and `import-tree` inputs.
+4. Done: `modules/parts.nix`, `modules/users.nix`, `modules/overlays.nix`. `flake.modules` needs `inputs.flake-parts.flakeModules.modules`.
+5. Done: ported `reis-new`. Old content moved out of `modules/` to `home-manager/` and `darwin/` because import-tree auto-loads every file under `modules/`. Verified by `nix eval .#homeConfigurations.reis@reis-new.activationPackage.drvPath` and `nix flake check --system x86_64-linux`.
+6. Pending: port `rh-sb3` (same shape, plus its `nixgl.profile = "nvidiaPrime"`).
+7. Pending: port `reisholmes` (darwin + its HM profile). Needs the Mac.
+8. Pending: delete old `home/` and `hosts/` dirs, update Makefile/AGENTS.md, write `llm-notes/dendritic-migration.md`, `nix flake check` on both systems, merge.
 
 One host per commit. Stop at the first host that fails verification. Rollback = `git checkout` of the previous branch; machines are untouched until `nix_rebuild` is run on them.
 

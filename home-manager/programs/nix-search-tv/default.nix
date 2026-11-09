@@ -1,8 +1,4 @@
-{
-  pkgs,
-  nhModules,
-  ...
-}: {
+{pkgs, ...}: {
   # https://github.com/3timeslazy/nix-search-tv
   # https://github.com/3timeslazy/nix-search-tv?tab=readme-ov-file#configuration
   # nix-search-tv
@@ -25,7 +21,7 @@
           fzf
           nix-search-tv
         ];
-        text = builtins.readFile "${nhModules}/assets/nix-search-tv/nix-search.tv.sh";
+        text = builtins.readFile ../../assets/nix-search-tv/nix-search.tv.sh;
       })
     ];
   };

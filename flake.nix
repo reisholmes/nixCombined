@@ -35,123 +35,14 @@
       url = "github:cachix/pre-commit-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Dendritic pattern: flake-parts module system plus automatic module loading.
+    # Inert until outputs switch to mkFlake + import-tree (see llm-research/04-migration-plan.md).
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    import-tree.url = "github:vic/import-tree";
   };
 
-  outputs = {
-    self,
-    home-manager,
-    nix-darwin,
-    nixpkgs,
-    pre-commit-hooks,
-    stylix,
-    ...
-  } @ inputs: let
-    inherit (self) outputs;
-
-    # Define user configurations
-    users = {
-      "reis.holmes" = {
-        fullName = "Reis Holmes";
-        name = "reis.holmes";
-        workEmail = "reis.holmes@optimizely.com";
-        signingKeyPub = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINNBSXWl4vHikJV3SOXxLdHq005sD3a/QIsvRfXGY3R2 4367558+reisholmes@users.noreply.github.com";
-        workSigningKeyPub = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKouJmVbhP+ojiWpSH4RDiVg/DQb0uHrVxFWztKEQ3u3 work-signing-key";
-      };
-      reis = {
-        fullName = "Reis Holmes";
-        name = "reis";
-        email = "4367558+reisholmes@users.noreply.github.com";
-        signingKeyPub = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINNBSXWl4vHikJV3SOXxLdHq005sD3a/QIsvRfXGY3R2 4367558+reisholmes@users.noreply.github.com";
-      };
-    };
-
-    # Function for NixOS system configuration (reserved for future use)
-    # mkNixosConfiguration = hostname: username:
-    #   nixpkgs.lib.nixosSystem {
-    #     specialArgs = {
-    #       inherit inputs outputs hostname;
-    #       userConfig = users.${username};
-    #       nixosModules = "${self}/modules/nixos";
-    #     };
-    #     modules = [./hosts/${hostname}];
-    #   };
-
-    # Function for nix-darwin system configuration
-    mkDarwinConfiguration = hostname: username:
-      nix-darwin.lib.darwinSystem {
-        specialArgs = {
-          inherit inputs outputs hostname self;
-          darwinModules = "${self}/modules/darwin";
-          userConfig = users.${username};
-        };
-        modules = [
-          ./hosts/${hostname}
-          home-manager.darwinModules.home-manager
-          # Note: stylix.darwinModules.stylix has compatibility issues (stylix.icons error)
-          # Stylix is configured via home-manager module instead (see home/*/reisholmes/default.nix)
-        ];
-      };
-
-    # Function for Home Manager configuration
-    mkHomeConfiguration = system: username: hostname:
-      home-manager.lib.homeManagerConfiguration {
-        pkgs = import nixpkgs {inherit system;};
-        extraSpecialArgs = {
-          inherit inputs outputs;
-          userConfig = users.${username};
-          nhModules = "${self}/modules/home-manager";
-        };
-        modules = [
-          ./home/${username}/${hostname}
-          stylix.homeModules.stylix
-        ];
-      };
-  in {
-    # Reserved for future NixOS host configurations
-    # Example: nixosConfigurations.hostname = mkNixosConfiguration "hostname" "username";
-    nixosConfigurations = {};
-
-    darwinConfigurations = {
-      "reisholmes" = mkDarwinConfiguration "reisholmes" "reis.holmes";
-    };
-
-    homeConfigurations = {
-      "reis.holmes@reisholmes" = mkHomeConfiguration "aarch64-darwin" "reis.holmes" "reisholmes";
-      "reis@rh-sb3" = mkHomeConfiguration "x86_64-linux" "reis" "rh-sb3";
-      "reis@reis-new" = mkHomeConfiguration "x86_64-linux" "reis" "reis-new";
-    };
-
-    overlays = import ./overlays {inherit inputs;};
-
-    # Pre-commit hooks for code quality
-    checks = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-darwin"] (system: {
-      pre-commit-check = pre-commit-hooks.lib.${system}.run {
-        src = ./.;
-        hooks = {
-          # Nix formatter
-          alejandra.enable = true;
-          # Nix linter (configured via statix.toml to ignore style-only warnings)
-          statix = {
-            enable = true;
-            settings = {
-              config = "${./.}/statix.toml";
-            };
-          };
-          # Find and remove unused code
-          deadnix.enable = true;
-        };
-      };
-    });
-
-    # Development shell with pre-commit hooks
-    # Run 'nix develop' once to install git hooks, then they run automatically on commit
-    devShells = nixpkgs.lib.genAttrs ["x86_64-linux" "aarch64-darwin"] (system: let
-      pkgs = import nixpkgs {inherit system;};
-    in {
-      default = pkgs.mkShell {
-        inherit (self.checks.${system}.pre-commit-check) shellHook;
-        buildInputs = self.checks.${system}.pre-commit-check.enabledPackages;
-      };
-    });
-  };
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake {inherit inputs;}
+    (inputs.import-tree ./modules);
 }

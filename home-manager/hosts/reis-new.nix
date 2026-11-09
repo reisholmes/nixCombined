@@ -1,15 +1,9 @@
 {
   config,
-  nhModules,
   pkgs,
   userConfig,
   ...
 }: {
-  imports = [
-    "${nhModules}/common"
-    "${nhModules}/dev"
-  ];
-
   # Enable home-manager
   programs.home-manager.enable = true;
 
@@ -97,7 +91,7 @@
 
     # Host-specific wallpaper
     # https://basicappleguy.com/basicappleblog/mountains-beyond-mountains
-    hostConfig.wallpaper = ../../../modules/home-manager/assets/stylix/hearts.png;
+    hostConfig.wallpaper = ../assets/stylix/hearts.png;
 
     # Font sizes and base16Scheme inherited from stylix-common.nix module
   };

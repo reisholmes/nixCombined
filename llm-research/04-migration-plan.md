@@ -7,48 +7,50 @@ Status: Draft. Executes after 03 is approved. Depends on 01 (pattern) and 02 (cu
 ```
 flake.nix           # inputs + two-line outputs (flake-parts.mkFlake + import-tree)
 flake.lock          # stays tracked
-modules/
-  parts.nix         # config.systems, pre-commit checks, devShell with hook shellHook
-  users.nix         # flake-level option: identity data (emails, signing keys), replaces the users attrset
-  shell.nix         # devShells per system
-  features/
-    git-signing.nix # git SSH signing from user identity
-    ssh-config.nix  # per-host ssh config blocks
-    stylix.nix      # stylix targets and wallpapers
-    nix-gc.nix      # timer-only systemd unit (Persistent = true, never in default.target)
-    dev-packages.nix  # replaces modules/home-manager/dev
+modules/            # flake-parts modules only, auto-loaded by import-tree
+  parts.nix         # systems, imports inputs.flake-parts.flakeModules.modules, pre-commit checks, devShell
+  users.nix         # flake-level option `users` (identity data)
+  overlays.nix      # flake.overlays output
   home/
-    common.nix      # replaces modules/home-manager/common
+    common.nix      # flake.modules.homeManager.common = import ../../home-manager/common
+    dev.nix         # flake.modules.homeManager.dev
   hosts/
-    reis-new.nix    # host facts + selected features -> .homeConfigurations.reis@reis-new
-    rh-sb3.nix      # -> .homeConfigurations.reis@rh-sb3
-    reisholmes.nix  # darwin host -> .darwinConfigurations.reisholmes plus its HM profile
+    reis-new.nix    # flake.homeConfigurations."reis@reis-new" (ported)
+    rh-sb3.nix      # pending
+    reisholmes.nix  # pending (darwin host plus its HM profile)
+home-manager/       # HM module content, NOT auto-loaded, imported by the modules/home wrappers
+  hosts/reis-new.nix  # host-specific HM config (moved from home/reis/reis-new/default.nix)
+darwin/             # nix-darwin module content, NOT auto-loaded
 overlays/default.nix  # unchanged, still a flake output
 ```
 
-Old home/, hosts/, and modules/ directories are deleted in the final step, once all four configurations build. The nix_rebuild aliases keep working because the flake attribute names do not change.
+Rule: every `.nix` file under `modules/` becomes a flake-parts module. Reusable home-manager and nix-darwin module content therefore lives outside `modules/`, in `home-manager/` and `darwin/`.
+
+`flake.modules` is not a built-in flake-parts option. `modules/parts.nix` imports `inputs.flake-parts.flakeModules.modules` to declare it. `nix flake check` then prints `warning: unknown flake output 'modules'`, which is cosmetic.
 
 ## Composition style
 
 Follow the simple style from adumh00man/dendritic-tutorial, not the predicate style from vic/vix: each host file is a module list (`modules = with self.<class>Modules; [ ... ]`) plus optional inline override objects. No `at` predicates. See llm-research/01-dendrix-pattern.md "Fourth example".
 
-## How home-manager fits (the one non-obvious piece)
+## How home-manager fits (verified for reis-new)
 
-- Each Linux host module builds its profile with home-manager.lib.homeManagerConfiguration inside the flake-parts tree, following vimjoyer's example at vimjoyer.com/nix/dendritic-home-manager.
-- The reisholmes darwin host keeps the home-manager.darwinModules.home-manager module in its darwinSystem call, plus the standalone profile, as today.
-- Verify the exact wiring against that example when porting, because the official Dendrix docs do not show it.
+- A host module builds its profile with `home-manager.lib.homeManagerConfiguration` inside the flake-parts tree, then assigns it to `flake.homeConfigurations."<user>@<host>"`.
+- HM module content is wrapped, not rewritten: `modules/home/common.nix` sets `flake.modules.homeManager.common = import ../../home-manager/common`.
+- `extraSpecialArgs` survives at the HM instantiation boundary only (`inputs`, `outputs = self`, `userConfig` from `config.users`). Inside the HM modules nothing changed. Removing it entirely means rewriting the ~20 HM module files to take options, which is a separate, later cleanup.
+- `nhModules` is gone. The one real user was `home-manager/programs/nix-search-tv`, now a relative path. Host imports are gone because the flake module selects the aspects.
+- The reisholmes darwin host keeps the `home-manager.darwinModules.home-manager` module in its darwinSystem call, plus the standalone profile, as before.
 
 ## Steps
 
-0. Prereq (standalone, do first): copy the fixed nix_rebuild alias from home/reis/reis-new/default.nix to home/reis/rh-sb3/default.nix. Commit as fix(home): only diff changed generations on rh-sb3.
-1. Create branch dendritic.
-2. Add inputs: flake-parts (github:hercules-ci/flake-parts) and import-tree (github:vic/import-tree). Commit the lockfile update.
-3. Create modules/parts.nix (systems = x86_64-linux and aarch64-darwin, pre-commit checks identical to the current checks attrset, devShell with the hook-installing shellHook) and modules/users.nix (the identity data).
-4. Port reis-new (pilot). Port its common/dev imports as feature files it selects. Verify.
-5. Port rh-sb3. Verify.
-6. Port reisholmes (darwin host plus its HM profile). Verify on the Mac.
-7. Delete the old home/, hosts/, and modules/ layout. Update Makefile targets if any paths changed. Update AGENTS.md and write llm-notes/dendritic-migration.md.
-8. Final nix flake check on both systems. Commit. Merge the branch.
+0. Done 2026-11-09: rh-sb3 `nix_rebuild` alias fixed (commit `435ff18`).
+1. Done: branch `dendritic`.
+2. Done: `flake-parts` and `import-tree` inputs added.
+3. Done: `modules/parts.nix`, `modules/users.nix`, `modules/overlays.nix` created.
+4. Done: reis-new ported. Verified with `nix eval .#homeConfigurations.reis@reis-new.activationPackage.drvPath` and `nix flake check --system x86_64-linux`.
+5. Pending: port rh-sb3. Verify the same way, plus a real `nix_rebuild` when on that machine.
+6. Pending: port reisholmes (darwin host plus its HM profile). Needs the Mac.
+7. Pending: delete the remaining old `home/` and `hosts/` dirs, update Makefile paths, AGENTS.md, and write `llm-notes/dendritic-migration.md`.
+8. Pending: final `nix flake check` on both systems. Merge.
 
 Do one host per commit. Stop at the first host that fails verification instead of stacking work.
 
