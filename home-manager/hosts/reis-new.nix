@@ -87,6 +87,9 @@
   # Silence Hyprland configType warning while home.stateVersion < "26.05"
   wayland.windowManager.hyprland.configType = "hyprlang";
 
+  # Stable wallpaper path, so KDE's manual wallpaper setting survives repo moves
+  xdg.dataFile."wallpapers/hearts.png".source = ../assets/stylix/hearts.png;
+
   # Stylix settings specific to this machine
   stylix = {
     enable = true;
