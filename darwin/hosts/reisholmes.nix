@@ -1,16 +1,16 @@
+# What: nix-darwin system module for reisholmes: platform, users, home-manager wiring.
+# Used by: modules/hosts/reisholmes.nix passes it to nix-darwin.lib.darwinSystem.
 {
   pkgs,
   outputs,
   userConfig,
   inputs,
-  self,
-  darwinModules,
   ...
 }: {
   # Import darwin modules for common configurations
   imports = [
-    "${darwinModules}/common"
-    "${darwinModules}/programs/homebrew.nix"
+    ../common
+    ../programs/homebrew.nix
   ];
 
   # Host-specific nixpkgs configuration
@@ -40,9 +40,14 @@
     ''}";
     extraSpecialArgs = {
       inherit inputs outputs userConfig;
-      nhModules = "${self}/modules/home-manager";
     };
-    users.${userConfig.name} = import ../../home/${userConfig.name}/reisholmes;
+    # Stylix system-level darwin module has compatibility issues, so it runs in home-manager.
+    sharedModules = [
+      inputs.stylix.homeModules.stylix
+      outputs.modules.homeManager.common
+      outputs.modules.homeManager.dev
+    ];
+    users.${userConfig.name} = import ../../home-manager/hosts/reisholmes.nix;
   };
 
   # Used for backwards compatibility, please read the changelog before changing.

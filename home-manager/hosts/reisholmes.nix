@@ -1,9 +1,6 @@
-{
-  nhModules,
-  inputs,
-  userConfig,
-  ...
-}: let
+# What: Host-specific home-manager config for reisholmes: work/personal git split, signing, stylix targets.
+# Used by: modules/hosts/reisholmes.nix for the standalone profile, darwin/hosts/reisholmes.nix for the embedded one.
+{userConfig, ...}: let
   # Personal email for personal repos
   personalEmail = "4367558+reisholmes@users.noreply.github.com";
 
@@ -22,12 +19,6 @@
     ];
   };
 in {
-  imports = [
-    "${nhModules}/common"
-    "${nhModules}/dev"
-    inputs.stylix.homeModules.stylix
-  ];
-
   # Enable home-manager
   programs.home-manager.enable = true;
 
