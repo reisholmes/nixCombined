@@ -1,6 +1,6 @@
 # Dendritic Nix migration handover
 
-Status at 2026-11-09: option B approved. Work is on branch `dendritic`. reis-new and rh-sb3 ported and evaluated. reisholmes still on the old layout and missing from the flake outputs until ported.
+Status at 2026-11-09: option B approved. Work is on branch `dendritic`. All three hosts ported and evaluating. Not yet rebuilt on any machine, not merged.
 All background lives in `llm-research/` (self-contained, re-read those before any implementation work).
 
 ## What we did
@@ -35,8 +35,8 @@ Key facts (details in the linked docs):
 4. Done: `modules/parts.nix`, `modules/users.nix`, `modules/overlays.nix`. `flake.modules` needs `inputs.flake-parts.flakeModules.modules`.
 5. Done: ported `reis-new`. Old content moved out of `modules/` to `home-manager/` and `darwin/` because import-tree auto-loads every file under `modules/`. Verified by `nix eval .#homeConfigurations.reis@reis-new.activationPackage.drvPath` and `nix flake check --system x86_64-linux`.
 6. Done: ported `rh-sb3`. Verified by `nix eval .#homeConfigurations.reis@rh-sb3.activationPackage.drvPath` and `nix flake check`.
-7. Pending: port `reisholmes` (darwin + its HM profile). Needs the Mac.
-8. Pending: delete old `home/` and `hosts/` dirs, update Makefile/AGENTS.md, write `llm-notes/dendritic-migration.md`, `nix flake check` on both systems, merge.
+7. Done: ported `reisholmes` (darwin + embedded and standalone HM profiles). Both evaluate.
+8. Done: host notes moved to `docs/hosts/`. Remaining: rebuild verification on the real machines (reis-new, rh-sb3, reisholmes), then merge.
 
 One host per commit. Stop at the first host that fails verification. Rollback = `git checkout` of the previous branch; machines are untouched until `nix_rebuild` is run on them.
 

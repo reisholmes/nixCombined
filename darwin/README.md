@@ -5,7 +5,7 @@ This directory contains nix-darwin system configuration modules for macOS hosts.
 ## Structure
 
 ```
-modules/darwin/
+darwin/
 ├── common/           # Shared configuration for all darwin hosts
 │   └── default.nix   # Nixpkgs, Nix daemon, fonts, security
 ├── programs/         # Program-specific configurations
@@ -47,16 +47,17 @@ Currently empty. Future service modules may include:
 
 ### In Host Configuration
 
-Import modules in your darwin host (e.g., `hosts/hostname/default.nix`):
+Import modules in the darwin host module, `darwin/hosts/<host>.nix`:
 
 ```nix
 {
-  darwinModules,
+  userConfig,
+  inputs,
   ...
 }: {
   imports = [
-    "${darwinModules}/common"
-    "${darwinModules}/programs/homebrew.nix"
+    ../common
+    ../programs/homebrew.nix
   ];
 
   # Host-specific overrides
@@ -65,17 +66,22 @@ Import modules in your darwin host (e.g., `hosts/hostname/default.nix`):
 }
 ```
 
-### Module Path Injection
+### Wiring in the flake
 
-The `darwinModules` path is injected in `flake.nix`:
+`modules/hosts/reisholmes.nix` builds the system and passes the module in:
 
 ```nix
-mkDarwinConfiguration = hostname: username:
-  nix-darwin.lib.darwinSystem {
+hosts.darwinConfigurations.reisholmes =
+  inputs.nix-darwin.lib.darwinSystem {
     specialArgs = {
-      darwinModules = "${self}/modules/darwin";
-      # ...
+      inherit inputs;
+      outputs = self;
+      userConfig = config.users."reis.holmes";
     };
+    modules = [
+      ../../darwin/hosts/reisholmes.nix
+      inputs.home-manager.darwinModules.home-manager
+    ];
   };
 ```
 
@@ -83,22 +89,22 @@ mkDarwinConfiguration = hostname: username:
 
 ### Program Module
 
-1. Create `modules/darwin/programs/program-name.nix`
-2. Add documentation header
-3. Import in host: `"${darwinModules}/programs/program-name.nix"`
+1. Create `darwin/programs/program-name.nix`
+2. Add the two-line header
+3. Import it in the host: `../programs/program-name.nix`
 
 ### Service Module
 
-1. Create `modules/darwin/services/service-name.nix`
+1. Create `darwin/services/service-name.nix`
 2. Configure service options
-3. Import in host: `"${darwinModules}/services/service-name.nix"`
+3. Import it in the host: `../services/service-name.nix`
 
 ## Platform Awareness
 
 Darwin modules are macOS-specific. For cross-platform configurations:
 
 - **Darwin-only**: Use these modules
-- **Cross-platform**: Use `modules/home-manager/` with platform conditionals
+- **Cross-platform**: Use `home-manager/` with platform conditionals
 - **Linux-only**: Create `modules/nixos/` (future)
 
 ## Documentation

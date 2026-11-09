@@ -11,7 +11,7 @@ Written 2026-10-25 from research passes on the official Dendrix docs, four examp
 | `01-dendrix-pattern.md` | What the Dendritic pattern is, core terms, getting started, vimjoyer's content | Done |
 | `02-current-workflow.md` | How this repo works today (flake, hosts, rebuild, checks) | Done |
 | `03-decision.md` | Pros/cons per option, recommendation: pattern only, no registry | Done (option B approved 2026-11-09) |
-| `04-migration-plan.md` | Stepwise plan, pilot host, verification, rollback | In progress (reis-new and rh-sb3 ported, reisholmes pending) |
+| `04-migration-plan.md` | Stepwise plan, pilot host, verification, rollback | In progress (all three hosts ported, merge pending) |
 
 Status legend: Done = complete, stable. Draft = will change during execution.
 

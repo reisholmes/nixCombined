@@ -50,9 +50,8 @@ Follow the simple style from adumh00man/dendritic-tutorial, not the predicate st
 3. Done: `modules/parts.nix`, `modules/users.nix`, `modules/overlays.nix` created.
 4. Done: reis-new ported. Verified with `nix eval .#homeConfigurations.reis@reis-new.activationPackage.drvPath` and `nix flake check --system x86_64-linux`.
 5. Done: rh-sb3 ported. Verified by `nix eval .#homeConfigurations.reis@rh-sb3.activationPackage.drvPath` and `nix flake check`. A real `nix_rebuild` on that machine is still owed.
-6. Pending: port reisholmes (darwin host plus its HM profile). Needs the Mac.
-7. Pending: delete the remaining old `home/` and `hosts/` dirs, update Makefile paths, AGENTS.md, and write `llm-notes/dendritic-migration.md`.
-8. Pending: final `nix flake check` on both systems. Merge.
+6. Done: reisholmes ported. Both `darwinConfigurations.reisholmes` and `homeConfigurations."reis.holmes@reisholmes"` evaluate. A real rebuild on the Mac is still owed.
+7. Done: host notes moved from `hosts/` to `docs/hosts/`, READMEs updated to the new layout. Remaining: rebuild verification on the real machines, then merge.
 
 Do one host per commit. Stop at the first host that fails verification instead of stacking work.
 

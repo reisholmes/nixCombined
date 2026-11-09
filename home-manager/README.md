@@ -9,7 +9,7 @@ This directory contains modular home-manager configurations that are shared acro
 Each program module follows this pattern:
 
 ```
-modules/home-manager/programs/
+home-manager/programs/
 ├── programName/
 │   ├── default.nix          # Main module configuration
 │   ├── config/              # Static config files (if needed)
@@ -28,7 +28,7 @@ modules/home-manager/programs/
 Shared configuration modules used across all systems:
 
 ```
-modules/home-manager/common/
+home-manager/common/
 ├── default.nix           # Main entry point, imports all common modules
 ├── nixpkgs-config.nix    # Nixpkgs overlays and allowUnfree config
 ├── stylix-common.nix     # Shared Stylix theme and font defaults
@@ -47,7 +47,7 @@ modules/home-manager/common/
 Development tools and language-specific configurations:
 
 ```
-modules/home-manager/dev/
+home-manager/dev/
 └── default.nix    # Development packages and tools
 ```
 
@@ -56,7 +56,7 @@ modules/home-manager/dev/
 Shared assets used by multiple modules:
 
 ```
-modules/home-manager/assets/
+home-manager/assets/
 ├── fastfetch/             # Fastfetch configuration files
 ├── oh-my-posh/           # Oh-My-Posh theme files
 └── stylix/               # Wallpapers and Stylix assets
@@ -66,15 +66,19 @@ modules/home-manager/assets/
 
 ### Importing Modules
 
-Modules are typically imported in host-specific configurations:
+Host modules select aspects through the flake, they do not import files:
 
 ```nix
-# In home/username/hostname/default.nix
-imports = [
-  "${nhModules}/common"  # Imports all common modules and programs
-  "${nhModules}/dev"     # Imports development tools
+# In modules/hosts/<host>.nix
+modules = [
+  config.flake.modules.homeManager.common
+  config.flake.modules.homeManager.dev
 ];
 ```
+
+The wrappers live in `modules/home/` and point at the content here, for example `modules/home/common.nix` contains `flake.modules.homeManager.common = import ../../home-manager/common;`.
+
+Host-specific config goes in `home-manager/hosts/<host>.nix` and is added to the same `modules` list.
 
 ### Overriding Defaults
 
@@ -106,7 +110,7 @@ Set wallpapers and theming per host:
 
 ```nix
 # Set a wallpaper
-stylix.hostConfig.wallpaper = ../../../modules/home-manager/assets/stylix/wallpaper_wave_mac.jpg;
+stylix.hostConfig.wallpaper = ../assets/stylix/wallpaper_wave_mac.jpg;  # relative to home-manager/hosts/
 
 # Skip wallpaper (e.g., on work machines)
 stylix.hostConfig.wallpaper = null;
@@ -139,9 +143,9 @@ programs.git.sshSigning = {
 
 ### Adding New Program Modules
 
-1. Create a new directory: `modules/home-manager/programs/new-program/`
+1. Create a new directory: `home-manager/programs/new-program/`
 2. Add `default.nix` with your configuration
-3. Import it in `modules/home-manager/common/default.nix`
+3. Import it in `home-manager/common/default.nix`, or expose it as its own aspect in `modules/home/`
 
 ```nix
 imports = [
@@ -161,10 +165,13 @@ Use `pkgs.stdenv.hostPlatform.isDarwin` for conditional logic when needed.
 
 ## Special Arguments
 
-Custom arguments passed to all modules:
+Custom arguments passed to the home-manager modules when the profile is instantiated:
 
-- `userConfig`: Contains user-specific settings (e.g., `userConfig.name`)
-- `nhModules`: Path to home-manager modules directory
+- `userConfig`: user identity data from `config.users.<name>` (for example `userConfig.name`)
+- `inputs`: the flake inputs
+- `outputs`: the flake outputs, used for `outputs.overlays.*`
+
+`nhModules` no longer exists. The flake modules in `modules/home/` import this directory directly.
 
 ## Best Practices
 

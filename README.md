@@ -161,12 +161,17 @@ home-manager switch --flake .#newuser@newmachine --impure -b backup
 
 ## Structure
 
-- `flake.nix`: The flake itself, defining inputs and outputs for NixOS, nix-darwin, and Home Manager configurations.
-- `hosts/`: nix-darwin configurations for each machine (NixOS reserved for future use)
-- `home/`: Home Manager configurations for each machine
-- `modules/`: Reusable platform-specific modules
-  - `darwin/`: macOS-specific modules
-  - `home-manager/`: User-space configuration modules (see [modules/home-manager/README.md](modules/home-manager/README.md))
+- `flake.nix`: inputs plus a two-line `outputs`. Evaluation is handed to flake-parts, which loads `modules/` with import-tree.
+- `modules/`: flake-parts modules, auto-loaded, one concern per file.
+  - `modules/hosts/<host>.nix`: declares a machine's flake outputs.
+  - `modules/home/<aspect>.nix`: exposes a home-manager aspect as `flake.modules.homeManager.<aspect>`.
+  - `modules/parts.nix`: systems, pre-commit checks, devShell.
+  - `modules/users.nix`: user identity data (emails, public signing keys).
+  - `modules/outputs.nix`: publishes host outputs once, because flake-parts merges only top-level flake outputs.
+- `home-manager/`: home-manager module content, wrapped by `modules/home/` (see [home-manager/README.md](home-manager/README.md)).
+- `home-manager/hosts/<host>.nix`: host-specific home-manager config.
+- `darwin/`: nix-darwin module content (see [darwin/README.md](darwin/README.md)).
+- `docs/hosts/`: per-machine setup notes.
 - `flake.lock`: Lock file ensuring reproducible builds by pinning input versions
 - `overlays/`: Custom Nix overlays for package modifications or additions
 
@@ -182,129 +187,57 @@ home-manager switch --flake .#newuser@newmachine --impure -b backup
 
 ## Usage
 
-### Adding a New Machine with a New User
+### Adding a New Machine
 
-To add a new machine with a new user to your nix-darwin or NixOS configuration, follow these steps:
+Today the flake has three hosts: `reis-new` and `rh-sb3` (standalone Home Manager on Linux) and `reisholmes` (nix-darwin plus Home Manager on macOS). There are no NixOS hosts yet. A NixOS host would follow the same shape with a `hosts.nixosConfigurations` option.
 
-> [!NOTE]
-> This flake currently has no NixOS machines (`nixosConfigurations = {}` and `mkNixosConfiguration` is commented out). The NixOS-specific steps below are reserved for future use. For now the supported configurations are nix-darwin (macOS) and standalone Home Manager (Linux).
-
-1. **Update `flake.nix`**:
-
-   a. Add the new user to the `users` attribute set:
+1. **Add the user (only for a new person)** in `modules/users.nix`:
 
    ```nix
-   users = {
-     # Existing users...
-     newuser = {
-       fullName = "New User";
-       name = "newuser";
-       email = "newuser@example.com";
-       signingKeyPub = "ssh-ed25519 AAAA... your@example.com";
-       # Optional for work users:
-       # workEmail = "newuser@company.com";
-       # workSigningKeyPub = "ssh-ed25519 BBBB... work-signing-key";
-     };
+   newuser = {
+     fullName = "New User";
+     name = "newuser";
+     email = "newuser@example.com";
+     signingKeyPub = "ssh-ed25519 AAAA...";
    };
    ```
 
-   b. Add the new machine to the appropriate configuration set:
-
-   For NixOS:
+2. **Add the host-specific home-manager config** in `home-manager/hosts/<machine>.nix`. Start from an existing host and keep the two-line header:
 
    ```nix
-   nixosConfigurations = {
-     # Existing configurations...
-     newmachine = mkNixosConfiguration "newmachine" "newuser";
-   };
-   ```
-
-   For nix-darwin:
-
-   ```nix
-   darwinConfigurations = {
-     # Existing configurations...
-     newmachine = mkDarwinConfiguration "newmachine" "newuser";
-   };
-   ```
-
-   c. Add the new home configuration:
-
-   ```nix
-   homeConfigurations = {
-     # Existing configurations...
-     "newuser@newmachine" = mkHomeConfiguration "x86_64-linux" "newuser" "newmachine";
-   };
-   ```
-
-2. **Create System Configuration**:
-
-   a. Create a new directory under `hosts/` for your machine:
-
-   ```sh
-   mkdir -p hosts/newmachine
-   ```
-
-   b. Create `default.nix` in this directory:
-
-   ```sh
-   touch hosts/newmachine/default.nix
-   ```
-
-   c. Add the basic configuration to `default.nix`:
-
-   For NixOS:
-
-   ```nix
-   { inputs, hostname, nixosModules, ... }:
-   {
-     imports = [
-       inputs.hardware.nixosModules.common-cpu-amd
-       ./hardware-configuration.nix
-       "${nixosModules}/common"
-       "${nixosModules}/programs/hyprland"
-     ];
-
-     networking.hostName = hostname;
+   # What: Host-specific home-manager config for <machine>.
+   # Used by: modules/hosts/<machine>.nix.
+   {userConfig, ...}: {
+     programs.home-manager.enable = true;
+     home.stateVersion = "25.11";
    }
    ```
 
-   For nix-darwin:
+3. **Declare the flake output** in `modules/hosts/<machine>.nix`:
 
    ```nix
-   { config, pkgs, ... }:
-   {
-     # Add machine-specific configurations here
+   {self, inputs, config, ...}: {
+     hosts.homeConfigurations."newuser@newmachine" =
+       inputs.home-manager.lib.homeManagerConfiguration {
+         pkgs = import inputs.nixpkgs {system = "x86_64-linux";};
+         extraSpecialArgs = {
+           inherit inputs;
+           outputs = self;
+           userConfig = config.users.newuser;
+         };
+         modules = [
+           config.flake.modules.homeManager.common
+           config.flake.modules.homeManager.dev
+           inputs.stylix.homeModules.stylix
+           ../../home-manager/hosts/newmachine.nix
+         ];
+       };
    }
    ```
 
-   d. For NixOS, generate `hardware-configuration.nix`:
+   For macOS, also set `hosts.darwinConfigurations.<machine>` the way `modules/hosts/reisholmes.nix` does, and add the matching home configuration.
 
-   ```sh
-   sudo nixos-generate-config --show-hardware-config > hosts/newmachine/hardware-configuration.nix
-   ```
-
-3. **Create Home Manager Configuration**:
-
-   a. Create a new directory for the user's host-specific configuration:
-
-   ```sh
-   mkdir -p home/newuser/newmachine
-   touch home/newuser/newmachine/default.nix
-   ```
-
-   b. Add basic home configuration:
-
-   ```nix
-   { nhModules, ... }:
-   {
-     imports = [
-       "${nhModules}/common"
-       "${nhModules}/programs/neovim"
-       "${nhModules}/services/waybar"
-     ];
-   }
-   ```
+   Every `.nix` file under `modules/` is loaded automatically. To add a shared aspect, create `modules/home/<aspect>.nix` containing `flake.modules.homeManager.<aspect> = import ../../home-manager/<aspect>;`. Keep home-manager and nix-darwin module content outside `modules/`, in `home-manager/` and `darwin/`.
 
 4. **Building and Applying Configurations**:
 
@@ -396,14 +329,15 @@ When in doubt, try Home Manager first. Fall back to system package managers only
 ## Modules
 
 For detailed module documentation and structure, see:
-- [modules/home-manager/README.md](modules/home-manager/README.md) - Home Manager module documentation
+- [home-manager/README.md](home-manager/README.md) - Home Manager module documentation
+- [darwin/README.md](darwin/README.md) - nix-darwin module documentation
 
 ## Host-Specific Notes
 
 For machine-specific setup instructions and configuration notes, see the README in each host directory:
-- [hosts/reisholmes/README.md](hosts/reisholmes/README.md) - macOS setup notes
-- [hosts/reis-new/README.md](hosts/reis-new/README.md) - CachyOS setup notes
-- [hosts/rh-sb3/README.md](hosts/rh-sb3/README.md) - Linux Mint setup notes
+- [docs/hosts/reisholmes/README.md](docs/hosts/reisholmes/README.md) - macOS setup notes
+- [docs/hosts/reis-new/README.md](docs/hosts/reis-new/README.md) - CachyOS setup notes
+- [docs/hosts/rh-sb3/README.md](docs/hosts/rh-sb3/README.md) - Linux Mint setup notes
 
 ## Changelog
 
@@ -495,16 +429,16 @@ nix develop  # Run once to install hooks
   - `nixgl-profiles.nix` - Hardware profile abstraction for NixGL
   - `stylix-host.nix` - Host-specific theming options
   - `git/ssh-signing.nix` - SSH signing configuration submodule
-- Comprehensive configuration examples in [modules/home-manager/README.md](modules/home-manager/README.md)
+- Comprehensive configuration examples in [home-manager/README.md](home-manager/README.md)
 - Module documentation with usage patterns and platform notes
 - Improved DRY principles through declarative options
 
 **Documentation:**
-- Updated `modules/home-manager/README.md` with new module details
+- Updated `home-manager/README.md` with new module details
 - Added configuration examples for all new features
 - Module headers with usage instructions
 
-**Migration Guide:** See [modules/home-manager/README.md](modules/home-manager/README.md) Configuration Examples section for detailed usage of new declarative patterns.
+**Migration Guide:** See [home-manager/README.md](home-manager/README.md) Configuration Examples section for detailed usage of new declarative patterns.
 
 ---
 

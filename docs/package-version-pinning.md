@@ -110,35 +110,37 @@ Add a new input to your `flake.nix` pointing to the specific revision:
 #### Option A: Via extraSpecialArgs (Recommended for Home Manager)
 
 ```nix
-# In your mkHomeConfiguration function
-mkHomeConfiguration = system: username: hostname:
-  home-manager.lib.homeManagerConfiguration {
-    pkgs = import nixpkgs {inherit system;};
+# In modules/hosts/<host>.nix
+hosts.homeConfigurations."newuser@newmachine" =
+  inputs.home-manager.lib.homeManagerConfiguration {
+    pkgs = import inputs.nixpkgs {system = "x86_64-linux";};
     extraSpecialArgs = {
-      inherit inputs outputs;
+      inherit inputs;
+      outputs = self;
       # Add pinned packages
       pkgs-cowsay-3-8-3 = import inputs.nixpkgs-cowsay-3-8-3 {
         inherit system;
       };
     };
-    modules = [ ./home/${username}/${hostname} ];
+    modules = [ ../../home-manager/hosts/newmachine.nix ];
   };
 ```
 
 #### Option B: Via specialArgs (For Darwin/NixOS)
 
 ```nix
-# In your mkDarwinConfiguration or mkNixosConfiguration
-mkDarwinConfiguration = hostname: username:
-  nix-darwin.lib.darwinSystem {
+# In modules/hosts/<host>.nix, for nix-darwin
+hosts.darwinConfigurations.newmachine =
+  inputs.nix-darwin.lib.darwinSystem {
     specialArgs = {
-      inherit inputs outputs hostname;
+      inherit inputs;
+      outputs = self;
       # Add pinned packages
       pkgs-cowsay-3-8-3 = import inputs.nixpkgs-cowsay-3-8-3 {
         system = "aarch64-darwin"; # or "x86_64-linux"
       };
     };
-    modules = [ ./hosts/${hostname} ];
+    modules = [ ../../darwin/hosts/newmachine.nix ];
   };
 ```
 
