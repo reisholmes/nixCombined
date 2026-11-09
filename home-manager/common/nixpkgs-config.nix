@@ -9,6 +9,9 @@
     ];
     config = {
       allowUnfree = true;
+      # python3.14-fabric is marked broken in the pinned nixpkgs and pipenv pulls it,
+      # which fails evaluation of both darwin configs. Downgrade to a warning.
+      problems.handlers.fabric.broken = "warn";
     };
   };
 }
