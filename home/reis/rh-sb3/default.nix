@@ -17,7 +17,7 @@
 
   # Host-specific shell aliases
   programs.zsh.shellAliases = {
-    nix_rebuild = "home-manager switch --flake .#reis@rh-sb3 --impure && nvd diff $(home-manager generations | head -2 | tail -1 | awk '{print $7}') $(home-manager generations | head -1 | awk '{print $7}')";
+    nix_rebuild = "old=$(home-manager generations | head -1 | awk '{print $7}'); home-manager switch --flake .#reis@rh-sb3 --impure -b backup && new=$(home-manager generations | head -1 | awk '{print $7}'); if [ \"$old\" = \"$new\" ]; then echo \"No changes (generation unchanged: $new)\"; else nvd diff \"$old\" \"$new\"; fi";
   };
 
   # SSH signing configuration for git
