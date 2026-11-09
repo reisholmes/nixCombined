@@ -26,7 +26,7 @@
 
   # Note: Stylix darwin system-level module has compatibility issues (stylix.icons error)
   # Stylix configuration is handled at the home-manager level instead
-  # See home/reis.holmes/reisholmes/default.nix for stylix config
+  # See home-manager/hosts/reisholmes.nix for stylix config
 
   # Home Manager configuration
   home-manager = {

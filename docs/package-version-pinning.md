@@ -198,14 +198,14 @@ Here's a full working example for pinning cowsay 3.8.3:
             system = "x86_64-linux";
           };
         };
-        modules = [ ./home/user/hostname ];
+        modules = [ ./home-manager/hosts/hostname.nix ];
       };
     };
   };
 }
 ```
 
-### home/user/hostname/default.nix
+### home-manager/hosts/hostname.nix
 
 ```nix
 {

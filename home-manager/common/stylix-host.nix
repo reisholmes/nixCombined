@@ -12,7 +12,7 @@ in {
       type = lib.types.nullOr lib.types.path;
       default = null;
       description = "Path to wallpaper image for this host. Set to null to skip wallpaper configuration (e.g., for work machines).";
-      example = lib.literalExpression "../../../modules/home-manager/assets/stylix/wallpaper_wave_mac.jpg";
+      example = lib.literalExpression "../assets/stylix/wallpaper_wave_mac.jpg";
     };
 
     autoEnable = lib.mkOption {

@@ -1,5 +1,5 @@
 # What: Declarative Homebrew packages and taps for nix-darwin.
-# Used by: Imported explicitly by the darwin host module (hosts/reisholmes/default.nix today).
+# Used by: Imported by the darwin host module (darwin/hosts/reisholmes.nix today).
 _: {
   homebrew = {
     enable = true;

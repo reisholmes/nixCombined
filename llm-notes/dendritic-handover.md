@@ -1,6 +1,7 @@
 # Dendritic Nix migration handover
 
-Status at 2026-11-09: option B approved. Work is on branch `dendritic`. All three hosts ported and evaluating. Not yet rebuilt on any machine, not merged.
+Status at 2026-11-09: option B approved. Work is on branch `dendritic`, 10 commits ahead of `fix/general-improvements` (pre-migration tip `ee7b884`). Stale-path audit fully fixed (uncommitted). `reis-new` verified with a real `nix_rebuild` (empty `nvd diff`). `rh-sb3` and `reisholmes` evaluate but are not rebuilt yet. Not merged.
+Merge note: `main` (`de1c017`) was never merged into this lineage. It holds reworded versions of 9 of the 14 `fix/general-improvements` commits and lacks the other 5 (gpu/nixgl refactor, ghostty alpha-blending, claude removal, gpu docs link, nix_rebuild awk quoting). Merging `dendritic` into `main` is a true merge; expect conflicts where both sides touched the same file (flake.lock, llm-notes, zsh, systemd).
 All background lives in `llm-research/` (self-contained, re-read those before any implementation work).
 
 ## What we did
@@ -13,7 +14,7 @@ Key facts (details in the linked docs):
 
 - "Dendritic" = the pattern: every `modules/*.nix` is a flake-parts module, auto-loaded via `github:vic/import-tree`. "Dendrix" = the community registry on top. Separate things; we use only the pattern.
 - home-manager and nix-darwin are first-class classes in the pattern, so our exact mix (standalone HM profiles + one darwin host) is a supported shape.
-- Our current wart: `specialArgs`/`extraSpecialArgs` threading (`userConfig`, `nhModules`, `darwinModules`, `inputs`, `outputs`, `self`, `hostname`). The pattern docs call `specialArgs` an anti-pattern; in the new layout this data becomes a flake-level option.
+- Current wart: `specialArgs`/`extraSpecialArgs` threading, reduced to `inputs`, `outputs` (self), `userConfig` at each host wiring site (pre-migration set was `userConfig`, `nhModules`, `darwinModules`, `inputs`, `outputs`, `self`, `hostname`). The pattern docs call `specialArgs` an anti-pattern; a future cleanup moves this data to flake-level options.
 - Complication: `vic/vix` (flagship example) moved off flake-parts to "Ren" (`github:vic/ren`). Ecosystem is churning. The registry only explicitly registers `vic-vix`.
 - Composition style chosen: the simple host-file-as-module-list style from `dendritic-tutorial`, not the `at`-predicate style from `vic/vix`. The tutorial is NixOS-only (no home-manager or darwin), so vimjoyer's `dendritic-home-manager` remains the reference for our HM-class wiring.
 - No CI exists. Checks = `nix flake check` (alejandra, deadnix, statix) + pre-commit via `nix develop` shellHook.
@@ -36,7 +37,8 @@ Key facts (details in the linked docs):
 5. Done: ported `reis-new`. Old content moved out of `modules/` to `home-manager/` and `darwin/` because import-tree auto-loads every file under `modules/`. Verified by `nix eval .#homeConfigurations.reis@reis-new.activationPackage.drvPath` and `nix flake check --system x86_64-linux`.
 6. Done: ported `rh-sb3`. Verified by `nix eval .#homeConfigurations.reis@rh-sb3.activationPackage.drvPath` and `nix flake check`.
 7. Done: ported `reisholmes` (darwin + embedded and standalone HM profiles). Both evaluate.
-8. Done: host notes moved to `docs/hosts/`. Remaining: rebuild verification on the real machines (reis-new, rh-sb3, reisholmes), then merge.
+8. Done: host notes moved to `docs/hosts/`. Done: `reis-new` rebuilt with `nix_rebuild`, `nvd diff` showed no version or selection changes. Remaining: rebuild `rh-sb3` and `reisholmes`, then merge.
+9. Done: stale-path audit after the layout move. All findings fixed across 8 files (docs, comments, headers, setup script). One-off resolver script was `/tmp/path_audit.py` (checks relative paths in `.nix` and links in `.md`); not kept in the repo.
 
 One host per commit. Stop at the first host that fails verification. Rollback = `git checkout` of the previous branch; machines are untouched until `nix_rebuild` is run on them.
 

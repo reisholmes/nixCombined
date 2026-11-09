@@ -1,5 +1,5 @@
 # What: Shared nix-darwin system module for macOS hosts: system defaults, packages, GC.
-# Used by: Imported by the darwin host module (hosts/reisholmes/default.nix today).
+# Used by: Imported by darwin/hosts/reisholmes.nix.
 {
   pkgs,
   outputs,

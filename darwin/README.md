@@ -105,7 +105,7 @@ Darwin modules are macOS-specific. For cross-platform configurations:
 
 - **Darwin-only**: Use these modules
 - **Cross-platform**: Use `home-manager/` with platform conditionals
-- **Linux-only**: Create `modules/nixos/` (future)
+- **Linux-only**: A future `nixos/` content directory, wired through `modules/hosts/` like `darwin/` is (do not put content under `modules/` directly; import-tree auto-loads it as a flake-parts module)
 
 ## Documentation
 

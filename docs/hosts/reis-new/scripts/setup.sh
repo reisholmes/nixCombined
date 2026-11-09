@@ -50,7 +50,7 @@ NOTES:
   - This script is designed for CachyOS but may work on other Arch-based distributions
   - Requires sudo access for system-level changes
   - A reboot is recommended after completion
-  - Configuration files are restored from modules/home-manager/assets/
+  - Configuration files are restored from home-manager/assets/
 
 EXAMPLES:
   $(basename "$0")              Run the full setup
@@ -78,7 +78,7 @@ done
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-ASSETS_DIR="$REPO_ROOT/modules/home-manager/assets"
+ASSETS_DIR="$REPO_ROOT/home-manager/assets"
 
 # Check if running on CachyOS
 if ! grep -q "CachyOS" /etc/os-release 2>/dev/null; then

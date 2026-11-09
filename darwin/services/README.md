@@ -17,11 +17,11 @@ Potential service modules:
 
 ## Usage
 
-Import service modules in your darwin host configuration:
+Import service modules in the darwin host module (`darwin/hosts/<host>.nix`):
 
 ```nix
 imports = [
-  darwinModules.services.serviceName
+  ../services/service-name.nix
 ];
 ```
 
