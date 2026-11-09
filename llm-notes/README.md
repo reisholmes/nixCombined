@@ -8,3 +8,4 @@ When you resolve a new non-obvious issue, append a note to the right file (or cr
 
 - [Flake evaluation banners and input drift](flake-eval.md)
 - [home-manager rebuild and generation pitfalls](home-manager-rebuild.md)
+- [Dendritic Nix migration handover](dendritic-handover.md) — not a troubleshooting note; handover state for the in-progress migration, full research in `llm-research/`
