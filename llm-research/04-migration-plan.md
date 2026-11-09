@@ -11,6 +11,7 @@ modules/            # flake-parts modules only, auto-loaded by import-tree
   parts.nix         # systems, imports inputs.flake-parts.flakeModules.modules, pre-commit checks, devShell
   users.nix         # flake-level option `users` (identity data)
   overlays.nix      # flake.overlays output
+  outputs.nix       # declares hosts.homeConfigurations/darwinConfigurations, publishes them once as flake outputs
   home/
     common.nix      # flake.modules.homeManager.common = import ../../home-manager/common
     dev.nix         # flake.modules.homeManager.dev
@@ -34,7 +35,8 @@ Follow the simple style from adumh00man/dendritic-tutorial, not the predicate st
 
 ## How home-manager fits (verified for reis-new)
 
-- A host module builds its profile with `home-manager.lib.homeManagerConfiguration` inside the flake-parts tree, then assigns it to `flake.homeConfigurations."<user>@<host>"`.
+- A host module builds its profile with `home-manager.lib.homeManagerConfiguration` inside the flake-parts tree, then assigns it to `hosts.homeConfigurations."<user>@<host>"`. `modules/outputs.nix` publishes that option once as `flake.homeConfigurations`.
+- Why the indirection: flake-parts merges only the top level of `flake`, and each output attribute is `unique raw`. Two host modules setting `flake.homeConfigurations.<name>` directly is an evaluation error. See `llm-notes/dendritic-migration.md`.
 - HM module content is wrapped, not rewritten: `modules/home/common.nix` sets `flake.modules.homeManager.common = import ../../home-manager/common`.
 - `extraSpecialArgs` survives at the HM instantiation boundary only (`inputs`, `outputs = self`, `userConfig` from `config.users`). Inside the HM modules nothing changed. Removing it entirely means rewriting the ~20 HM module files to take options, which is a separate, later cleanup.
 - `nhModules` is gone. The one real user was `home-manager/programs/nix-search-tv`, now a relative path. Host imports are gone because the flake module selects the aspects.
@@ -47,7 +49,7 @@ Follow the simple style from adumh00man/dendritic-tutorial, not the predicate st
 2. Done: `flake-parts` and `import-tree` inputs added.
 3. Done: `modules/parts.nix`, `modules/users.nix`, `modules/overlays.nix` created.
 4. Done: reis-new ported. Verified with `nix eval .#homeConfigurations.reis@reis-new.activationPackage.drvPath` and `nix flake check --system x86_64-linux`.
-5. Pending: port rh-sb3. Verify the same way, plus a real `nix_rebuild` when on that machine.
+5. Done: rh-sb3 ported. Verified by `nix eval .#homeConfigurations.reis@rh-sb3.activationPackage.drvPath` and `nix flake check`. A real `nix_rebuild` on that machine is still owed.
 6. Pending: port reisholmes (darwin host plus its HM profile). Needs the Mac.
 7. Pending: delete the remaining old `home/` and `hosts/` dirs, update Makefile paths, AGENTS.md, and write `llm-notes/dendritic-migration.md`.
 8. Pending: final `nix flake check` on both systems. Merge.

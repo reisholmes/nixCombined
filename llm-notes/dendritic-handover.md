@@ -1,6 +1,6 @@
 # Dendritic Nix migration handover
 
-Status at 2026-11-09: option B approved. Work is on branch `dendritic`. reis-new ported and verified. rh-sb3 and reisholmes still on the old layout and therefore missing from the flake outputs until ported.
+Status at 2026-11-09: option B approved. Work is on branch `dendritic`. reis-new and rh-sb3 ported and evaluated. reisholmes still on the old layout and missing from the flake outputs until ported.
 All background lives in `llm-research/` (self-contained, re-read those before any implementation work).
 
 ## What we did
@@ -34,7 +34,7 @@ Key facts (details in the linked docs):
 3. Done: added `flake-parts` and `import-tree` inputs.
 4. Done: `modules/parts.nix`, `modules/users.nix`, `modules/overlays.nix`. `flake.modules` needs `inputs.flake-parts.flakeModules.modules`.
 5. Done: ported `reis-new`. Old content moved out of `modules/` to `home-manager/` and `darwin/` because import-tree auto-loads every file under `modules/`. Verified by `nix eval .#homeConfigurations.reis@reis-new.activationPackage.drvPath` and `nix flake check --system x86_64-linux`.
-6. Pending: port `rh-sb3` (same shape, plus its `nixgl.profile = "nvidiaPrime"`).
+6. Done: ported `rh-sb3`. Verified by `nix eval .#homeConfigurations.reis@rh-sb3.activationPackage.drvPath` and `nix flake check`.
 7. Pending: port `reisholmes` (darwin + its HM profile). Needs the Mac.
 8. Pending: delete old `home/` and `hosts/` dirs, update Makefile/AGENTS.md, write `llm-notes/dendritic-migration.md`, `nix flake check` on both systems, merge.
 

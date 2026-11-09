@@ -1,12 +1,12 @@
-# What: Declares homeConfigurations."reis@reis-new" from the homeManager aspects.
-# Used by: Auto-loaded by import-tree; consumed by the `nix_rebuild` alias and `make home`.
+# What: Sets hosts.homeConfigurations."reis@reis-new" from the homeManager aspects.
+# Used by: Auto-loaded by import-tree; published as flake.homeConfigurations for `nix_rebuild`.
 {
   self,
   inputs,
   config,
   ...
 }: {
-  flake.homeConfigurations."reis@reis-new" = inputs.home-manager.lib.homeManagerConfiguration {
+  hosts.homeConfigurations."reis@reis-new" = inputs.home-manager.lib.homeManagerConfiguration {
     pkgs = import inputs.nixpkgs {system = "x86_64-linux";};
     extraSpecialArgs = {
       inherit inputs;

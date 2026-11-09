@@ -1,14 +1,10 @@
+# What: Host-specific home-manager config for rh-sb3: rebuild alias, git signing, gtk, stylix wallpaper.
+# Used by: modules/hosts/rh-sb3.nix puts it in the modules list of homeConfigurations."reis@rh-sb3".
 {
   config,
-  nhModules,
   userConfig,
   ...
 }: {
-  imports = [
-    "${nhModules}/common"
-    "${nhModules}/dev"
-  ];
-
   # Enable home-manager
   programs.home-manager.enable = true;
 
@@ -71,7 +67,7 @@
 
     # Host-specific wallpaper
     # https://basicappleguy.com/basicappleblog/strokes
-    hostConfig.wallpaper = ../../../modules/home-manager/assets/stylix/wallpaper_wave_mac.jpg;
+    hostConfig.wallpaper = ../assets/stylix/wallpaper_wave_mac.jpg;
 
     # Font sizes and base16Scheme inherited from stylix-common.nix module
   };
