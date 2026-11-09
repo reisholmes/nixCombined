@@ -1,6 +1,6 @@
 # nixCombined
 
-An attempt to combine multiple nix configs
+An attempt to combine multiple nix configs, structured with the Dendritic pattern (flake-parts + import-tree).
 
 Inspired by: <https://github.com/AlexNabokikh/nix-config>
 
@@ -68,7 +68,7 @@ nvd diff /nix/var/nix/profiles/system-{OLD,NEW}-link
 
 ### `nix_rebuild` Alias
 
-Every host defines a `nix_rebuild` shell alias (managed via `programs.zsh.shellAliases` in each `home/<user>/<host>/default.nix`). It runs the right rebuild for that machine and then prints the package differences between the last two generations using `nvd diff`:
+Every host defines a `nix_rebuild` shell alias, managed via `programs.zsh.shellAliases` in `home-manager/hosts/<host>.nix`. It captures the current generation, rebuilds, captures the new one, then prints `nvd diff` between them. If the rebuild created no new generation it prints `No changes` instead of re-diffing a stale pair:
 
 - **Linux hosts** (`reis@reis-new`, `reis@rh-sb3`): `home-manager switch` + nvd diff
 - **macOS** (`reis.holmes@reisholmes`): `darwin-rebuild switch` + nvd diff
@@ -132,17 +132,49 @@ nix flake check
 ### Configuration
 
 - **statix.toml** - Configures statix to ignore style-only warnings (W04, W20)
-- **flake.nix** - Pre-commit hook configuration in `checks` and `devShells` outputs
+- **modules/parts.nix** - Pre-commit hook configuration in the `checks` and `devShells` outputs
 
 ### New Machines
 
 When cloning this repo on a new machine, remember to run `nix develop` once to install the pre-commit hooks.
 
-## Quick Start (TLDR)
+## Structure
 
-- Add new home manager name and computer (if using NixOS)
-- Install nix on linux
-- Bootstrap home manager
+- `flake.nix`: inputs plus a two-line `outputs`. Evaluation is handed to flake-parts, which loads `modules/` with import-tree.
+- `modules/`: flake-parts modules, auto-loaded, one concern per file.
+  - `modules/hosts/<host>.nix`: declares a machine's flake outputs.
+  - `modules/home/<aspect>.nix`: exposes a home-manager aspect as `flake.modules.homeManager.<aspect>`.
+  - `modules/parts.nix`: systems, pre-commit checks, devShell.
+  - `modules/users.nix`: user identity data (emails, public signing keys).
+  - `modules/outputs.nix`: publishes host outputs once, because flake-parts merges only top-level flake outputs.
+- `home-manager/`: home-manager module content, wrapped by `modules/home/` (see [home-manager/README.md](home-manager/README.md)).
+- `home-manager/hosts/<host>.nix`: host-specific home-manager config.
+- `darwin/`: nix-darwin module content (see [darwin/README.md](darwin/README.md)).
+- `docs/`: guides such as package version pinning, plus per-machine notes under `docs/hosts/`.
+- `llm-notes/`: troubleshooting notes in Symptom/Cause/Fix/Verify form, indexed in `llm-notes/README.md`.
+- `llm-research/`: research, decision, and migration docs for the dendritic pattern.
+- `flake.lock`: Lock file ensuring reproducible builds by pinning input versions
+- `overlays/`: Custom Nix overlays for package modifications or additions
+
+### Key Inputs
+
+- **nixpkgs**: Points to the `nixos-unstable` channel for access to the latest packages
+- **nixpkgs-stable**: Points to the `nixos-25.11` channel, providing stable packages (used by `overlays/`)
+- **home-manager**: Manages user-specific configurations, following the `nixpkgs` input
+- **nix-darwin**: Enables nix-darwin for macOS system configuration
+- **mac-app-util**: Building and managing macOS apps
+- **stylix**: Theming framework (colors, fonts, wallpapers) applied via home-manager. `stylix-stable` pins the `release-25.11` branch
+- **pre-commit-hooks**: Code quality hooks (alejandra, statix, deadnix) used by the `checks` and `devShells` outputs
+- **flake-parts**: Builds the flake outputs from modules. It replaces the hand-written `outputs` function.
+- **import-tree**: Loads every `.nix` file under `modules/` as a flake-parts module.
+
+## Usage
+
+### Quick Start (TLDR)
+
+- Add the user and the host (see [Adding a New Machine](#adding-a-new-machine))
+- Install Nix on Linux, or Nix plus nix-darwin on macOS
+- Bootstrap home-manager
 
 ```sh
 echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
@@ -158,34 +190,6 @@ home-manager switch --flake .#newuser@newmachine --impure -b backup
 ```sh
 home-manager switch --flake .#newuser@newmachine --impure -b backup
 ```
-
-## Structure
-
-- `flake.nix`: inputs plus a two-line `outputs`. Evaluation is handed to flake-parts, which loads `modules/` with import-tree.
-- `modules/`: flake-parts modules, auto-loaded, one concern per file.
-  - `modules/hosts/<host>.nix`: declares a machine's flake outputs.
-  - `modules/home/<aspect>.nix`: exposes a home-manager aspect as `flake.modules.homeManager.<aspect>`.
-  - `modules/parts.nix`: systems, pre-commit checks, devShell.
-  - `modules/users.nix`: user identity data (emails, public signing keys).
-  - `modules/outputs.nix`: publishes host outputs once, because flake-parts merges only top-level flake outputs.
-- `home-manager/`: home-manager module content, wrapped by `modules/home/` (see [home-manager/README.md](home-manager/README.md)).
-- `home-manager/hosts/<host>.nix`: host-specific home-manager config.
-- `darwin/`: nix-darwin module content (see [darwin/README.md](darwin/README.md)).
-- `docs/hosts/`: per-machine setup notes.
-- `flake.lock`: Lock file ensuring reproducible builds by pinning input versions
-- `overlays/`: Custom Nix overlays for package modifications or additions
-
-### Key Inputs
-
-- **nixpkgs**: Points to the `nixos-unstable` channel for access to the latest packages
-- **nixpkgs-stable**: Points to the `nixos-25.11` channel, providing stable packages (used by `overlays/`)
-- **home-manager**: Manages user-specific configurations, following the `nixpkgs` input
-- **nix-darwin**: Enables nix-darwin for macOS system configuration
-- **mac-app-util**: Building and managing macOS apps
-- **stylix**: Theming framework (colors, fonts, wallpapers) applied via home-manager. `stylix-stable` pins the `release-25.11` branch
-- **pre-commit-hooks**: Code quality hooks (alejandra, statix, deadnix) used by the `checks` and `devShells` outputs
-
-## Usage
 
 ### Adding a New Machine
 
@@ -247,19 +251,13 @@ Today the flake has three hosts: `reis-new` and `rh-sb3` (standalone Home Manage
    git add .
    ```
 
-   b. Build and switch to the new system configuration:
-
-   For NixOS:
-
-   ```sh
-   sudo nixos-rebuild switch --flake .#newmachine
-   ```
-
-   For nix-darwin (requires Nix and nix-darwin installation first):
+   b. On macOS, build and switch the system configuration (requires Nix and nix-darwin installed first):
 
    ```sh
    darwin-rebuild switch --flake .#newmachine
    ```
+
+   There is no NixOS host yet. When one is added, `sudo nixos-rebuild switch --flake .#newmachine` follows the same shape.
 
    c. Build and switch to the new Home Manager configuration:
 
@@ -274,7 +272,7 @@ home-manager switch --flake .#newuser@newmachine
 > [!NOTE]
 > `nix-shell -p home-manager` installs the latest unstable home-manager, not the flake-pinned one. It's only needed once so the `home-manager` command exists. From then on the flake-pinned version takes over.
 
-After this initial setup, you can rebuild configurations separately and home-manager will be available without additional steps
+After this initial setup, you can rebuild configurations separately and home-manager will be available without additional steps.
 
 ## Updating Flakes
 
@@ -340,6 +338,20 @@ For machine-specific setup instructions and configuration notes, see the README 
 - [docs/hosts/rh-sb3/README.md](docs/hosts/rh-sb3/README.md) - Linux Mint setup notes
 
 ## Changelog
+
+### 2026-11-09 - Dendritic pattern: flake-parts + import-tree
+
+**Breaking Changes:**
+
+- **Layout** - `flake.nix` now only declares inputs and a two-line `outputs`. Everything else lives in `modules/`, which import-tree loads automatically. Home-manager content moved from `modules/home-manager/` to `home-manager/`, and nix-darwin content from `modules/darwin/` to `darwin/`.
+- **Host configs** - `home/<user>/<host>/default.nix` became `home-manager/hosts/<host>.nix`, and each host's flake output is now declared in `modules/hosts/<host>.nix`.
+- **`nhModules` removed** - Host files no longer import `"${nhModules}/common"`. Hosts select aspects through `config.flake.modules.homeManager.<aspect>`.
+- **Host notes** - `hosts/<host>/` moved to `docs/hosts/<host>/`.
+- **File headers** - Every authored file now starts with `# What:` / `# Used by:` lines. See `AGENTS.md`.
+
+**Why:** see `llm-research/03-decision.md` (decision) and `llm-research/04-migration-plan.md` (procedure).
+
+---
 
 ### 2026-10-28 - NixGL removed, host-OS GPU approach
 
