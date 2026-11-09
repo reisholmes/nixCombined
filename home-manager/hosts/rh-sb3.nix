@@ -1,0 +1,74 @@
+# What: Host-specific home-manager config for rh-sb3: rebuild alias, git signing, gtk, stylix wallpaper.
+# Used by: modules/hosts/rh-sb3.nix puts it in the modules list of homeConfigurations."reis@rh-sb3".
+{
+  config,
+  userConfig,
+  ...
+}: {
+  # Enable home-manager
+  programs.home-manager.enable = true;
+
+  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
+  home.stateVersion = "25.11";
+
+  # Host-specific shell aliases
+  programs.zsh.shellAliases = {
+    nix_rebuild = "old=$(home-manager generations | head -1 | awk '{print $7}'); home-manager switch --flake .#reis@rh-sb3 --impure -b backup && new=$(home-manager generations | head -1 | awk '{print $7}'); if [ \"$old\" = \"$new\" ]; then echo \"No changes (generation unchanged: $new)\"; else nvd diff \"$old\" \"$new\"; fi";
+  };
+
+  # SSH signing configuration for git
+  programs.git.sshSigning = {
+    enable = true;
+    allowedSigners = [
+      {
+        email = userConfig.email;
+        key = userConfig.signingKeyPub;
+      }
+    ];
+  };
+
+  # Git configuration
+  programs.git = {
+    # Enable SSH signing globally (personal computer - all repos signed)
+    signing = {
+      key = "${config.home.homeDirectory}/.ssh/private-signing-key-github";
+      signByDefault = true;
+    };
+
+    # Git settings (new format)
+    settings = {
+      # Set personal email from userConfig
+      user.email = userConfig.email;
+    };
+  };
+
+  # GPU drivers for standalone home-manager on Linux (host-OS /run/opengl-driver)
+  targets.genericLinux.gpu.enable = true;
+
+  # Silence Hyprland configType warning while home.stateVersion < "26.05"
+  wayland.windowManager.hyprland.configType = "hyprlang";
+
+  # gtk styling settings
+  gtk = {
+    cursorTheme = {
+      name = "XCursor-Pro-Dark";
+    };
+    iconTheme = {
+      name = "Mint-Y-Blue";
+    };
+    theme = {
+      name = "Catppuccin-GTK-Dark";
+    };
+  };
+
+  # Stylix settings specific to this machine
+  stylix = {
+    enable = true;
+
+    # Host-specific wallpaper
+    # https://basicappleguy.com/basicappleblog/strokes
+    hostConfig.wallpaper = ../assets/stylix/wallpaper_wave_mac.jpg;
+
+    # Font sizes and base16Scheme inherited from stylix-common.nix module
+  };
+}

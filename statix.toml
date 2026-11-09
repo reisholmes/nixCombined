@@ -1,5 +1,5 @@
-# Statix configuration
-# Disable specific lints that are style-only warnings
+# What: statix configuration for this repo: ignored style warnings, nix version, ignore paths.
+# Used by: The statix pre-commit hook, wired in modules/parts.nix.
 
 # Disabled diagnostic codes:
 # - manual_inherit_from (W04): Suggests using inherit instead of assignments

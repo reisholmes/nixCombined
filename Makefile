@@ -1,5 +1,5 @@
-# Makefile
-# Convenience commands for NixOS/nix-darwin/home-manager operations
+# What: Entry points for rebuilds and maintenance: home, darwin, nixos, update, gc, check.
+# Used by: Run `make <target>` from the repo root. The `nix_rebuild` aliases mirror the home target.
 
 # Variables (can be overridden)
 HOSTNAME := $(shell hostname -s)
