@@ -1,6 +1,6 @@
 # Dendritic Nix migration handover
 
-Status at 2026-11-09: option B approved. Work is on branch `dendritic`, 12 commits ahead of `fix/general-improvements` (pre-migration tip `ee7b884`); all work committed. `reis-new` verified with a real `nix_rebuild` (empty `nvd diff`). Wallpaper stable-path fix committed (`05b3b48`) but not yet activated: needs a `nix_rebuild` on reis-new, then repoint KDE containment 46 to `~/.local/share/wallpapers/hearts.png`. `rh-sb3` and `reisholmes` evaluate but are not rebuilt yet. Not merged.
+Status at 2026-11-09: option B approved. Work is on branch `dendritic`, 12 commits ahead of `fix/general-improvements` (pre-migration tip `ee7b884`); all work committed. `reis-new` verified with a real `nix_rebuild` (empty `nvd diff`). Wallpaper stable path activated on reis-new (rebuild 2026-11-09, containments 42 and 46 repointed to `~/.local/share/wallpapers/hearts.png`). `rh-sb3` and `reisholmes` evaluate but are not rebuilt yet. Not merged.
 Merge note: `main` (`de1c017`) was never merged into this lineage. It holds reworded versions of 9 of the 14 `fix/general-improvements` commits and lacks the other 5 (gpu/nixgl refactor, ghostty alpha-blending, claude removal, gpu docs link, nix_rebuild awk quoting). Merging `dendritic` into `main` is a true merge; expect conflicts where both sides touched the same file (flake.lock, llm-notes, zsh, systemd).
 All background lives in `llm-research/` (self-contained, re-read those before any implementation work).
 
@@ -39,7 +39,7 @@ Key facts (details in the linked docs):
 7. Done: ported `reisholmes` (darwin + embedded and standalone HM profiles). Both evaluate.
 8. Done: host notes moved to `docs/hosts/`. Done: `reis-new` rebuilt with `nix_rebuild`, `nvd diff` showed no version or selection changes. Remaining: rebuild `rh-sb3` and `reisholmes`, then merge.
 9. Done: stale-path audit after the layout move. All findings fixed (docs, comments, headers, setup script), committed as `412bc0d`. One-off resolver script was `/tmp/path_audit.py` (checks relative paths in `.nix` and links in `.md`); not kept in the repo.
-10. Wallpaper stable path: KDE's manual desktop config (`plasma-org.kde.plasma.desktop-appletsrc`) pointed at the repo path, so the repo move broke the wallpaper. Fix committed in `05b3b48`: install `home-manager/assets/stylix/hearts.png` to `xdg.dataFile."wallpapers/hearts.png"` (i.e. `~/.local/share/wallpapers/hearts.png`). Pending: `nix_rebuild` on reis-new, then repoint KDE containment 46 to that path.
+10. Wallpaper stable path: KDE's manual desktop config (`plasma-org.kde.plasma.desktop-appletsrc`) pointed at the repo path, so the repo move broke the wallpaper. Fix committed in `05b3b48`: install `home-manager/assets/stylix/hearts.png` to `xdg.dataFile."wallpapers/hearts.png"` (i.e. `~/.local/share/wallpapers/hearts.png`). Done 2026-11-09: `nix_rebuild` created the store symlink; KDE containments 42 and 46 both repointed to the stable path, zero repo-path references left in the applet config.
 
 One host per commit. Stop at the first host that fails verification. Rollback = `git checkout` of the previous branch; machines are untouched until `nix_rebuild` is run on them.
 
