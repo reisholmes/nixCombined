@@ -1,3 +1,5 @@
+# What: Package overlays: `stable` from nixpkgs-stable, and the pipx check workaround.
+# Used by: modules/overlays.nix exposes them as flake.overlays.
 {inputs, ...}: {
   # When applied, the stable nixpkgs set (declared in the flake inputs) will
   # be accessible through 'pkgs.stable'

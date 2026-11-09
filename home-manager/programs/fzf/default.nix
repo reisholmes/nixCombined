@@ -1,3 +1,5 @@
+# What: Home-manager aspect configuring fzf.
+# Used by: Imported by home-manager/common/default.nix.
 _: {
   # fzf
   programs.fzf = {

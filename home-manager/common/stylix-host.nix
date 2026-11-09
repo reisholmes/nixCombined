@@ -1,3 +1,5 @@
+# What: Declares the `stylix.hostConfig.wallpaper` option hosts use for per-machine theming.
+# Used by: Imported by home-manager/common/default.nix; each host sets the option in its own file.
 {
   config,
   lib,

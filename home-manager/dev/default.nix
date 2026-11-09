@@ -1,3 +1,5 @@
+# What: Developer tooling aspect: extra CLI tools and TUI program modules.
+# Used by: modules/home/dev.nix assigns it to flake.modules.homeManager.dev.
 {
   lib,
   pkgs,

@@ -1,15 +1,6 @@
-# Nix store garbage collection (Linux only)
-#
-# Mirrors the macOS nix-darwin auto-GC in modules/darwin/common/default.nix
-# (--delete-older-than 21d, plus optimise), adapted for a desktop that is not
-# left on overnight:
-#   - a Mon 11:00 timer catches up on the rare days the machine is left on
-#
-# Not wanted by default.target: home-manager's reloadSystemd activation would
-# then restart the finished oneshot on every `home-manager switch`, running a
-# full GC scan on every rebuild. The timer alone covers the intent.
-#
-# User-level systemd units, so home-manager can manage them without root.
+# What: Timer-only nix GC: deletes generations older than 21 days and optimises the store.
+# Used by: Imported by home-manager/systemd/default.nix.
+# Note: Timer-only on purpose. A oneshot in default.target restarts on every switch, see llm-notes/home-manager-rebuild.md.
 {
   lib,
   pkgs,

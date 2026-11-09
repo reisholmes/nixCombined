@@ -1,3 +1,5 @@
+# What: Home-manager aspect configuring zsh: aliases, history, completion, prompt.
+# Used by: Imported by home-manager/common/default.nix.
 {
   lib,
   pkgs,

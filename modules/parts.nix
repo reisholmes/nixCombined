@@ -1,3 +1,5 @@
+# What: Flake-wide settings: systems, the flake.modules option, pre-commit checks, devShell.
+# Used by: Auto-loaded by import-tree. Everything else builds on it.
 {inputs, ...}: {
   imports = [inputs.flake-parts.flakeModules.modules];
 

@@ -1,3 +1,5 @@
+# What: Home-manager aspect configuring lazygit.
+# Used by: Imported by home-manager/common/default.nix.
 _: {
   # LazyGit
   programs.lazygit = {

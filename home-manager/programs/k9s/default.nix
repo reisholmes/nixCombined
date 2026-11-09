@@ -1,8 +1,5 @@
-# k9s — Kubernetes TUI with Catppuccin Mocha theme and custom pod view.
-#
-# Config paths differ by platform: ~/Library/Application Support/k9s on
-# macOS, ~/.config/k9s on Linux. The skin and views assets are imported
-# from ../../assets/k9s/.
+# What: Home-manager aspect configuring k9s with a Catppuccin skin and custom views.
+# Used by: Imported by home-manager/dev/default.nix.
 {pkgs, ...}: let
   k9sConfigDir =
     if pkgs.stdenv.hostPlatform.isDarwin

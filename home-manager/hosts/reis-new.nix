@@ -1,3 +1,5 @@
+# What: Host-specific home-manager config for reis-new: aliases, ssh, git signing, GPU, stylix wallpaper.
+# Used by: modules/hosts/reis-new.nix puts it in the modules list of homeConfigurations."reis@reis-new".
 {
   config,
   pkgs,

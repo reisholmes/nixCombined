@@ -1,3 +1,5 @@
+# What: Declares the `users` flake option holding identity data: emails and public signing keys.
+# Used by: Host modules read config.users.<name>.
 {lib, ...}: {
   options.users = lib.mkOption {
     type = lib.types.attrsOf lib.types.attrs;

@@ -1,3 +1,5 @@
+# What: Git SSH signing settings: allowed signers and key paths.
+# Used by: Imported by home-manager/programs/git/default.nix.
 {
   config,
   lib,

@@ -1,24 +1,5 @@
-# Common Darwin (macOS) Configuration Module
-#
-# Purpose: Provides shared system-level configuration for all nix-darwin hosts
-#
-# Features:
-#   - Nixpkgs configuration (allow unfree, overlays)
-#   - Nix daemon settings (experimental features, garbage collection)
-#   - System fonts installation
-#   - TouchID for sudo authentication
-#   - Automatic store optimization
-#
-# Platform: macOS only (nix-darwin)
-#
-# Usage:
-#   Import in your darwin host configuration:
-#   imports = [ darwinModules.common ];
-#
-# Dependencies:
-#   - outputs: flake outputs for overlays
-#   - pkgs: nixpkgs package set
-#
+# What: Shared nix-darwin system module for macOS hosts: system defaults, packages, GC.
+# Used by: Imported by the darwin host module (hosts/reisholmes/default.nix today).
 {
   pkgs,
   outputs,

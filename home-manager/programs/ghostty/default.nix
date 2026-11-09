@@ -1,3 +1,5 @@
+# What: Home-manager aspect configuring ghostty.
+# Used by: Imported by home-manager/common/default.nix.
 {
   config,
   pkgs,

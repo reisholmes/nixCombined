@@ -1,3 +1,5 @@
+# What: Home-manager aspect enabling zoxide with zsh integration.
+# Used by: Imported by home-manager/common/default.nix.
 _: {
   programs.zoxide = {
     enable = true;

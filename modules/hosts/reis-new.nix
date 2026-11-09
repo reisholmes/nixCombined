@@ -1,3 +1,5 @@
+# What: Declares homeConfigurations."reis@reis-new" from the homeManager aspects.
+# Used by: Auto-loaded by import-tree; consumed by the `nix_rebuild` alias and `make home`.
 {
   self,
   inputs,

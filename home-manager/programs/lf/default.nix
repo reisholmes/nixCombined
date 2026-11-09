@@ -1,3 +1,5 @@
+# What: Home-manager aspect configuring lf, including its preview scripts.
+# Used by: Imported by home-manager/common/default.nix.
 {
   config,
   pkgs,

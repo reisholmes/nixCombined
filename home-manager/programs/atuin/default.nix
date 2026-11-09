@@ -1,3 +1,5 @@
+# What: Home-manager aspect enabling atuin shell history.
+# Used by: Imported by home-manager/common/default.nix.
 _: {
   # Install atuin via home-manager module
   programs.atuin = {

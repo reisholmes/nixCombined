@@ -1,3 +1,5 @@
+# What: Home-manager aspect configuring fastfetch.
+# Used by: Imported by home-manager/common/default.nix.
 {config, ...}: {
   # fastfetch
   programs.fastfetch = {

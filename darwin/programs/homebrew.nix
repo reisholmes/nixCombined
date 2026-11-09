@@ -1,29 +1,5 @@
-# Homebrew Configuration Module for nix-darwin
-#
-# Purpose: Provides declarative Homebrew package management on macOS
-#
-# Features:
-#   - Homebrew taps (third-party repositories)
-#   - Brews (command-line tools)
-#   - Casks (GUI applications)
-#   - Mac App Store apps via mas
-#   - Cleanup of unmanaged packages (disabled for now, see onActivation.cleanup)
-#
-# Platform: macOS only (nix-darwin)
-#
-# Usage:
-#   Import in your darwin host configuration:
-#   imports = [ darwinModules.programs.homebrew ];
-#
-#   Then configure packages:
-#   homebrew = {
-#     enable = true;
-#     brews = [ "package-name" ];
-#     casks = [ "app-name" ];
-#   };
-#
-# Documentation: https://mynixos.com/nix-darwin/options/homebrew
-#
+# What: Declarative Homebrew packages and taps for nix-darwin.
+# Used by: Imported explicitly by the darwin host module (hosts/reisholmes/default.nix today).
 _: {
   homebrew = {
     enable = true;

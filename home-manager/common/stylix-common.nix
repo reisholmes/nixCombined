@@ -1,3 +1,5 @@
+# What: Shared stylix base16 scheme and font sizes for every host.
+# Used by: Imported by home-manager/common/default.nix.
 {
   lib,
   pkgs,

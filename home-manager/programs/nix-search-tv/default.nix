@@ -1,3 +1,5 @@
+# What: Home-manager aspect configuring nix-search-tv and its index update script.
+# Used by: Imported by home-manager/common/default.nix.
 {pkgs, ...}: {
   # https://github.com/3timeslazy/nix-search-tv
   # https://github.com/3timeslazy/nix-search-tv?tab=readme-ov-file#configuration

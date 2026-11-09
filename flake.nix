@@ -1,3 +1,5 @@
+# What: Flake entry point. Declares inputs and hands evaluation to flake-parts.
+# Used by: Every nix command in this repo. `outputs` is built from modules/ by import-tree.
 {
   # I essentially copied this from someone much smarter than me:
   # https://github.com/AlexNabokikh/nix-config

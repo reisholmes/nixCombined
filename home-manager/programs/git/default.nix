@@ -1,25 +1,5 @@
-# Git Version Control Configuration
-#
-# Features:
-# - User identity configuration (name, email) from userConfig
-# - SSH commit signing support via ssh-signing.nix submodule
-# - Delta diff viewer with git integration
-# - GitHub CLI credential helper integration
-#
-# Platform Handling:
-# - Works on both Linux and macOS
-# - User name defaults to userConfig.fullName (can be overridden per-host)
-# - Email typically set per-host due to work/personal contexts
-#
-# Submodules:
-# - ssh-signing.nix: Declarative SSH commit signing configuration
-#   Provides programs.git.sshSigning options for managing allowed signers
-#
-# Usage:
-#   Automatically imported via common module
-#   Configure per-host settings:
-#     programs.git.settings.user.email = "your@email.com";
-#     programs.git.sshSigning.enable = true;
+# What: Git aspect: identity from userConfig, aliases, and settings.
+# Used by: Imported by home-manager/common/default.nix.
 {
   lib,
   pkgs,

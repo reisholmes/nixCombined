@@ -1,16 +1,5 @@
-# Custom Utility Scripts
-#
-# Installs custom scripts to ~/.local/bin
-# Scripts are automatically available in PATH
-#
-# Available Scripts:
-# - fif: Find in files (interactive grep with fzf)
-# - fkill: Kill processes interactively with fzf
-# - pull-all: Update all git repositories in a directory
-#
-# Usage:
-#   Automatically imported via common module
-#   Scripts available in PATH after home-manager switch
+# What: Installs the custom scripts in this directory to ~/.local/bin.
+# Used by: Imported by home-manager/common/default.nix.
 {
   lib,
   pkgs,
