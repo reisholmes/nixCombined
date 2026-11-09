@@ -1,6 +1,6 @@
 # 04 - Migration plan (option B: pattern only)
 
-Status: Draft. Executes after 03 is approved. Depends on 01 (pattern) and 02 (current state).
+Status: Executed 2026-11-09 (steps 0-7 done, committed on `dendritic`). Remaining: rebuild verification on rh-sb3 and reisholmes, then merge. Depends on 01 (pattern) and 02 (current state).
 
 ## Target layout
 
@@ -17,8 +17,8 @@ modules/            # flake-parts modules only, auto-loaded by import-tree
     dev.nix         # flake.modules.homeManager.dev
   hosts/
     reis-new.nix    # flake.homeConfigurations."reis@reis-new" (ported)
-    rh-sb3.nix      # pending
-    reisholmes.nix  # pending (darwin host plus its HM profile)
+    rh-sb3.nix      # ported
+    reisholmes.nix  # ported (darwin host plus its HM profile)
 home-manager/       # HM module content, NOT auto-loaded, imported by the modules/home wrappers
   hosts/reis-new.nix  # host-specific HM config (moved from home/reis/reis-new/default.nix)
 darwin/             # nix-darwin module content, NOT auto-loaded
@@ -72,7 +72,6 @@ Overall Definition of Done: all four configurations build, nix flake check passe
 ## Risks
 
 - home-manager class wiring: the docs do not fully show standalone HM profiles under flake-parts. Mitigation: follow vimjoyer's dendritic-home-manager example exactly.
-- nixgl: currently passed via extraSpecialArgs. It becomes a flake-level option or a module argument. Test mesa (reis-new) and nvidiaPrime (rh-sb3) profiles separately.
 - stylix: currently imported as stylix.homeModules.stylix per profile. Keep that import inside the stylix feature file so host files stay declarative.
 - Ecosystem churn: if the pattern's tooling shifts further (Ren), we own a small module tree, not a lock-in. The pattern is the dependency, the tooling is swappable.
 
