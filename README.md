@@ -68,12 +68,37 @@ nvd diff /nix/var/nix/profiles/system-{OLD,NEW}-link
 
 ### `nix_rebuild` Alias
 
-Every host defines a `nix_rebuild` shell alias (managed via `programs.zsh.shellAliases` in each `home/<user>/<host>/default.nix`) that runs the right rebuild for that machine and then prints the package differences between the last two generations using `nvd diff`:
+Every host defines a `nix_rebuild` shell alias (managed via `programs.zsh.shellAliases` in each `home/<user>/<host>/default.nix`). It runs the right rebuild for that machine and then prints the package differences between the last two generations using `nvd diff`:
 
 - **Linux hosts** (`reis@reis-new`, `reis@rh-sb3`): `home-manager switch` + nvd diff
 - **macOS** (`reis.holmes@reisholmes`): `darwin-rebuild switch` + nvd diff
 
 So on any of the managed machines, `nix_rebuild` is the one-liner for "rebuild me and show what changed".
+
+## GPU Setup (non-NixOS Linux)
+
+Both Linux hosts (`reis-new`, `rh-sb3`) set `targets.genericLinux.gpu.enable = true`. This is home-manager's "fix the host OS" GPU approach: instead of wrapping each GUI app with nixGL, home-manager builds a `non-nixos-gpu` environment (mesa, libglvnd, ...) and installs a tmpfiles.d rule that symlinks `/run/opengl-driver` into it. Every Nix package then finds the GPU drivers through that single symlink.
+
+**Why not nixGL**: the `nixgl` flake input builds GL wrappers whose `checkPhase` runs `pcregrep`, which no longer exists in the pinned nixpkgs, so any config referencing it failed to evaluate. The nixGL input and wrapper modules were removed; see `llm-notes/home-manager-rebuild.md` for the full write-up.
+
+### One-off `sudo` setup
+
+At activation, home-manager prints a one-off command:
+
+```sh
+sudo /nix/store/<hash>-non-nixos-gpu/bin/non-nixos-gpu-setup
+```
+
+Run it once with `sudo`. It writes the tmpfiles.d rule so `/run/opengl-driver` points into the Nix store. Re-run it whenever the `non-nixos-gpu` store path changes, i.e. after nixpkgs or mesa updates. Without it, GPU apps silently fall back to llvmpipe software rendering.
+
+Verify after running it:
+
+```sh
+ls -l /run/opengl-driver   # must be a symlink into /nix/store
+LIBGL_DEBUG=1 kitty        # must report the real GPU, not llvmpipe
+```
+
+Upstream documentation: [home-manager, GPU drivers on non-NixOS systems (fixing the host OS)](https://nix-community.github.io/home-manager/usage/gpu-non-nixos.html#when-sudo-is-available-fixing-the-host-os).
 
 ## Development & Code Quality
 
@@ -126,7 +151,7 @@ home-manager switch --flake .#newuser@newmachine --impure -b backup
 ```
 
 > [!NOTE]
-> `nix-shell -p home-manager` pulls the *latest unstable* home-manager, not the version pinned by the flake. This is only for bootstrapping a fresh machine so that the `home-manager` command exists; afterwards every rebuild re-uses the flake-pinned home-manager (installed by the first `switch`), so the two converge.
+> `nix-shell -p home-manager` pulls the *latest unstable* home-manager, not the version pinned by the flake. This is only for bootstrapping a fresh machine so that the `home-manager` command exists. Afterwards every rebuild re-uses the flake-pinned home-manager (installed by the first `switch`), so the two converge.
 
 - From now on you can do:
 
@@ -152,8 +177,7 @@ home-manager switch --flake .#newuser@newmachine --impure -b backup
 - **home-manager**: Manages user-specific configurations, following the `nixpkgs` input
 - **nix-darwin**: Enables nix-darwin for macOS system configuration
 - **mac-app-util**: Building and managing macOS apps
-- **nixgl**: Fixes graphics issues on non-NixOS systems
-- **stylix**: Theming framework (colors, fonts, wallpapers) applied via home-manager; `stylix-stable` pins the `release-25.11` branch
+- **stylix**: Theming framework (colors, fonts, wallpapers) applied via home-manager. `stylix-stable` pins the `release-25.11` branch
 - **pre-commit-hooks**: Code quality hooks (alejandra, statix, deadnix) used by the `checks` and `devShells` outputs
 
 ## Usage
@@ -163,7 +187,7 @@ home-manager switch --flake .#newuser@newmachine --impure -b backup
 To add a new machine with a new user to your nix-darwin or NixOS configuration, follow these steps:
 
 > [!NOTE]
-> This flake currently has no NixOS machines (`nixosConfigurations = {}` and `mkNixosConfiguration` is commented out). The NixOS-specific steps below are reserved for future use; for now the supported configurations are nix-darwin (macOS) and standalone Home Manager (Linux).
+> This flake currently has no NixOS machines (`nixosConfigurations = {}` and `mkNixosConfiguration` is commented out). The NixOS-specific steps below are reserved for future use. For now the supported configurations are nix-darwin (macOS) and standalone Home Manager (Linux).
 
 1. **Update `flake.nix`**:
 
@@ -315,7 +339,7 @@ home-manager switch --flake .#newuser@newmachine
 ```
 
 > [!NOTE]
-> `nix-shell -p home-manager` installs the latest unstable home-manager, not the flake-pinned one. It's only needed once so the `home-manager` command exists; from then on the flake-pinned version takes over.
+> `nix-shell -p home-manager` installs the latest unstable home-manager, not the flake-pinned one. It's only needed once so the `home-manager` command exists. From then on the flake-pinned version takes over.
 
 After this initial setup, you can rebuild configurations separately and home-manager will be available without additional steps
 
@@ -382,6 +406,15 @@ For machine-specific setup instructions and configuration notes, see the README 
 - [hosts/rh-sb3/README.md](hosts/rh-sb3/README.md) - Linux Mint setup notes
 
 ## Changelog
+
+### 2026-10-28 - NixGL removed, host-OS GPU approach
+
+**Breaking Changes:**
+
+- **NixGL removed** - The `nixgl` flake input and the `nixgl-profiles.nix` / `nixgl-wrapper.nix` modules are gone. The wrapper `checkPhase` (pcregrep) broke evaluation against current nixpkgs. ghostty and kitty now use bare `pkgs.ghostty` / `pkgs.kitty`.
+- **GPU** - Linux hosts set `targets.genericLinux.gpu.enable = true` (rh-sb3 is iGPU/mesa only, no NVIDIA offload). After a rebuild that changes the `non-nixos-gpu` store path, run the printed one-off `sudo non-nixos-gpu-setup` command. See the GPU Setup section above.
+
+---
 
 ### 2025-01-23 - Pre-commit Hooks Integration
 

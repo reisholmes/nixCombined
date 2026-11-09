@@ -33,7 +33,7 @@ Declarative Homebrew package management:
 - **Casks**: GUI applications
 - **masApps**: Mac App Store applications
 
-Automatic cleanup removes packages not defined in configuration.
+Cleanup is off. If you remove a package from `homebrew.nix`, a rebuild leaves it installed. The `onActivation.cleanup` comment in `programs/homebrew.nix` says why, and how to list packages that are not in the configuration.
 
 ## Services Module
 

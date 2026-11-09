@@ -3,7 +3,7 @@
 # Mirrors the macOS nix-darwin auto-GC in modules/darwin/common/default.nix
 # (--delete-older-than 21d, plus optimise), adapted for a desktop that is not
 # left on overnight:
-#   - a Mon 11:00 timer catches up if the machine is left on for days
+#   - a Mon 11:00 timer catches up on the rare days the machine is left on
 #
 # Not wanted by default.target: home-manager's reloadSystemd activation would
 # then restart the finished oneshot on every `home-manager switch`, running a
@@ -32,7 +32,7 @@ in
           ExecStart = "${gcScript}/bin/nix-gc-weekly";
         };
       };
-      # Safety net while the machine is left on for days.
+      # Safety net for the rare days the machine is left on.
       timers."nix-gc" = {
         Unit.Description = "Scheduled Nix garbage collection";
         Timer = {

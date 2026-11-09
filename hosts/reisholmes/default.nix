@@ -1,4 +1,5 @@
 {
+  pkgs,
   outputs,
   userConfig,
   inputs,
@@ -30,10 +31,16 @@
   # Home Manager configuration
   home-manager = {
     useUserPackages = true;
+    # Move a colliding file to <name>.backup-<timestamp> instead of aborting activation.
+    # A timestamp, not backupFileExtension: a fixed <name>.backup aborts activation the
+    # second time the same file collides, because the earlier backup is still there.
+    # Home Manager runs this command once per colliding file, with the file path as $1.
+    backupCommand = "${pkgs.writeShellScript "hm-backup" ''
+      ${pkgs.coreutils}/bin/mv -- "$1" "$1.backup-$(${pkgs.coreutils}/bin/date +%Y%m%d-%H%M%S)"
+    ''}";
     extraSpecialArgs = {
       inherit inputs outputs userConfig;
       nhModules = "${self}/modules/home-manager";
-      inherit (inputs) nixgl;
     };
     users.${userConfig.name} = import ../../home/${userConfig.name}/reisholmes;
   };

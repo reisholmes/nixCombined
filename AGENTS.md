@@ -1,7 +1,7 @@
 # LLM agent notes for this repo
 
 Before troubleshooting anything in this repo, read `llm-notes/README.md` and the topic files it links.
-After resolving a new non-obvious issue here, add a note to the right `llm-notes/` file (or create one) and update its index.
+After resolving a new non-obvious issue here, add a note to the right `llm-notes/` file (or create one) and update the index in `llm-notes/README.md`.
 
 ## Layout
 

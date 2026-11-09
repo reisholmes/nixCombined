@@ -7,7 +7,7 @@
 #   - Brews (command-line tools)
 #   - Casks (GUI applications)
 #   - Mac App Store apps via mas
-#   - Automatic cleanup of unmanaged packages
+#   - Cleanup of unmanaged packages (disabled for now, see onActivation.cleanup)
 #
 # Platform: macOS only (nix-darwin)
 #
@@ -28,9 +28,14 @@ _: {
   homebrew = {
     enable = true;
 
-    # Cleanup strategy: "uninstall" removes packages not in config
-    # Alternative: "zap" (more aggressive, may remove shared files)
-    onActivation.cleanup = "uninstall";
+    # Cleanup strategy: "none" leaves packages that are not in this config installed.
+    # "uninstall" is disabled because on Homebrew 7.0.11 `brew bundle --force-cleanup`
+    # deletes ~/.homebrew/trust.json and then fails on the untrusted deskflow tap.
+    # That failure aborts activation before home-manager runs.
+    # To list packages that are not in this config (nix-darwin writes the Brewfile to the Nix store):
+    #   brew bundle cleanup --file="$(grep -o '/nix/store/[^ '\'']*-Brewfile' /run/current-system/activate | head -1)"
+    # Set back to "uninstall" once a Homebrew release keeps the trust file.
+    onActivation.cleanup = "none";
 
     # Homebrew taps (third-party repositories)
     # Format: "owner/repo"

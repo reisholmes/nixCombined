@@ -97,7 +97,6 @@ in {
       tflint
     ]
     ++ lib.optionals stdenv.hostPlatform.isDarwin [
-      (azure-cli.withExtensions [azure-cli.extensions.aks-preview])
       github-copilot-cli
       pipx
       python314Packages.pip

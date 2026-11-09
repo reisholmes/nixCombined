@@ -1,17 +1,16 @@
 {
   config,
   pkgs,
-  wrapWithNixGL,
   ...
 }: {
   # https://home-manager-options.extranix.com/?query=programs.ghostty&release=master
   # Ghostty
   # On macOS, ghostty is installed via Homebrew for better system integration
-  # On Linux, it's installed via Nix with nixGL wrapper
+  # On Linux, it's installed via Nix
   programs.ghostty = {
     enable = !pkgs.stdenv.hostPlatform.isDarwin;
 
-    package = wrapWithNixGL pkgs.ghostty;
+    package = pkgs.ghostty;
   };
   # disable xdg auto config so we can inject our own
   # https://github.com/nix-community/home-manager/issues/5539#issuecomment-2172568260
