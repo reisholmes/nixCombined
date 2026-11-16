@@ -4,7 +4,7 @@
   # I essentially copied this from someone much smarter than me:
   # https://github.com/AlexNabokikh/nix-config
   # All I wanted was a simple, easy enough to follow examples, of managing
-  # two machines (linux mint and mac, in my case) with home manager and
+  # three machines (two Linux, one Mac, in my case) with home manager and
   # shared app configs between them. Alex's config matches what I required.
   # If you don't follow what I'm doing then go read his repo.
   description = "Nix and nix-darwin configs for my machines";
@@ -39,7 +39,7 @@
     };
 
     # Dendritic pattern: flake-parts module system plus automatic module loading.
-    # Inert until outputs switch to mkFlake + import-tree (see llm-research/04-migration-plan.md).
+    # Everything under modules/ is loaded by import-tree (see README Structure).
     flake-parts.url = "github:hercules-ci/flake-parts";
     import-tree.url = "github:vic/import-tree";
   };

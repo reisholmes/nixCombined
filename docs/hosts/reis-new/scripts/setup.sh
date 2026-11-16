@@ -77,7 +77,7 @@ done
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 ASSETS_DIR="$REPO_ROOT/home-manager/assets"
 
 # Check if running on CachyOS
@@ -181,7 +181,7 @@ yay -S --needed --noconfirm lsp-plugins-lv2 --answerclean None --answerdiff None
 }
 
 # Install Calf for microphone control
-echo_info "Installing Calf (no-gui version)..."
+echo_info "Installing Calf..."
 yay -S --needed --noconfirm calf --answerclean None --answerdiff None
 
 # Restore EasyEffects
@@ -284,7 +284,7 @@ echo_info "  - OpenRGB: ~/.config/OpenRGB/reis_default.orp"
 echo ""
 echo_info "Manual steps remaining:"
 echo_info "  1. Install Temperature Sensors DKMS module:"
-echo_info "     Run: $SCRIPT_DIR/update-asus-ec-sensors.sh"
+echo_info "     Follow the Temperature Sensors DKMS Module section in docs/hosts/reis-new/README.md"
 echo_info "     (Required after each major CachyOS update)"
 echo ""
 echo_info "  2. Install Proton-GE custom drivers for Steam:"

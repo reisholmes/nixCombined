@@ -59,7 +59,7 @@ nixos:
 	sudo nixos-rebuild switch --flake $(FLAKE)
 	@echo ""
 	@echo "Showing package differences..."
-	@nvd diff /nix/var/nix/profiles/system-{$$(ls -v /nix/var/nix/profiles/ | grep 'system-.*-link' | tail -2 | head -1 | sed 's/system-\(.*\)-link/\1/'),$($(ls -v /nix/var/nix/profiles/ | grep 'system-.*-link' | tail -1 | sed 's/system-\(.*\)-link/\1/'))}-link 2>/dev/null || echo "Note: nvd not available or insufficient generations for comparison"
+	@nvd diff $$(ls -d1v /nix/var/nix/profiles/system-*-link 2>/dev/null | tail -2 | head -1) $$(ls -d1v /nix/var/nix/profiles/system-*-link 2>/dev/null | tail -1) 2>/dev/null || echo "Note: nvd not available or insufficient generations for comparison"
 
 update:
 	@echo "Updating flake inputs..."

@@ -11,13 +11,13 @@ Written 2026-10-25 from research passes on the official Dendrix docs, four examp
 | `01-dendrix-pattern.md` | What the Dendritic pattern is, core terms, getting started, vimjoyer's content | Done |
 | `02-current-workflow.md` | How this repo works today (flake, hosts, rebuild, checks) | Done |
 | `03-decision.md` | Pros/cons per option, recommendation: pattern only, no registry | Done (option B approved 2026-11-09) |
-| `04-migration-plan.md` | Stepwise plan, pilot host, verification, rollback | In progress (all three hosts ported, merge pending) |
+| `04-migration-plan.md` | Stepwise plan, pilot host, verification, rollback | Done (merged in PR #7, `aa01d8e`) |
 
 Status legend: Done = complete, stable. Draft = will change during execution.
 
 ## TL;DR for future sessions
 
 - "Dendritic" is the pattern (flake-parts + import-tree, every modules/*.nix is a module). "Dendrix" is the community registry on top. They are separate; we adopt the pattern only.
-- Our repo: 3 standalone home-manager profiles + 1 nix-darwin host, no NixOS hosts yet. Layout copied from AlexNabokikh/nix-config. We thread userConfig/nhModules/inputs through specialArgs, which the Dendritic docs call an anti-pattern.
+- Our repo at research time: 3 standalone home-manager profiles + 1 nix-darwin host, no NixOS hosts yet. Layout was copied from AlexNabokikh/nix-config, and specialArgs threaded userConfig/nhModules/inputs, which the Dendritic docs call an anti-pattern. The migration is now merged (PR #7), so read the current layout from `README.md`.
 - Recommendation: restructure to flake-parts + import-tree, pilot host reis-new, keep pre-commit and nix_rebuild, skip the Dendrix registry for now.
-- Pre-existing gap to fix first, independent of migration: rh-sb3's nix_rebuild alias still has the stale-generation-diff bug fixed for reis-new in commit f09007a.
+- rh-sb3's `nix_rebuild` alias had the stale-generation-diff bug fixed for reis-new in commit `f09007a`. It was fixed before the migration, in commit `435ff18`.

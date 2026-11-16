@@ -5,7 +5,8 @@
   pkgs,
   ...
 }: let
-  # nixpkgs has 0.25.10; nvim 0.12 requires >= 0.26.8
+  # The locked nixpkgs now has 0.27.1, which satisfies nvim 0.12 (>= 0.26.8).
+  # This pinned 0.26.8 binary predates that; switch to pkgs.tree-sitter when verified.
   # To update hashes: change version, then run:
   #   curl -sL <url> -o /tmp/ts.gz && nix-hash --type sha256 --flat /tmp/ts.gz | xargs nix-hash --type sha256 --to-base32
   # Prefix the output with "sha256:" below.

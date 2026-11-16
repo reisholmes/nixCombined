@@ -68,10 +68,10 @@ nvd diff /nix/var/nix/profiles/system-{OLD,NEW}-link
 
 ### `nix_rebuild` Alias
 
-Every host defines a `nix_rebuild` shell alias, managed via `programs.zsh.shellAliases` in `home-manager/hosts/<host>.nix`. It captures the current generation, rebuilds, captures the new one, then prints `nvd diff` between them. If the rebuild created no new generation it prints `No changes` instead of re-diffing a stale pair:
+Every host defines a `nix_rebuild` shell alias, managed via `programs.zsh.shellAliases` in `home-manager/hosts/<host>.nix`:
 
-- **Linux hosts** (`reis@reis-new`, `reis@rh-sb3`): `home-manager switch` + nvd diff
-- **macOS** (`reis.holmes@reisholmes`): `darwin-rebuild switch` + nvd diff
+- **Linux hosts** (`reis@reis-new`, `reis@rh-sb3`): `home-manager switch`, then `nvd diff` of the generation captured before and after the switch. If the rebuild created no new generation it prints `No changes` instead of re-diffing a stale pair.
+- **macOS** (`reis.holmes@reisholmes`): `darwin-rebuild switch`, then `nvd diff` of the two newest system generations. It has no no-change check.
 
 So on any of the managed machines, `nix_rebuild` is the one-liner for "rebuild me and show what changed".
 
@@ -379,7 +379,7 @@ nix develop  # Run once to install hooks
 ```
 
 **Files:**
-- `flake.nix:134-163` - Pre-commit checks and devShell configuration
+- `modules/parts.nix` - Pre-commit checks and devShell configuration
 - `statix.toml` - Statix linter configuration
 - `.gitignore` - Ignores auto-generated pre-commit configs
 

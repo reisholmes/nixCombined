@@ -11,9 +11,6 @@
       indexes = ["nixpkgs" "home-manager"];
     };
   };
-  # disable xdg auto config so we can inject our own
-  # https://github.com/nix-community/home-manager/issues/5539#issuecomment-2172568260
-  # xdg.configFile."nix-search-tv/config.json".enable = false;
   home = {
     packages = with pkgs; [
       #nix-search-tv

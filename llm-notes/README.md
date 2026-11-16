@@ -8,7 +8,6 @@ When you resolve a new non-obvious issue, append a note to the right file (or cr
 
 - [Flake evaluation banners and input drift](flake-eval.md)
 - [home-manager rebuild and generation pitfalls](home-manager-rebuild.md)
-- [Dendritic Nix migration handover](dendritic-handover.md) — not a troubleshooting note; handover state for the in-progress migration, full research in `llm-research/`
+- [Dendritic Nix migration handover](dendritic-handover.md) — not a troubleshooting note; migration record, merged into `main` 2026-11-09, full research in `llm-research/`
 - [Dendritic migration pitfalls](dendritic-migration.md) — flake-parts output merging, `flake.modules`, auto-loading under `modules/`
-- [Broken packages blocking evaluation](nixpkgs-broken-packages.md) — nixpkgs marks a package broken, the whole configuration stops evaluating
 - [Homebrew activation pitfalls](homebrew.md) — cleanup resets tap trust, a removed formula hides the cask that replaced it

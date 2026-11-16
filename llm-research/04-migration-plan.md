@@ -1,6 +1,6 @@
 # 04 - Migration plan (option B: pattern only)
 
-Status: Executed 2026-11-09 (steps 0-7 done, committed on `dendritic`). Remaining: rebuild verification on rh-sb3 and reisholmes, then merge. Depends on 01 (pattern) and 02 (current state).
+Status: Executed 2026-11-09 (steps 0-7 done, committed on `dendritic`) and merged in PR #7 (`aa01d8e`). Remaining: real rebuild verification on rh-sb3 and reisholmes. Depends on 01 (pattern) and 02 (current state).
 
 ## Target layout
 
@@ -51,7 +51,7 @@ Follow the simple style from adumh00man/dendritic-tutorial, not the predicate st
 4. Done: reis-new ported. Verified with `nix eval .#homeConfigurations.reis@reis-new.activationPackage.drvPath` and `nix flake check --system x86_64-linux`.
 5. Done: rh-sb3 ported. Verified by `nix eval .#homeConfigurations.reis@rh-sb3.activationPackage.drvPath` and `nix flake check`. A real `nix_rebuild` on that machine is still owed.
 6. Done: reisholmes ported. Both `darwinConfigurations.reisholmes` and `homeConfigurations."reis.holmes@reisholmes"` evaluate. A real rebuild on the Mac is still owed.
-7. Done: host notes moved from `hosts/` to `docs/hosts/`, READMEs updated to the new layout. Remaining: rebuild verification on the real machines, then merge.
+7. Done: host notes moved from `hosts/` to `docs/hosts/`, READMEs updated to the new layout, merged in PR #7. Remaining: rebuild verification on rh-sb3 and reisholmes.
 
 Do one host per commit. Stop at the first host that fails verification instead of stacking work.
 

@@ -253,8 +253,7 @@ When prompted for lv2-host provider, select option 1 (ardour from cachyos-extra-
 Microphone control, boosting and ensuring it's being presented Stereo to Mono, is performed with the `Stereo Tools` plugin from Calf:
 
 ```bash
-yay calf-no-gui
-# Select: aur/calf-no-gui
+yay calf
 ```
 
 Test with:
@@ -406,8 +405,8 @@ ip route get 1.1.1.1               # public traffic routes via wg0
 
 ```bash
 sudo mkdir /mnt/games
-echo "UUID=8E3E36AB3E368C69 /mnt/games ntfs-3g   uid=1000,gid=1000    0       0" | sudo tee -a /etc/fstab
-yay ntfs-3g
+echo "UUID=6ce52a72-75af-4708-92d5-2e56754e1b1b /mnt/games     btrfs   defaults,noatime,compress=zstd,commit=120 0 0" | sudo tee -a /etc/fstab
+sudo chown -R reis:reis /mnt/games
 sudo mount -a
 ```
 

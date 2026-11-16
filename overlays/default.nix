@@ -10,9 +10,9 @@
     };
   };
 
-  # pipx 1.8.0 has broken tests on nixos-unstable (PEP 508 spacing mismatch).
-  # doCheck = false mirrors the fix already on nixpkgs/master; remove once
-  # nixos-unstable picks up a version with fixed tests.
+  # pipx 1.8.0 had broken tests on nixos-unstable (PEP 508 spacing mismatch).
+  # The locked nixpkgs now ships pipx 1.16.6, so this override is a removal
+  # candidate; keep doCheck = false until a build without it is verified.
   pipx-fix = _final: prev: {
     pipx = prev.pipx.overridePythonAttrs (_: {
       doCheck = false;
