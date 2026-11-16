@@ -46,7 +46,6 @@ _: {
       "deskflow"
       "gcloud-cli"
       "ghostty"
-      "powershell"
       "proton-pass"
       # Raycast setup: https://www.youtube.com/watch?v=DBifQv9AYhc
       "raycast"
