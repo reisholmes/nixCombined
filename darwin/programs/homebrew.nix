@@ -4,39 +4,45 @@ _: {
   homebrew = {
     enable = true;
 
-    # Cleanup strategy: "none" leaves packages that are not in this config installed.
-    # "uninstall" is disabled because on Homebrew 7.0.11 `brew bundle --force-cleanup`
-    # deletes ~/.homebrew/trust.json and then fails on the untrusted deskflow tap.
-    # That failure aborts activation before home-manager runs.
-    # To list packages that are not in this config (nix-darwin writes the Brewfile to the Nix store):
+    # nix-darwin runs `brew update` on each darwin-rebuild switch, then upgrades outdated
+    # packages listed in this file. This makes rebuilds slower, needs network access, and means
+    # two rebuilds of the same config can install different versions.
+    # Manual `brew` commands auto-update through homebrew.global.autoUpdate, which defaults to true.
+    onActivation.autoUpdate = true;
+    onActivation.upgrade = true;
+
+    # nix-darwin uninstalls packages that are not in this config on each rebuild.
+    # Cleanup resets ~/.homebrew/trust.json to the trust this Brewfile declares
+    # (https://docs.brew.sh/Tap-Trust). Every non-official tap below must set
+    # `trusted = true`, or cleanup drops its trust and activation fails before home-manager runs.
+    # To preview what cleanup would remove (nix-darwin writes the Brewfile to the Nix store):
     #   brew bundle cleanup --file="$(grep -o '/nix/store/[^ '\'']*-Brewfile' /run/current-system/activate | head -1)"
-    # Set back to "uninstall" once a Homebrew release keeps the trust file.
-    onActivation.cleanup = "none";
+    onActivation.cleanup = "uninstall";
 
     # Homebrew taps (third-party repositories)
-    # Format: "owner/repo"
     taps = [
-      "deskflow/homebrew-tap"
-      "hashicorp/tap"
-      "jesseduffield/lazydocker"
-      "powershell/tap"
+      {
+        name = "deskflow/homebrew-tap";
+        trusted = true;
+      }
     ];
 
     # Brews (command-line tools, typically pre-compiled binaries)
     brews = [
       "adr-tools"
       "awscli"
-      "azure-cli"
       "lazydocker"
       "node"
       "opencode"
       "podman"
       "uv"
+      "vale"
     ];
 
     # Casks (macOS native GUI applications)
     # Managed via command line for declarative installs
     casks = [
+      "azure-cli"
       "deskflow"
       "gcloud-cli"
       "ghostty"

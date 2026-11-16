@@ -33,7 +33,7 @@ Declarative Homebrew package management:
 - **Casks**: GUI applications
 - **masApps**: Mac App Store applications
 
-Cleanup is off. If you remove a package from `homebrew.nix`, a rebuild leaves it installed. The `onActivation.cleanup` comment in `programs/homebrew.nix` says why, and how to list packages that are not in the configuration.
+Cleanup is on (`uninstall`). A rebuild removes every formula, cask and tap that is not listed in `homebrew.nix`, including packages you installed by hand with `brew install`. Every non-official tap needs `trusted = true`, or the rebuild fails. The `onActivation.cleanup` comment in `programs/homebrew.nix` explains why each non-official tap needs `trusted = true` and shows how to preview what cleanup removes. Details are in `llm-notes/homebrew.md`.
 
 ## Services Module
 
