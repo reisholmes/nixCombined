@@ -42,6 +42,7 @@ in {
     ../programs/flux9s
     ../programs/k9s
     ../programs/opencode
+    ../programs/pi-coding-agent
   ];
 
   # Ensure common packages are installed

@@ -7,6 +7,12 @@
 - **Fix**: Keep `flake.lock` tracked. If it is ever ignored again: `git add -f flake.lock` and remove the entry from `.gitignore` (original fix: commit `e34c4ed`). All machines in this repo share one set of input pins; update inputs deliberately with `nix flake update`.
 - **Verify**: `nix flake metadata .` prints no "updating lock file" banner, and `flake.lock` mtime is unchanged after the evaluation.
 
+## New untracked files are missing from the store source copy
+
+- **Symptom**: `nix flake check .` fails with `error: path '/nix/store/<hash>-source/<new file>' does not exist` right after creating a new module file and importing it.
+- **Cause**: Dirty-tree evaluation copies only git-tracked files into the store source (previous section). A newly created file is untracked until staged, so its import target is absent from the evaluated source.
+- **Fix**: `git add` the new file, then re-run the flake command. Staging is enough; no commit needed.
+
 ## Related
 
 - Do not switch aliases from `--flake .#...` to `--flake path:`. The `path:` form copies the directory including untracked files (`.git/`, `.direnv/`, `result`), so the source hash churns on every git commit or direnv reload.
