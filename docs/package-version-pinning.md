@@ -167,6 +167,8 @@ In your home configuration or system configuration:
 
 ## Complete Example
 
+This example uses the pre-Dendritic single-file flake shape to keep the pinning steps readable. In this repo, add the input to `flake.nix` and pass the pinned package set from `modules/hosts/<host>.nix` as shown above.
+
 Here's a full working example for pinning cowsay 3.8.3:
 
 ### flake.nix

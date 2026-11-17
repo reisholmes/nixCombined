@@ -116,13 +116,12 @@
     ++ lib.optionals (!stdenv.hostPlatform.isDarwin) [
       # Fonts for stylix to apply on Linux
       # On darwin, fonts are managed at system level via fonts.packages
-      # Kitty overrides this in its config for Hack
       ibm-plex
 
       # Terminal fonts
       # https://github.com/nix-community/home-manager/issues/6160
       # If experiencing issues on linux run
-      #    nix shell 'nixpkgs#fontconfig"
+      #    nix shell 'nixpkgs#fontconfig'
       #    fc-cache -vr
       nerd-fonts.hack
       nerd-fonts.jetbrains-mono
@@ -144,7 +143,7 @@
     ];
 
   # NOTE: Stylix configuration is intentionally NOT here
-  # Stylix is configured in each home config (home/*/*/default.nix) to:
+  # Stylix is configured in each host file (home-manager/hosts/<host>.nix) to:
   # - Prevent config duplication
   # - Allow platform-specific theming (wallpapers, etc)
 }

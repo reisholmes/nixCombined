@@ -1,6 +1,6 @@
 # Dendritic Nix migration handover
 
-Status at 2026-11-09: option B approved. Work is on branch `dendritic`, 12 commits ahead of `fix/general-improvements` (pre-migration tip `ee7b884`); all work committed. `reis-new` verified with a real `nix_rebuild` (empty `nvd diff`). Wallpaper stable path activated on reis-new (rebuild 2026-11-09, containments 42 and 46 repointed to `~/.local/share/wallpapers/hearts.png`). `rh-sb3` and `reisholmes` evaluate but are not rebuilt yet. Not merged.
+Status at 2026-11-09: option B approved. Work was on branch `dendritic`, 12 commits ahead of `fix/general-improvements` (pre-migration tip `ee7b884`); all work committed. `reis-new` verified with a real `nix_rebuild` (empty `nvd diff`). Wallpaper stable path activated on reis-new (rebuild 2026-11-09, containments 42 and 46 repointed to `~/.local/share/wallpapers/hearts.png`). `rh-sb3` and `reisholmes` evaluated but were not rebuilt at that time. The branch is now merged into `main` (PR #7, `aa01d8e`). This note records the migration, not the current repo state.
 Merge note: `main` (`de1c017`) was never merged into this lineage. It holds reworded versions of 9 of the 14 `fix/general-improvements` commits and lacks the other 5 (gpu/nixgl refactor, ghostty alpha-blending, claude removal, gpu docs link, nix_rebuild awk quoting). Merging `dendritic` into `main` is a true merge; expect conflicts where both sides touched the same file (flake.lock, llm-notes, zsh, systemd).
 All background lives in `llm-research/` (self-contained, re-read those before any implementation work).
 

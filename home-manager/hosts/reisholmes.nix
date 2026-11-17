@@ -51,7 +51,7 @@ in {
   programs.git = {
     # Git settings (new format)
     settings = {
-      # No default email - work email stays out of nix, personal email set in conditional includes
+      # No global user.email - conditional includes pick the email by repository path
 
       # CommonInfrastructure is a work-only GitHub org, so its ssh:// URLs always use the work key.
       # This rule sits outside the work include on purpose: uv fetches git dependencies from its

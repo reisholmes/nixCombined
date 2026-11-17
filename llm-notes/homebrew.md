@@ -19,7 +19,7 @@
 ## A removed formula hides the cask that replaced it
 
 - **Symptom**: `az version` reports an old version, such as 2.90.0, while `brew info --cask azure-cli` reports a newer installed version. `brew upgrade` does not change the version.
-- **Cause**: Homebrew deleted the `azure-cli` formula and replaced it with a cask. The old formula stays installed, and its `/opt/homebrew/bin/az` link blocks the cask's link. `brew upgrade` skips the formula because Homebrew has no formula definition left to upgrade to. With `onActivation.cleanup = "none"`, activation never removes the formula either.
+- **Cause**: Homebrew deleted the `azure-cli` formula and replaced it with a cask. The old formula stays installed, and its `/opt/homebrew/bin/az` link blocks the cask's link. `brew upgrade` skips the formula because Homebrew has no formula definition left to upgrade to. When cleanup was `"none"`, activation never removed the formula either.
 - **Fix**: `brew uninstall --formula azure-cli && brew reinstall --cask azure-cli && hash -r`. With `onActivation.cleanup = "uninstall"`, activation removes formulae that are not in `brews`. That stops this case from coming back on any machine. Activation does not relink the cask on a machine that is already broken, so run the fix above there.
 - **Verify**: `readlink /opt/homebrew/bin/az` points into `/opt/homebrew/Caskroom/azure-cli/`, and `az version` matches the cask version.
 
