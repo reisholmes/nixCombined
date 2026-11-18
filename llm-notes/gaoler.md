@@ -26,7 +26,16 @@ Existing pi config: `home-manager/programs/pi-coding-agent/default.nix` (Jan pro
 - **Writable-settings interaction**: see `pi-coding-agent.md` — if `mutableSettings = true` is enabled, the container writes runtime state into the same `~/.pi/agent/settings.json` (fine, it's a real file then). Without it, `settings.json` is a root-owned store symlink on the host and pi in the container (running as the user) may fail to write it.
 - **Verify**: `gaoler run --rm --profile pi pi -p "Reply with exactly: OK"` returns `OK` (exercises the Jan provider through the container), and `ls ~/.pi/agent/sessions` shows the in-container session persisted.
 
-## Next steps (target host: reis-new; not yet started, 2026-11-17)
+## Nix packaging pitfalls (hit 2026-11-18 while adding the package to `home-manager/hosts/reis-new.nix`)
+
+- **Symptom**: `home-manager build` fails with `error: attempt to call something which is not a function but a string`.
+- **Cause**: Nix has no triple-quote strings; `installPhase = """` parses as the empty string `""`. Use `'' ... ''`.
+- **Symptom**: build fails with `unpacker appears to have produced no directories`.
+- **Cause**: the release tarball has files at its root (no top-level dir), which the standard unpacker rejects. Set `dontUnpack = true` and run `tar -xf $src --exclude '._*'` in `installPhase`.
+- **Symptom**: `error: undefined variable 'docker-cli'` / `pkgs.tar` not found.
+- **Cause**: nixpkgs has no `docker-cli` attr (use `pkgs.docker`), and current nixpkgs renamed `tar` to `gnutar`.
+
+## Next steps (target host: reis-new; step 1 done 2026-11-18)
 
 - **Goal** — `pi` runs inside a gaoler-hardened podman container using the host's existing `~/.pi` config, on reis-new.
 - **Steps**

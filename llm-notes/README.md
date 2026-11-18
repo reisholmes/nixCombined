@@ -11,3 +11,5 @@ When you resolve a new non-obvious issue, append a note to the right file (or cr
 - [Dendritic Nix migration handover](dendritic-handover.md) — not a troubleshooting note; migration record, merged into `main` 2026-11-09, full research in `llm-research/`
 - [Dendritic migration pitfalls](dendritic-migration.md) — flake-parts output merging, `flake.modules`, auto-loading under `modules/`
 - [Homebrew activation pitfalls](homebrew.md) — cleanup resets tap trust, a removed formula hides the cask that replaced it
+- [gaoler (container sandbox for pi)](gaoler.md) — gaoler is Docker-API-only; podman via its rootless Docker socket + `endpoint` (commands and config location inside); Jan provider/`JAN_API_KEY` wiring for the `pi` profile
+- [pi-coding-agent (pi) notes](pi-coding-agent.md) — "No models available" with a local server (resolved); `settings.json` runtime-state writes vs `mutableSettings` (possible fix, unverified)

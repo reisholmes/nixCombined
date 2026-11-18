@@ -5,7 +5,27 @@
   pkgs,
   userConfig,
   ...
-}: {
+}: let
+  # Prebuilt gaoler binary from the Codeberg release; sha256 from the
+  # release `checksums` file (verified 2026-11-18).
+  gaoler = pkgs.stdenv.mkDerivation {
+    pname = "gaoler";
+    version = "0.22.0";
+    src = pkgs.fetchurl {
+      url = "https://codeberg.org/KarlGW/gaoler/releases/download/v0.22.0/gaoler-0.22.0-linux-amd64.tar.gz";
+      sha256 = "b6dd4b96260a9d8048c777d8c50f918af6e4cf2bb23c9f9cc03402df851168de";
+    };
+    nativeBuildInputs = [pkgs.gnutar pkgs.xz];
+    # The tarball has no top-level directory, so skip the standard unpacker.
+    dontUnpack = true;
+    dontBuild = true;
+    installPhase = ''
+      tar -xf $src --exclude '._*'
+      mkdir -p $out/bin
+      cp gaoler $out/bin/
+    '';
+  };
+in {
   # Enable home-manager
   programs.home-manager.enable = true;
 
@@ -79,7 +99,36 @@
   # Packages specific to this machine
   home.packages = with pkgs; [
     lm_sensors
+    # gaoler sandbox for pi: rootless podman serves the Docker API, docker (CLI) is for debugging the socket
+    docker
+    gaoler
+    podman
   ];
+
+  # gaoler: point it at the rootless podman Docker API socket and define the pi
+  # profile (mounts ~/.pi, passes JAN_API_KEY from the host env). uid is 1000.
+  # See llm-notes/gaoler.md for why rootless podman and the endpoint literal.
+  home.file."/.gaoler/config.json".text = ''
+    {
+      "endpoint": "unix:///run/user/1000/podman/podman.sock",
+      "image": {
+        "template": "{HOME}/.gaoler/image.tmpl"
+      },
+      "profiles": {
+        "pi": {
+          "container": {
+            "volumes": {
+              "{HOME}/.pi": "{HOME}/.pi"
+            },
+            "env": {
+              "JAN_API_KEY": "{env:JAN_API_KEY}"
+            }
+          },
+          "inherit": true
+        }
+      }
+    }
+  '';
 
   # GPU drivers for standalone home-manager on Linux (host-OS /run/opengl-driver)
   targets.genericLinux.gpu.enable = true;
