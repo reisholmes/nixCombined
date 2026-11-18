@@ -17,6 +17,7 @@
       config.flake.modules.homeManager.common
       config.flake.modules.homeManager.dev
       inputs.stylix.homeModules.stylix
+      ../../home-manager/programs/pi-coding-agent
       ../../home-manager/hosts/reis-new.nix
     ];
   };
