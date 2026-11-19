@@ -130,6 +130,12 @@ in {
     }
   '';
 
+  # gaoler base image: node 24 + pi only. Built lazily on first `gaoler init`/run.
+  home.file."/.gaoler/image.tmpl".text = ''
+    FROM node:24-bookworm-slim
+    RUN npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+  '';
+
   # GPU drivers for standalone home-manager on Linux (host-OS /run/opengl-driver)
   targets.genericLinux.gpu.enable = true;
 
