@@ -12,7 +12,7 @@ gaoler is a Go CLI that runs workloads in hardened containers (moby seccomp prof
   ```
   Do **not** use podman's rootful `/run/podman/podman.sock` — that needs a `podman system service` daemon and root socket access. Do **not** start `podman system service` for the rootless socket; it is created by `podman` itself on first use.
 - **Verify**: `curl --unix-socket "$XDG_RUNTIME_DIR/podman/podman.sock" http://d/v1.47/version` returns Docker-engine version JSON (proves the socket speaks the Docker API, which is all gaoler needs). Then `gaoler run --rm <image> echo hi`.
-- **Uncertain (verify on first use)**: image *builds* through the Docker API on a rootless podman socket (gaoler builds from `image.tmpl` at `init`), and SELinux labelling, have not been tested here. If build fails, pre-build with `podman build -t gaoler-pi - < image.tmpl-resolved` and point `image.template`/profile at that tag instead.
+- **Verified 2026-11-19**: image builds through the Docker API on a rootless podman socket work, but stock gaoler v0.22.0 **panics** on podman 6's build stream — see the next section. With the patch (built from source), `gaoler init` and `gaoler run` both work end to end.
 - **Where in the config**: both podman and gaoler are per-machine, so they go in `home-manager/hosts/<host>.nix` (e.g. `reis-new` or `rh-sb3`), not the shared `home-manager/programs/` tree: `home.packages = [ pkgs.podman pkgs.docker-cli ];` (docker-cli is only for debugging against the socket) plus `home.file."/.gaoler/config.json"` and `home.file."/.gaoler/image.tmpl"` holding the profile above. The pinned home-manager (rev `a1293da`) has **no** `programs.podman` module — only `programs.docker-cli` and `programs.lazydocker` — so do not reach for one.
 
 ## Running pi inside a gaoler profile, compatible with our existing pi config
@@ -35,15 +35,21 @@ Existing pi config: `home-manager/programs/pi-coding-agent/default.nix` (Jan pro
 - **Symptom**: `error: undefined variable 'docker-cli'` / `pkgs.tar` not found.
 - **Cause**: nixpkgs has no `docker-cli` attr (use `pkgs.docker`), and current nixpkgs renamed `tar` to `gnutar`.
 
-## Next steps (target host: reis-new; step 1 done 2026-11-18)
+## Podman 6 + gaoler 0.22.0 issues (hit 2026-11-19 on reis-new)
 
-- **Goal** — `pi` runs inside a gaoler-hardened podman container using the host's existing `~/.pi` config, on reis-new.
-- **Steps**
-  1. In `home-manager/hosts/reis-new.nix`: `home.packages = [ pkgs.podman pkgs.docker-cli <gaoler v0.22.0 via fetchurl, sha256 from the release checksums file> ];`
-  2. `home.file."/.gaoler/config.json"` in the same file: `endpoint` (literal socket path, e.g. `"unix:///run/user/1000/podman/podman.sock"` — confirm uid with `id -u`), `image.template = "{HOME}/.gaoler/image.tmpl"`, `profiles.pi = { container = { volumes = { "{HOME}/.pi" = "{HOME}/.pi" }; env = { "JAN_API_KEY" = "{env:JAN_API_KEY}" }; }, inherit = true }` (gaoler expands `{HOME}` in volume paths). No extra Jan fix needed — see the resolved section above.
-  3. `home.file."/.gaoler/image.tmpl"`: node 24 + `npm install -g --ignore-scripts @earendil-works/pi-coding-agent` only (do not use the repo template as-is; it hardcodes an arm64 Go tarball).
-  4. `nix_rebuild`, then `gaoler init` (fixes uid/gid; re-run after any uid change).
-- **Done when**
-  - `curl --unix-socket "$XDG_RUNTIME_DIR/podman/podman.sock" http://d/v1.47/version` → JSON with `"Name":"Moby"` or docker-engine fields (socket speaks the Docker API).
-  - `gaoler run --rm --profile pi pi -p "Reply with exactly: OK"` → `OK` (proves Jan provider + `JAN_API_KEY` work through the container).
-  - `ls ~/.pi/agent/sessions` → a new session dir from the in-container run (proves the `~/.pi` mount round-trips state).
+- **Symptom**: `podman pull` fails with `config file not found` / `Unknown policy requirement type "disallow"`.
+- **Cause**: the nix `podman` package ships **no** `~/.config/containers/policy.json` or `registries.conf`; podman 6's new image engine (go.podman.io/image/v5) only accepts the new requirement types (`reject`, `insecureAcceptAnything`, `signedBy`, `signedBaseLayer`, `sigstoreSigned`) and reads **only** `~/.config/containers/policy.json` (env vars `CONTAINERS_POLICY`/`XDG_CONFIG_HOME` are ignored).
+- **Fix**: manage `home.file."/.config/containers/policy.json"` with `{"default":[{"type":"insecureAcceptAnything"}]}` (same default as Docker Desktop). No `registries.conf` needed when images use fully-qualified names (`docker.io/library/node:24-bookworm-slim`). Note `quay.io/library/...` 401s (private/renamed), so Docker Hub it is despite rate limits.
+- **Symptom**: `gaoler init` panics with `strings: negative Repeat count` during the image build.
+- **Cause**: podman 6's buildah sends `Step 0/0` (BuildKit-style, no step counts) over the Docker API. In `internal/container/service_build.go`, `scanResult` divides by a zero `total` → NaN/negative percentage → `strings.Repeat` panics in the progress bar.
+- **Fix**: `patches/gaoler-0.22.0-build-progress-clamp.patch` (clamp to [0,1], NaN guard). The derivation in `home-manager/hosts/reis-new.nix` is now a `buildGoModule` (source archive from Codeberg + patch; `vendorHash` = SRI of the go-modules FOD, read from a deliberate hash-mismatch build). Manual test build: `git clone --branch v0.22.0 https://codeberg.org/KarlGW/gaoler ~/src/gaoler && cd ~/src/gaoler && go build -o gaoler ./cmd/gaoler`.
+- **Symptom**: `gaoler run` fails: `Error attaching ... unable to find user reis: no matching entries in passwd file`.
+- **Cause**: gaoler runs containers as the host username; podman resolves it against the container `/etc/passwd`. `node:24-bookworm-slim` has no such user (uid 1000 belongs to `node`).
+- **Fix**: in `image.tmpl`: `RUN userdel node && groupadd -g 1000 reis && useradd -m -u 1000 -g 1000 reis` (userdel removes the `node` group too; a second `groupdel` fails). uid/gid must match the host so the mounted `~/.pi` stays writable.
+- **Trap**: `image.base` only accepts gaoler's supported distros — a custom image name gives `base image not supported`. Custom images must go through `image.template`.
+- **Socket lifetime**: the rootless podman socket is created by any `podman` invocation, but the API service it spawns is transient (started here with `systemd-run --user`). It is not guaranteed to come back after reboot without a persistent user unit.
+
+## Status (2026-11-19: working on reis-new)
+
+- **Done**: all four setup steps above, plus the podman 6 fixes. `gaoler init` builds the image and `gaoler run --no-workspace --profile pi pi --version` → `1.5.2` with the nix-built patched binary. Final verify still open: `gaoler run --profile pi pi -p "Reply with exactly: OK"` (exercises Jan + JAN_API_KEY through the container) and a session dir in `~/.pi/agent/sessions`.
+- **Upstream**: feedback + patch for the build-stream panic is ready for the repo owner (friend of the user); `patches/gaoler-0.22.0-build-progress-clamp.patch` is the diff. Drop the patch and `vendorHash` when a fixed release lands.

@@ -6,24 +6,21 @@
   userConfig,
   ...
 }: let
-  # Prebuilt gaoler binary from the Codeberg release; sha256 from the
-  # release `checksums` file (verified 2026-11-18).
-  gaoler = pkgs.stdenv.mkDerivation {
+  # Gaoler v0.22.0 from the Codeberg source, with the build-progress panic
+  # fixed (patches/gaoler-0.22.0-build-progress-clamp.patch; stock panics on
+  # podman 6's stepless build stream). Reported upstream; drop the patch when
+  # a fixed release lands.
+  gaoler = pkgs.buildGoModule rec {
     pname = "gaoler";
     version = "0.22.0";
     src = pkgs.fetchurl {
-      url = "https://codeberg.org/KarlGW/gaoler/releases/download/v0.22.0/gaoler-0.22.0-linux-amd64.tar.gz";
-      sha256 = "b6dd4b96260a9d8048c777d8c50f918af6e4cf2bb23c9f9cc03402df851168de";
+      url = "https://codeberg.org/KarlGW/gaoler/archive/v0.22.0.tar.gz";
+      sha256 = "0d66442b625393508a4efa840459a0f4a2451ce297bd2d815f8e0c664697f4c7";
     };
-    nativeBuildInputs = [pkgs.gnutar pkgs.xz];
-    # The tarball has no top-level directory, so skip the standard unpacker.
-    dontUnpack = true;
-    dontBuild = true;
-    installPhase = ''
-      tar -xf $src --exclude '._*'
-      mkdir -p $out/bin
-      cp gaoler $out/bin/
-    '';
+    patches = [../../patches/gaoler-0.22.0-build-progress-clamp.patch];
+    subpackages = ["./cmd/gaoler"];
+    doCheck = false;
+    vendorHash = "sha256-kJc4CrQblmXoksBMuCNMyGtdpPEtaJdMOv+v/bNKlx8=";
   };
 in {
   # Enable home-manager
@@ -130,9 +127,26 @@ in {
     }
   '';
 
-  # gaoler base image: node 24 + pi only. Built lazily on first `gaoler init`/run.
+  # The nix podman package ships no containers config files, so pulls fail with
+  # "config file not found". Podman 6's new image engine only accepts the new
+  # requirement types (reject, insecureAcceptAnything, signedBy, ...), so the
+  # old stock policy cannot be used. Accept unverified images, same default as
+  # Docker Desktop. See llm-notes/gaoler.md.
+  home.file."/.config/containers/policy.json".text = ''
+    {
+      "default": [
+        { "type": "insecureAcceptAnything" }
+      ]
+    }
+  '';
+
+  # gaoler base image template: node 24 + pi + a user matching the host user.
+  # Built by `gaoler init`. The user is required: gaoler runs containers as the
+  # host username and podman resolves it against the container /etc/passwd.
   home.file."/.gaoler/image.tmpl".text = ''
-    FROM node:24-bookworm-slim
+    FROM docker.io/library/node:24-bookworm-slim
+    # node:slim already has user/group `node` at 1000; userdel removes both.
+    RUN userdel node && groupadd -g 1000 reis && useradd -m -u 1000 -g 1000 reis
     RUN npm install -g --ignore-scripts @earendil-works/pi-coding-agent
   '';
 
