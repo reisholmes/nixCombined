@@ -1,0 +1,58 @@
+diff --git a/internal/container/service_build.go b/internal/container/service_build.go
+index d7b6e73..7f43cc2 100644
+--- a/internal/container/service_build.go
++++ b/internal/container/service_build.go
+@@ -436,8 +436,10 @@ func scanResult(total, part *int, b []byte) (float64, error) {
+ 
+ 	var percentage float64
+ 	if done {
+-		percentage = (float64(*part) / float64(*total))
+-		return percentage, nil
++		if *total > 0 {
++			percentage = (float64(*part) / float64(*total))
++		}
++		return clampPercentage(percentage), nil
+ 	}
+ 
+ 	steps := strings.TrimSpace(strings.Split(strings.TrimPrefix(output.Stream, "Step "), ":")[0])
+@@ -447,20 +449,30 @@ func scanResult(total, part *int, b []byte) (float64, error) {
+ 	}
+ 
+ 	if *total == 0 {
+-		tot, err := strconv.Atoi(parts[1])
+-		if err != nil {
+-			*total = 0
+-		}
+-		*total = tot
++		*total, _ = strconv.Atoi(parts[1])
+ 	}
+-	partint, err := strconv.Atoi(parts[0])
+-	if err != nil {
+-		*part = 0
++	*part, _ = strconv.Atoi(parts[0])
++	if *total <= 0 {
++		return 0, nil
+ 	}
+-	*part = partint
+ 	percentage = (float64(*part-1) / float64(*total))
+ 
+-	return percentage, nil
++	return clampPercentage(percentage), nil
++}
++
++// clampPercentage keeps the build progress in [0, 1]; out-of-range or NaN
++// values make strings.Repeat panic in the progress bar.
++func clampPercentage(p float64) float64 {
++	if p != p {
++		return 0
++	}
++	if p < 0 {
++		return 0
++	}
++	if p > 1 {
++		return 1
++	}
++	return p
+ }
+ 
+ func cpuQuotaAndPeriod(cpu float64) (quota, period int64, err error) {
