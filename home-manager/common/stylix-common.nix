@@ -36,6 +36,12 @@
       kitty = {
         enable = false;
       };
+      # nixpkgs removed the wayprompt package, so home-manager removed the
+      # program module and now asserts if anything defines options under it.
+      # Stylix still ships a wayprompt target, so it must stay disabled.
+      wayprompt = {
+        enable = false;
+      };
     };
 
     # Font configuration - can be overridden per-host

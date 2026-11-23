@@ -22,6 +22,13 @@
 - **Fix**: Remove `Install.WantedBy` from rarely-run oneshot units and let a timer own the schedule (`Persistent = true` covers missed runs). `nix-gc` is timer-only (Mon 11:00) since commit `f09007a`.
 - **Rule**: Never put a rarely-run oneshot into `default.target` under home-manager.
 
+## `nix_rebuild` failed: `programs.wayprompt` removed, defined by stylix
+
+- **Symptom**: `nix_rebuild` aborted at eval with "The option definition `programs.wayprompt' in `<stylix>/modules/wayprompt/hm.nix' no longer has any effect; please remove it". The trace names `hosts.homeConfigurations` and a host module, which hides the real source.
+- **Cause**: nixpkgs removed the `wayprompt` package, so home-manager 26.11-pre removed the program module and asserts on any definition under it. The pinned stylix rev still ships `modules/wayprompt/hm.nix`, which sets `programs.wayprompt.settings.colours`, and stylix enables every target by default. Stylix master still ships the file, so updating the input does not help.
+- **Fix**: `stylix.targets.wayprompt.enable = false;` in `home-manager/common/stylix-common.nix`. Stylix wraps target config in `mkIf cfg.enable`, so the removed option is never defined.
+- **Verify**: `nix build .#homeConfigurations."reis@reis-new".activationPackage --no-link` exits 0, then `nix_rebuild` switches generation and `nvd diff` prints the package changes.
+
 ## `nix_rebuild` failed at eval on the nixGL wrapper
 
 - **Symptom**: `nix_rebuild` / `home-manager switch --flake .#reis@reis-new --impure` aborted during evaluation before activation, with a nixGL wrapper failure.
