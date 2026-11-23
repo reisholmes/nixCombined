@@ -41,6 +41,21 @@ in {
     monitor-status = "kscreen-doctor -o";
   };
 
+  # Launch pi in a gaoler container on the current directory. Starts the
+  # transient rootless podman API socket if it is missing (see
+  # llm-notes/gaoler.md for the socket lifetime pitfall).
+  programs.zsh.siteFunctions.pis = ''
+    pis() {
+      local sock="$XDG_RUNTIME_DIR/podman/podman.sock"
+      if [ ! -S "$sock" ]; then
+        mkdir -p "$(dirname "$sock")"
+        systemd-run --user --unit podman-api \
+          podman system service --time=0 "unix://$sock"
+      fi
+      gaoler run --profile pi --user 0 pi "$@"
+    }
+  '';
+
   # SSH settings per host
   programs.ssh = {
     enable = true;
