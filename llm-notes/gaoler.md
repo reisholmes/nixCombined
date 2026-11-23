@@ -10,7 +10,7 @@ gaoler is a Go CLI that runs workloads in hardened containers (moby seccomp prof
   ```json
   { "endpoint": "unix:///run/user/1000/podman/podman.sock" }
   ```
-  Do **not** use podman's rootful `/run/podman/podman.sock` — that needs a `podman system service` daemon and root socket access. Do **not** start `podman system service` for the rootless socket; it is created by `podman` itself on first use.
+  Do **not** use podman's rootful `/run/podman/podman.sock` — that needs root socket access. The rootless API socket *is* started by `podman system service`; the earlier "podman creates it on first use" observation only holds for the lifetime of that transient unit (5 min idle) — see the socket-lifetime entry below for the persistent startup command.
 - **Verify**: `curl --unix-socket "$XDG_RUNTIME_DIR/podman/podman.sock" http://d/v1.47/version` returns Docker-engine version JSON (proves the socket speaks the Docker API, which is all gaoler needs). Then `gaoler run --rm <image> echo hi`.
 - **Verified 2026-11-19**: image builds through the Docker API on a rootless podman socket work, but stock gaoler v0.22.0 **panics** on podman 6's build stream — see the next section. With the patch (built from source), `gaoler init` and `gaoler run` both work end to end.
 - **Where in the config**: both podman and gaoler are per-machine, so they go in `home-manager/hosts/<host>.nix` (e.g. `reis-new` or `rh-sb3`), not the shared `home-manager/programs/` tree: `home.packages = [ pkgs.podman pkgs.docker-cli ];` (docker-cli is only for debugging against the socket) plus `home.file."/.gaoler/config.json"` and `home.file."/.gaoler/image.tmpl"` holding the profile above. The pinned home-manager (rev `a1293da`) has **no** `programs.podman` module — only `programs.docker-cli` and `programs.lazydocker` — so do not reach for one.
@@ -47,9 +47,23 @@ Existing pi config: `home-manager/programs/pi-coding-agent/default.nix` (Jan pro
 - **Cause**: gaoler runs containers as the host username; podman resolves it against the container `/etc/passwd`. `node:24-bookworm-slim` has no such user (uid 1000 belongs to `node`).
 - **Fix**: in `image.tmpl`: `RUN userdel node && groupadd -g 1000 reis && useradd -m -u 1000 -g 1000 reis` (userdel removes the `node` group too; a second `groupdel` fails). uid/gid must match the host so the mounted `~/.pi` stays writable.
 - **Trap**: `image.base` only accepts gaoler's supported distros — a custom image name gives `base image not supported`. Custom images must go through `image.template`.
-- **Socket lifetime**: the rootless podman socket is created by any `podman` invocation, but the API service it spawns is transient (started here with `systemd-run --user`). It is not guaranteed to come back after reboot without a persistent user unit.
+- **Socket lifetime**: the rootless API service is transient (default `podman system service` drops the socket after 5 min idle), and after reboot the `/run/user/1000/podman/` dir is gone. Bring it up with:
+  ```sh
+  mkdir -p /run/user/1000/podman
+  systemd-run --user --unit podman-api podman system service --time=0 unix:///run/user/1000/podman/podman.sock
+  ```
+  A persistent user unit for this should replace the systemd-run hack before relying on it after reboots.
+- **Symptom**: volume mounts are `rw` but every write is `EACCES` as the in-container `reis` (uid 1000).
+- **Cause**: rootless podman maps container uid 0 → host uid 1000 and shifts other uids into the subuid range (`/etc/subuid`: 100000–165536), so in-container uid 1000 is a different host identity than the file owner.
+- **Fix**: run the container with `--user 0` (container root *is* host `reis` via the identity mapping) and set `HOME` in the profile env — root's default `$HOME` is `/root`, so pi can't find `~/.pi` without it.
+- **Symptom**: pi inside the container says `No API key found` even though the key env var is set.
+- **Cause**: `~/.pi/agent/models.json` and `settings.json` are `/nix/store` symlinks on the host (home-manager); their targets don't exist in the container, so pi reads nothing.
+- **Fix**: add file-level entries to the profile `container.volumes` (docker resolves host symlinks and mounts the real store files); a file entry wins over the enclosing directory entry.
+- **Symptom**: `ECONNREFUSED 192.168.10.10:1337` from the container, while the host reaches Jan fine.
+- **Cause**: rootless podman's default network (slirp4netns) cannot route back to the host's own LAN IP (no hairpin NAT); even the bridge gateway IP fails.
+- **Fix**: `"networks": ["host"]` in the profile `container` config (gaoler passes a single entry straight through as the network mode). Trade-off: the container shares the host network, so gaoler's network isolation is off for this profile.
 
 ## Status (2026-11-19: working on reis-new)
 
-- **Done**: all four setup steps above, plus the podman 6 fixes. `gaoler init` builds the image and `gaoler run --no-workspace --profile pi pi --version` → `1.5.2` with the nix-built patched binary. Final verify still open: `gaoler run --profile pi pi -p "Reply with exactly: OK"` (exercises Jan + JAN_API_KEY through the container) and a session dir in `~/.pi/agent/sessions`.
+- **Done (2026-11-23)**: fully verified end to end. `gaoler run --no-workspace --profile pi --user 0 pi -p "Reply with exactly: OK"` → `OK`, and a fresh session file landed in `~/.pi/agent/sessions/` (Jan + JAN_API_KEY + mount round-trip all work). Requires `--user 0` (uid-mapping issue, see above) and the host-network profile fix.
 - **Upstream**: feedback + patch for the build-stream panic is ready for the repo owner (friend of the user); `patches/gaoler-0.22.0-build-progress-clamp.patch` is the diff. Drop the patch and `vendorHash` when a fixed release lands.

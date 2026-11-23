@@ -115,11 +115,17 @@ in {
         "pi": {
           "container": {
             "volumes": {
-              "{HOME}/.pi": "{HOME}/.pi"
+              "{HOME}/.pi": "{HOME}/.pi",
+              "{HOME}/.pi/agent/models.json": "{HOME}/.pi/agent/models.json",
+              "{HOME}/.pi/agent/settings.json": "{HOME}/.pi/agent/settings.json"
             },
             "env": {
+              "HOME": "/home/reis",
               "JAN_API_KEY": "{env:JAN_API_KEY}"
-            }
+            },
+            "networks": [
+              "host"
+            ]
           },
           "inherit": true
         }
