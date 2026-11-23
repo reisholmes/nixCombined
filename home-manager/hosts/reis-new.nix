@@ -168,6 +168,11 @@ in {
     FROM docker.io/library/node:24-bookworm-slim
     # node:slim already has user/group `node` at 1000; userdel removes both.
     RUN userdel node && groupadd -g 1000 reis && useradd -m -u 1000 -g 1000 reis
+    # ripgrep and fd are baked in because pi's runtime auto-download fails in
+    # the podman user namespace (tar cannot chown archive entries).
+    RUN apt-get update \
+      && apt-get install -y --no-install-recommends ripgrep fd-find \
+      && rm -rf /var/lib/apt/lists/*
     RUN npm install -g --ignore-scripts @earendil-works/pi-coding-agent
   '';
 
